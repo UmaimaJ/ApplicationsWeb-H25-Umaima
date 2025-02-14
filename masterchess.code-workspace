@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+			"name": "masterchess-frontend",
+			"path": "projet-masterchess/masterchess-frontend"
+		},
+		{
+			"name": "masterchess-backend",
+			"path": "projet-masterchess/masterchess-backend"
+		},
+		{
+			"name": "masterchess",
+			"path": "projet-masterchess"
+		},
+		{
+			"name": "repo-root",
+			"path": "."
+		}
+	],
+	"settings": {
+	},
+	"extensions": {
+		"recommendations": [
+			"DigitalBrainstem.javascript-ejs-support",
+			"ms-vscode.vscode-typescript-next",
+			"ms-vscode.js-debug-nightly",
+			"idered.npm",
+			"christian-kohler.npm-intellisense",
+			"traBpUkciP.vscode-npm-scripts"
+		]
+	}
+}
