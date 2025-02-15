@@ -60,16 +60,6 @@ function App() {
       <div class="content">
         {/* <Jeu></Jeu> */}
       </div>
-      <div class="my-sidebar">
-        <div class="move-info-panel">
-          <br />
-          <label class="move-info-label">A2A3</label>
-          <label class="move-info-label">B2B3</label>
-          <label class="move-info-label">C2C3</label>
-          <label class="move-info-label">D2D3</label>
-          <label class="move-info-label">E2E3</label>
-        </div>
-      </div>
     </div>
   );
 }
