@@ -58,7 +58,7 @@ function App() {
         </div>
       </div>
       <div class="content">
-        {/* <Jeu></Jeu> */}
+        <Jeu></Jeu>
       </div>
     </div>
   );
