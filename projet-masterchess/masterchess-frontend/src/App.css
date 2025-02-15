@@ -30,8 +30,6 @@ html, body, .App, #root{
   height: auto; 
   width: auto;
   align-content: center;
-
-  padding: 50px;
 }
 
 .my-sidebar{
