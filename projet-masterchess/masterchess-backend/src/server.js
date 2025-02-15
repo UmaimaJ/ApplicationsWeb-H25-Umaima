@@ -11,5 +11,5 @@ const server = app.listen(4000, function() {
 });
 
 app.get("/", function (req, res) {
-    res.render("serveur fonctionne");
+    res.send("serveur fonctionne");
 });
