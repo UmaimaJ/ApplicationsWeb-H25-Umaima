@@ -2,9 +2,9 @@ import rectangle from "../style/rectangle.svg";
 import timericon from "../style/timer-icon.svg";
 import board from "../style/board.svg";
 
-import './Jeu.css';
+import './PageJeu.css';
 
-export default function Jeu() {
+export default function PageJeu() {
     return (
         <div class="jeu-container">
             <div class="playpage-game">
