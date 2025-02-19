@@ -1,6 +1,8 @@
 import { createContext, useContext } from 'react';
 import React from 'react';
 
+import { Chessboard } from "react-chessboard";
+
 import rectangle from "../style/rectangle.svg";
 import timericon from "../style/timer-icon.svg";
 import board from "../style/board.svg";
@@ -50,7 +52,9 @@ class PageJeu extends React.Component {
                                 <label class="playpage-timer-label">3:15</label>
                             </div>
                         </div>
-                        <img class="playpage-game-board" src={board} />
+                        <div class="playpage-game-board">
+                            <Chessboard id="BasicBoard"/>
+                        </div>
                         <div class="playpage-infobar">
                             <div class="playpage-profile left clear">
                                 <div class="playpage-profile-pfp">
