@@ -14,7 +14,7 @@ const server = app.listen(4000, function() {
 
 var con = mysql.createConnection({
     host: "localhost",
-    port: "3307",
+    port: "3306",
     user: "dev_chess",
     database: "projet_chess",
     password: "developpement"
