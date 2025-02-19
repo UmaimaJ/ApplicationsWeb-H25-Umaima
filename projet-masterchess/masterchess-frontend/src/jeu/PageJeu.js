@@ -18,7 +18,6 @@ class PageJeu extends React.Component {
     {
         this.onDrop = this.onDrop.bind(this);
 
-        console.log(this.props.idPartie);
         const partie = await JeuService.getPartie(this.props.idPartie);
         const profilJoueur1 = await JeuService.getProfilJoueur(partie?.id_joueur1);
         const profilJoueur2 = await JeuService.getProfilJoueur(partie?.id_joueur2);
