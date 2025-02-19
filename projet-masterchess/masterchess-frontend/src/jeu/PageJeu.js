@@ -107,9 +107,13 @@ class PageJeu extends React.Component {
                     </div>
                     <div class="my-sidebar">
                         <div class="move-info-panel">
+<<<<<<< HEAD
                             {this.state?.game.history({ verbose: true }).map((entry, i) =>
                                 <label style={{color: (entry.color === 'w'? 'white' : "black"), backgroundColor: "grey"}} key={i}>joueur: {entry.color === 'w' ? this.state.profilJoueur1.compte : this.state.profilJoueur2.compte} from: {entry.from} to: {entry.to}
                                 </label>)}
+=======
+                            {this.state?.game.history({ verbose: true }).map((entry, i) => <label style={{color: (entry.color === 'w'? 'white' : "black"), backgroundColor: "grey"}} key={i}>joueur: {entry.color === 'w' ? this.state.profilJoueur1.compte : this.state.profilJoueur2.compte} from: {entry.from} to: {entry.to}</label>)}
+>>>>>>> 9eff690029b0ede615d01f05513b8dfd5d982fd5
                         </div>
                     </div>
                 </div>           
