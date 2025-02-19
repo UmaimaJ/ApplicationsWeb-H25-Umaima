@@ -18,6 +18,7 @@
 		}
 	],
 	"settings": {
+		"npm.packageManager": "npm"
 	},
 	"extensions": {
 		"recommendations": [
