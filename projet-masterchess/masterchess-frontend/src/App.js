@@ -58,7 +58,7 @@ function App() {
         </div>
       </div>
       <div class="content">
-        <PageJeu></PageJeu>
+        <PageJeu idPartie="1"></PageJeu>
       </div>
     </div>
   );
