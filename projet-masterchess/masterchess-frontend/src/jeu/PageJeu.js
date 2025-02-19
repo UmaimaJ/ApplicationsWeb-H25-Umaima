@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 import React from 'react';
 
 import { Chessboard } from "react-chessboard";
+import { Chess } from "chess.js";
 
 import rectangle from "../style/rectangle.svg";
 import timericon from "../style/timer-icon.svg";
@@ -15,15 +16,49 @@ const PartieContext = createContext(null);
 class PageJeu extends React.Component {
     async componentDidMount()
     {
+        this.onDrop = this.onDrop.bind(this);
+
         console.log(this.props.idPartie);
         const partie = await JeuService.getPartie(this.props.idPartie);
-        const profilJoueur = await JeuService.getProfilJoueur(partie.id_joueur1);
+        const profilJoueur1 = await JeuService.getProfilJoueur(partie?.id_joueur1);
+        const profilJoueur2 = await JeuService.getProfilJoueur(partie?.id_joueur2);
 
         if(this.props.idPartie)
             this.setState({
+                game: new Chess(),
                 partie: partie,
-                profilJoueur: profilJoueur
+                profilJoueur1: profilJoueur1,
+                profilJoueur2: profilJoueur2
         });
+    }
+
+    async makeAMove(move) {
+        const gameCopy = new Chess(this.state.game.fen());
+        try
+        {
+            const result = gameCopy.move(move);
+            this.setState({game: gameCopy});
+            return result; // null if cant move
+        }
+        catch(err)
+        {
+            return null;
+        }
+        return null;
+
+    }
+
+    async onDrop(sourceSquare, targetSquare)
+    {
+        const move = await this.makeAMove({
+            from: sourceSquare,
+            to: targetSquare
+        });
+
+        if(!move)
+            return false;
+
+        return true;
     }
 
     render() {
@@ -43,8 +78,8 @@ class PageJeu extends React.Component {
                                     <img class="playpage-profile-pfp-icon" src={rectangle} />
                                 </div>
                                 <div class="playpage-profile-userdata">
-                                    <label class="playpage-profile-username">{this.state.profilJoueur.compte}</label>
-                                    <label class="playpage-profile-userinfo">Joueur 1</label>
+                                    <label class="playpage-profile-username">{this.state.profilJoueur2.compte}</label>
+                                    <label class="playpage-profile-userinfo">Joueur 2</label>
                                 </div>
                             </div>
                             <div class="playpage-timer right">
@@ -53,7 +88,7 @@ class PageJeu extends React.Component {
                             </div>
                         </div>
                         <div class="playpage-game-board">
-                            <Chessboard id="BasicBoard"/>
+                            <Chessboard id="BasicBoard" position={this.state.game.fen()} onPieceDrop={this.onDrop}/>
                         </div>
                         <div class="playpage-infobar">
                             <div class="playpage-profile left clear">
@@ -61,8 +96,8 @@ class PageJeu extends React.Component {
                                     <img class="playpage-profile-pfp-icon" src={rectangle} />
                                 </div>
                                 <div class="playpage-profile-userdata">
-                                    <label class="playpage-profile-username">Robot</label>
-                                    <label class="playpage-profile-userinfo">Joueur 2</label>
+                                    <label class="playpage-profile-username">{this.state.profilJoueur1.compte}</label>
+                                    <label class="playpage-profile-userinfo">Joueur 1</label>
                                 </div>
                             </div>
                             <div class="playpage-timer right">
