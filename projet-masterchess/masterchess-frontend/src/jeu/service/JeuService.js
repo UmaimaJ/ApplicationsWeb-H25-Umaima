@@ -20,9 +20,13 @@ class JeuService {
         });
     }
 
-    async connectPartie()
+    async connectPartie(partieId, profiljeuId)
     {
-        this.io.connect();
+        this.io.io.opts.query = {
+            partieId: partieId,
+            profiljeuId: profiljeuId
+         };
+        this.io.disconnect().connect();
     }
 
     async getAllPartiesEncours()

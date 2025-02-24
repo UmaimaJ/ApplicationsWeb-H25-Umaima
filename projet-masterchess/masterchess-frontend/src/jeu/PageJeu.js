@@ -67,6 +67,7 @@ class PageJeu extends React.Component {
 
         if(partie)
         {
+            await this.state.jeuService.connectPartie(partie.id, profiljeu1.id);
             await this.setState({
                 game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
                 partie: partie,
