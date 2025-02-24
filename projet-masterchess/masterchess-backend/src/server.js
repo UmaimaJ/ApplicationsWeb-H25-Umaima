@@ -50,6 +50,7 @@ app.get("/getAllPartiesEncours", async function (req, res, err) {
 app.get("/getPartie", async function (req, res, err) {
     await jeuService.getPartie(req.query.id, (result) => {
         res.send(result);
+        console.log(result);
     });
 });
 

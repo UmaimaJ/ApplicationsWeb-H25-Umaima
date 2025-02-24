@@ -79,7 +79,7 @@ class JeuService{
     {
         this.mysql.query("SELECT * FROM partie WHERE id = ?", [partieId], function (err, result, fields) {
             if (err) throw err;
-            callback(result)
+            callback(result[0])
         });
     }
 
