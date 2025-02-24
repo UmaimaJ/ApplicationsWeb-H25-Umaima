@@ -20,7 +20,8 @@ var con = mysql.createConnection({
     port: "3306",
     user: "dev_chess",
     database: "projet_chess",
-    password: "developpement"
+    password: "developpement",
+    multipleStatements: true
 });
 
 con.connect(function(err) {
