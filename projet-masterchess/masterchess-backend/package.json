@@ -20,7 +20,7 @@
     "helmet": "^8.0.0",
     "masterchess-backend": "file:",
     "morgan": "^1.10.0",
-    "mysql": "^2.18.1",
+    "mysql2": "^3.12.0",
     "socket.io": "^4.8.1"
   }
 }

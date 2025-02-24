@@ -1,6 +1,6 @@
 import express from "express";
 import http from "http";
-import mysql from "mysql";
+import mysql from "mysql2/promise";
 import cors from "cors";
 import bodyParser from "body-parser";
 
@@ -15,7 +15,7 @@ const server = http.createServer(app);
 const __filename = fileURLToPath(import.meta.url); 
 const __dirname = path.dirname(__filename);
 
-var con = mysql.createConnection({
+const mymysql = mysql.createConnection({
     host: "localhost",
     port: "3306",
     user: "dev_chess",
@@ -24,12 +24,7 @@ var con = mysql.createConnection({
     multipleStatements: true
 });
 
-con.connect(function(err) {
-    if (err) throw err;
-    console.log("Connected!");
-});
-
-const jeuService = new JeuService(server, con);
+const jeuService = new JeuService(server, await mymysql);
 
 server.listen(4000, function() { 
     console.log("serveur fonctionne sur 4000... ! "); 
@@ -43,25 +38,21 @@ app.get("/", function (req, res) {
 });
 
 app.get("/getAllPartiesEncours", async function (req, res, err) {
-    await jeuService.getAllPartiesEncours((result) => {
-        res.send(result);
-    });
+    const result = await jeuService.getAllPartiesEncours();
+    res.send(result);
 });
 
 app.get("/getPartie", async function (req, res, err) {
-    await jeuService.getPartie(req.query.id, (result) => {
-        res.send(result);
-    });
+    const result = await jeuService.getPartie(req.query.id);
+    res.send(result);
 });
 
 app.get("/getProfiljeu", async function (req, res, err) {   
-    await jeuService.getProfiljeu(req.query.id, (result) => {
-        res.send(result);
-    }); 
+    const result = await jeuService.getProfiljeu(req.query.id);
+    res.send(result);
 });
 
 app.post("/createPartie", async function (req, res, err) {   
-    await jeuService.createPartie(req.body.idprofiljeu1, req.body.idprofiljeu2, (result) => {
-        res.send(result);
-    }); 
+    const result = await jeuService.createPartie(req.body.idprofiljeu1, req.body.idprofiljeu2);
+    res.send(result);
 });

@@ -23,27 +23,37 @@ class PageJeu extends React.Component {
         this.onBtnCreer = this.onBtnCreer.bind(this);
         this.onBtnOuvrirPartie = this.onBtnOuvrirPartie.bind(this);
         this.onBtnRefreshPartiesEncours = this.onBtnRefreshPartiesEncours.bind(this);
+        
+        this.onConnect = this.onConnect.bind(this);
+        this.onDisconnect = this.onDisconnect.bind(this);
+        this.onMoveresult = this.onMoveresult.bind(this);
+
+        const jeuService = new JeuService(this.onConnect, this.onDisconnect, this.onMoveresult);
 
         this.state = {
+            game: new Chess(),
+            jeuService: jeuService,
             enListe: true,
-            partiesEncours: JeuService.getAllPartiesEncours()
+            connected: false,
+            partiesEncours: jeuService.getAllPartiesEncours()
         }
 
     }
     static async getDerivedStateFromProps(props, state)
     {
         return {
-            partiesEncours: await JeuService.getAllPartiesEncours()
+            partiesEncours: state.jeuService.getAllPartiesEncours()
         };
     }
 
     async componentDidMount()
     {
+        await this.state.jeuService.connectPartie();
     }
 
     async updatePartiesEncours()
     {
-        const partiesEncours = await JeuService.getAllPartiesEncours();
+        const partiesEncours = await this.state.jeuService.getAllPartiesEncours();
         this.setState({
             partiesEncours: partiesEncours
         });
@@ -51,9 +61,9 @@ class PageJeu extends React.Component {
 
     async updatePartie(idPartie)
     {
-        const partie = await JeuService.getPartie(idPartie);
-        const profiljeu1 = await JeuService.getProfiljeu(partie?.id_joueur1);
-        const profiljeu2 = await JeuService.getProfiljeu(partie?.id_joueur2);
+        const partie = await this.state.jeuService.getPartie(idPartie);
+        const profiljeu1 = await this.state.jeuService.getProfiljeu(partie?.id_joueur1);
+        const profiljeu2 = await this.state.jeuService.getProfiljeu(partie?.id_joueur2);
 
         if(partie)
         {
@@ -67,12 +77,45 @@ class PageJeu extends React.Component {
             
     }
 
-    async makeAMove(move) {
+    async onConnect()
+    {
+        this.setState({
+            connected: true
+        });
+    }
+
+    async onDisconnect()
+    {
+        this.setState({
+            connected: false
+        });
+    }
+
+    async onMoveresult(move)
+    {
+        console.log(await this.simulateMove(move));
+    }
+
+    async makeAMove(move)
+    {
+        if(this.state?.connected)
+        {
+            const data = {
+                partieId: this.state.partie.id,
+                profilId: this.state.profiljeu1,
+                move: move
+            };
+
+            this.state.jeuService.io.emit("move", data);
+        }
+    }
+
+    async simulateMove(move) {
         const gameCopy = this.state.game;
         try
         {
             const result = gameCopy.move(move);
-            this.setState({game: gameCopy});
+            this.setState({ game: gameCopy });
             return result; // null if cant move
         }
         catch(err)
@@ -80,7 +123,7 @@ class PageJeu extends React.Component {
             return null;
         }
         return null;
-
+        
     }
 
     async onJeuPieceDrop(sourceSquare, targetSquare)
@@ -101,7 +144,7 @@ class PageJeu extends React.Component {
         const inputProfiljeu1 = document.querySelector("#idprofiljeu1Creer");
         const inputProfiljeu2 = document.querySelector("#idprofiljeu2Creer");
 
-        const idPartie = await JeuService.createPartie(inputProfiljeu1.value, inputProfiljeu2.value);
+        const idPartie = await this.state.jeuService.createPartie(inputProfiljeu1.value, inputProfiljeu2.value);
     }
 
     async onBtnOuvrirPartie(idPartie)

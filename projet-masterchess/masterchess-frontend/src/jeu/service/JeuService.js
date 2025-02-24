@@ -1,7 +1,30 @@
 import axios from 'axios';
+import { io } from "socket.io-client";
 
-const JeuService = {
-    getAllPartiesEncours: async function()
+class JeuService {
+    constructor(onConnection, onDisconnect, onMoveresult)
+    {
+        this.io = io("http://localhost:4000");
+
+        this.io.on("connect", (socket) => {
+            onConnection();
+        });
+
+        this.io.on("disconnect", (socket) => {
+            onDisconnect();
+        });
+
+        this.io.on("moveresult", (data) => {
+            onMoveresult(data.move);
+        });
+    }
+
+    async connectPartie()
+    {
+        this.io.connect();
+    }
+
+    async getAllPartiesEncours()
     {
         var result = null;
         await axios.get("http://localhost:4000/getAllPartiesEncours")
@@ -18,9 +41,9 @@ const JeuService = {
         });
 
         return result;
-    },
+    }
 
-    getPartie: async function(idPartie)
+    async getPartie(idPartie)
     {
         const params = new URLSearchParams();
         params.append("id", idPartie);
@@ -40,9 +63,9 @@ const JeuService = {
             //always executed
         });
         return result;
-    },
+    }
     
-    getProfiljeu: async function(idProfil)
+    async getProfiljeu(idProfil)
     {
         const params = new URLSearchParams();
         params.append("id", idProfil);
@@ -62,9 +85,9 @@ const JeuService = {
             //always executed
         });
         return result;
-    },
+    }
 
-    createPartie: async function(idprofiljeu1, idprofiljeu2) {
+    async createPartie(idprofiljeu1, idprofiljeu2) {
         var result = null;
         await axios.post("http://localhost:4000/createPartie", {
             idprofiljeu1: idprofiljeu1,
