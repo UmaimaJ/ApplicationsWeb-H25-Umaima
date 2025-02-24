@@ -93,7 +93,8 @@ class PageJeu extends React.Component {
 
     async onMoveresult(move)
     {
-        console.log(await this.simulateMove(move));
+        console.log(move);
+        await this.simulateMove(move);
     }
 
     async makeAMove(move)

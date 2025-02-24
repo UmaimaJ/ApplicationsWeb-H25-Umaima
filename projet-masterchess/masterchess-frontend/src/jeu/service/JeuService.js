@@ -15,7 +15,8 @@ class JeuService {
         });
 
         this.io.on("moveresult", (data) => {
-            onMoveresult(data.move);
+            console.log(data);
+            onMoveresult(data);
         });
     }
 
