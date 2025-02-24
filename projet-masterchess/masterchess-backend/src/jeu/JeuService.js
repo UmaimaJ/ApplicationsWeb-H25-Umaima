@@ -44,16 +44,16 @@ class JeuService{
     {
         this.connections[socket.id] = undefined;
 
-        if(!await this.isPartieEncours(socket.data.partieId))
-            return;
+        // if(!await this.isPartieEncours(socket.data.partieId))
+        //     return;
 
-        if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profilId))
-            return;
+        // if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profilId))
+        //     return;
 
         if(this.connections[socket.id])
         {
-            this.connections[socket.id].lastDisconnect[socket.data.profilId] = Date.now();
-            await this.bumpConnection(socket, socket.data.profilId);
+            // this.connections[socket.id].lastDisconnect[socket.data.profilId] = Date.now();
+            // await this.bumpConnection(socket, socket.data.profilId);
         }
     }
 

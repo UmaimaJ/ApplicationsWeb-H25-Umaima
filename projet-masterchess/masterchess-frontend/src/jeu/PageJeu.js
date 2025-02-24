@@ -68,7 +68,7 @@ class PageJeu extends React.Component {
         if(partie)
         {
             await this.setState({
-                game: new Chess(),
+                game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
                 partie: partie,
                 profiljeu1: profiljeu1,
                 profiljeu2: profiljeu2
