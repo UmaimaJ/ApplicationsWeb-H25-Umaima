@@ -35,6 +35,7 @@ class PageJeu extends React.Component {
             jeuService: jeuService,
             enListe: true,
             connected: false,
+            profiljeuCourantId: 1,
             partiesEncours: jeuService.getAllPartiesEncours()
         }
 
@@ -67,7 +68,7 @@ class PageJeu extends React.Component {
 
         if(partie)
         {
-            await this.state.jeuService.connectPartie(partie.id, profiljeu1.id);
+            await this.state.jeuService.connectPartie(partie.id, this.state.profiljeuCourantId);
             await this.setState({
                 game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
                 partie: partie,
@@ -104,11 +105,11 @@ class PageJeu extends React.Component {
         {
             const data = {
                 partieId: this.state.partie.id,
-                profilId: this.state.profiljeu1,
+                profiljeuId: this.state.profiljeu1.id,
                 move: move
             };
 
-            this.state.jeuService.io.emit("move", data);
+            this.state.jeuService.io.emit("move", { data: data });
         }
     }
 

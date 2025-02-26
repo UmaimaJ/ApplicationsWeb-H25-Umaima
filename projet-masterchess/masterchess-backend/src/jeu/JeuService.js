@@ -18,23 +18,16 @@ class JeuService{
         this.onDisconnect = this.onDisconnect.bind(this);
         this.onMove = this.onMove.bind(this);
 
-        this.io.use((socket, next) => {
-            //some middleware for query params on connect/handshake
-            //need the partieId, profiljeuId from query
-            socket.data = {
-                profiljeuId: socket.handshake.query.profiljeuId,
-                partieId: socket.handshake.query.partieId
-            }
-            next();
-
-        })
         this.io.on("connection", this.onConnect);
         this.io.on("disconnect", this.onDisconnect);
     }
 
     async onConnect(socket)
     {
-        this.connections[socket.id] = socket;
+        socket.data = {
+            profiljeuId: socket.handshake.query.profiljeuId,
+            partieId: socket.handshake.query.partieId
+        }
 
         if(!await this.isPartieEncours(socket.data.partieId))
             return;
@@ -42,41 +35,33 @@ class JeuService{
         if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profiljeuId))
             return;
 
-        if(this.connections[socket.id])
-        {
-            //this.connections[socket.id].lastConnection[socket.data.profiljeuId] = Date.now();
-            await this.bumpConnection(socket, socket.data.profiljeuId);
-            socket.on("move", this.onMove);
-        }
+        //this.connections[socket.id].lastConnection[socket.data.profiljeuId] = Date.now();
+        await this.bumpConnection(socket, socket.data.profiljeuId);
+        socket.on("move", this.onMove);
     }
 
     async onDisconnect(socket)
     {
-        this.connections[socket.id] = undefined;
-
         if(!await this.isPartieEncours(socket.data.partieId))
             return;
 
         if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profiljeuId))
             return;
 
-        if(this.connections[socket.id])
-        {
-            //this.connections[socket.id].lastDisconnect[socket.data.profiljeuId] = Date.now();
-            await this.bumpConnection(socket, socket.data.profiljeuId);
-        }
+        //this.connections[socket.id].lastDisconnect[socket.data.profiljeuId] = Date.now();
+        await this.bumpConnection(socket, socket.data.profiljeuId);
     }
 
     async onMove(socket)
     {
-        // if(!await this.isPartieEncours(socket.data.partieId))
-        //     return;
+        if(!await this.isPartieEncours(socket.data.partieId))
+            return;
 
-        // if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profiljeuId))
-        //     return;
+        if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profiljeuId))
+            return;
 
-        const moveresult = await this.doMove(socket.partieId, socket.move);
-        // if(moveresult) await this.bumpConnection(this.connections[socket.id].data.partieId, this.connections[socket.id].data.profiljeuId);
+        const moveresult = await this.doMove(socket.data.partieId, socket.data.move);
+        if(moveresult) await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
 
         this.io.emit("moveresult", moveresult);
     }
@@ -109,16 +94,12 @@ class JeuService{
     async isPartieEncours(partieId)
     {
         const [results, fields] = await this.mysql.query("SELECT * FROM partie WHERE id=? AND statut<2;", [partieId]);
-        console.log("isPartieEncours " + partieId);
-        console.log(results);
         return results.length > 0;
     }
 
     async isJoueurDansPartie(partieId, profiljeuId)
     {
         const [results, fields] = await this.mysql.query("SELECT * FROM partie WHERE id=? AND ( id_joueur1=? OR id_joueur2=? ) AND statut<2;", [partieId, profiljeuId, profiljeuId]);
-        console.log("isJoueurDansPartie " + partieId + " " + profiljeuId);
-        console.log(results);
         return results.length > 0;
     }
 
