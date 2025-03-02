@@ -28,6 +28,10 @@ class PageJeu extends React.Component {
         this.onDisconnect = this.onDisconnect.bind(this);
         this.onMoveresult = this.onMoveresult.bind(this);
 
+        this.moveQueueThink = this.moveQueueThink.bind(this);
+        this.moveQueueThinkId = null;
+        this.moveQueue = [];
+
         const jeuService = new JeuService(this.onConnect, this.onDisconnect, this.onMoveresult);
 
         this.state = {
@@ -73,7 +77,7 @@ class PageJeu extends React.Component {
                 game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
                 partie: partie,
                 profiljeu1: profiljeu1,
-                profiljeu2: profiljeu2
+                profiljeu2: profiljeu2,
             });
         }
             
@@ -81,9 +85,41 @@ class PageJeu extends React.Component {
 
     async onConnect()
     {
+        if(this.state.connected)
+            await this.resetConnectionStatus();
+
         this.setState({
             connected: true
         });
+    }
+
+    async resetConnectionStatus()
+    {
+        if(this.moveQueueThinkId)
+        {
+            clearTimeout(this.moveQueueThinkId);
+            this.moveQueue = [];
+            this.moveQueueThinkId = null;
+        }
+    }
+
+    async moveQueueThink()
+    {
+        let move = null;
+        if(this.state.connected)
+        {
+            while(move = this.moveQueue.pop())
+            {
+                if(move) await this.simulateMove(move);
+                console.log("test")
+                console.log(move);
+            }
+        }
+    }
+
+    async queueMove(move)
+    {
+        this.moveQueue.push(move);
     }
 
     async onDisconnect()
@@ -95,8 +131,13 @@ class PageJeu extends React.Component {
 
     async onMoveresult(move)
     {
-        console.log(move);
-        await this.simulateMove(move);
+        await this.queueMove(move);
+        if(this.moveQueueThinkId)
+        {
+            clearTimeout(this.moveQueueThinkId);
+            this.moveQueueThinkId = null;
+        }
+        this.moveQueueThinkId = setTimeout(this.moveQueueThink, 1000);
     }
 
     async makeAMove(move)
