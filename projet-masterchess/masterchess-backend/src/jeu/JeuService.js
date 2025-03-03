@@ -78,37 +78,29 @@ class JeuService{
         if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profiljeuId))
             return;
 
-        //if is joueur courant
+        //TODO isjoueurcourant
 
         const moveresult = await this.doMove(socket.data.partieId, socket.data.move);
-        console.log("nous avons fait:");
         if(moveresult)
         {
-            console.log("nous avons fait:");
             const nouveauJoueurcourant = await this.prochainProfiljeu(socket.data.partieId);
             await this.updateJoueurcourantPartie({id: socket.data.partieId, id_joueurcourant: nouveauJoueurcourant});
 
             await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
             if(this.io.emit("moveresult", moveresult))
             {
-                console.log("nous avons fait:");
-                console.log(moveresult);
                 await this.sleep(2000);
                 if(nouveauJoueurcourant == -1)
                 {
                     const moveresult = await this.doBotMove(socket.data.partieId);
-                    console.log("let bot a fait:");
                     if(moveresult)
                     {
-                        console.log("let bot a fait:");
                         const nouveauJoueurcourant = await this.prochainProfiljeu(socket.data.partieId);
                         await this.updateJoueurcourantPartie({id: socket.data.partieId, id_joueurcourant: nouveauJoueurcourant});
             
                         //await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
                         if(this.io.emit("moveresult", moveresult))
                         {
-                            console.log("let bot a fait:");
-                            console.log(moveresult);
                         }
                         else
                             throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
@@ -122,7 +114,7 @@ class JeuService{
 
     async prochainProfiljeu(partieId)
     {
-        const partie = await this.getPartie(partieId);
+        const partie = await this.selectPartie(partieId);
         const prochainProfiljeu = partie.id_joueurcourant != partie.id_joueur1 ? partie.id_joueur2 : partie.id_joueur1;
         const numJoueur = partie.id_joueurcourant != partie.id_joueur2 ? 1 : 2;
 
@@ -131,7 +123,7 @@ class JeuService{
 
     async doBotMove(partieId)
     {
-        const partie = await this.getPartie(partieId);
+        const partie = await this.selectPartie(partieId);
 
         var game = null;
         if(partie.historiquetables)
@@ -147,7 +139,7 @@ class JeuService{
 
     async doMove(partieId, move)
     {
-        const partie = await this.getPartie(partieId);
+        const partie = await this.selectPartie(partieId);
 
         var gameCopy = null;
         if(partie.historiquetables)
@@ -200,25 +192,25 @@ class JeuService{
         //this.connections[socket.id].lastAction[profiljeuId] = Date.now();
     }
 
-    async getAllPartiesEncours()
+    async selectAllPartiesEncours()
     {
         const [results, fields] = await this.mysql.query("SELECT * FROM partie WHERE statut <> 2;", [0]);
         return results;
     }
 
-    async getPartie(partieId)
+    async selectPartie(partieId)
     {
         const [results, fields] = await this.mysql.query("SELECT * FROM partie WHERE id = ?", [partieId]);
         return results[0];
     }
 
-    async getProfiljeu(joueurId)
+    async selectProfiljeu(joueurId)
     {
         const [results, fields] = await this.mysql.query("SELECT * FROM profiljeu JOIN usager ON profiljeu.id_usager = usager.id WHERE profiljeu.id = ?", [joueurId]);
         return results[0];
     }
 
-    async createPartie(joueur1Id, joueur2Id)
+    async insertPartie(joueur1Id, joueur2Id)
     {
         const [results, fields] = await this.mysql.query("INSERT INTO partie (id_joueur1, id_joueur2, id_joueurcourant, statut, datedebut) VALUES (?, ?, ?, 0, NOW()); SELECT LAST_INSERT_ID() AS id;",
             [joueur1Id, joueur2Id, joueur1Id]);

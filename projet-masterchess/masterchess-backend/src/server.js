@@ -38,21 +38,21 @@ app.get("/", function (req, res) {
 });
 
 app.get("/getAllPartiesEncours", async function (req, res, err) {
-    const result = await jeuService.getAllPartiesEncours();
+    const result = await jeuService.selectAllPartiesEncours();
     res.send(result);
 });
 
 app.get("/getPartie", async function (req, res, err) {
-    const result = await jeuService.getPartie(req.query.id);
+    const result = await jeuService.selectPartie(req.query.id);
     res.send(result);
 });
 
 app.get("/getProfiljeu", async function (req, res, err) {   
-    const result = await jeuService.getProfiljeu(req.query.id);
+    const result = await jeuService.selectProfiljeu(req.query.id);
     res.send(result);
 });
 
 app.post("/createPartie", async function (req, res, err) {   
-    const result = await jeuService.createPartie(req.body.idprofiljeu1, req.body.idprofiljeu2);
+    const result = await jeuService.insertPartie(req.body.idprofiljeu1, req.body.idprofiljeu2);
     res.send(result);
 });
