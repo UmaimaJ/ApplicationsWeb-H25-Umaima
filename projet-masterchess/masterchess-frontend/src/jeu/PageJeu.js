@@ -106,21 +106,21 @@ class PageJeu extends React.Component {
 
     async moveQueueThink()
     {
-        let move = null;
+        let moveframe = null;
         if(this.state.connected)
         {
-            while(move = this.moveQueue.pop())
+            while(moveframe = this.moveQueue.pop())
             {
-                if(move) await this.simulateMove(move);
+                if(moveframe) await this.simulateMove(moveframe);
                 console.log("test")
-                console.log(move);
+                console.log(moveframe);
             }
         }
     }
 
-    async queueMove(move)
+    async queueMove(moveframe)
     {
-        this.moveQueue.push(move);
+        this.moveQueue.push(moveframe);
     }
 
     async onDisconnect()
@@ -130,11 +130,11 @@ class PageJeu extends React.Component {
         });
     }
 
-    async onMoveresult(move)
+    async onMoveresult(moveframe)
     {
-        if(move.partieId == this.state.partie?.id)
+        if(moveframe.partieId == this.state.partie?.id)
         {
-            await this.queueMove(move.move);
+            await this.queueMove(moveframe.move);
             if(this.moveQueueThinkId)
             {
                 clearTimeout(this.moveQueueThinkId);
