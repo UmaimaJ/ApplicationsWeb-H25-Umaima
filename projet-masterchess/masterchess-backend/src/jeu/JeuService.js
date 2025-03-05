@@ -48,7 +48,7 @@ class JeuService{
                 const nouveauJoueurcourant = await this.prochainProfiljeu(socket.data.partieId);
                 await this.updateJoueurcourantPartie({id: socket.data.partieId, id_joueurcourant: nouveauJoueurcourant});
 
-                if(this.io.emit("moveresult", moveresult))
+                if(this.io.emit("moveresult", { move: moveresult, partieId: socket.data.partieId }))
                 {
 
                 }
@@ -87,7 +87,7 @@ class JeuService{
             await this.updateJoueurcourantPartie({id: socket.data.partieId, id_joueurcourant: nouveauJoueurcourant});
 
             await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
-            if(this.io.emit("moveresult", moveresult))
+            if(this.io.emit("moveresult", { move: moveresult, partieId: socket.data.partieId }))
             {
                 await this.sleep(2000);
                 if(nouveauJoueurcourant == -1)
@@ -99,7 +99,7 @@ class JeuService{
                         await this.updateJoueurcourantPartie({id: socket.data.partieId, id_joueurcourant: nouveauJoueurcourant});
             
                         //await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
-                        if(this.io.emit("moveresult", moveresult))
+                        if(this.io.emit("moveresult", { move: moveresult, partieId: socket.data.partieId }))
                         {
                         }
                         else

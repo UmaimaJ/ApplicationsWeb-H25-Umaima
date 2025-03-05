@@ -39,6 +39,7 @@ class PageJeu extends React.Component {
             jeuService: jeuService,
             enListe: true,
             connected: false,
+            partie: null,
             profiljeuCourantId: 1,
             partiesEncours: jeuService.getAllPartiesEncours()
         }
@@ -53,7 +54,7 @@ class PageJeu extends React.Component {
 
     async componentDidMount()
     {
-        await this.state.jeuService.connectPartie();
+        
     }
 
     async updatePartiesEncours()
@@ -73,7 +74,7 @@ class PageJeu extends React.Component {
         if(partie)
         {
             await this.state.jeuService.connectPartie(partie.id, this.state.profiljeuCourantId);
-            await this.setState({
+            this.setState({
                 game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
                 partie: partie,
                 profiljeu1: profiljeu1,
@@ -131,13 +132,16 @@ class PageJeu extends React.Component {
 
     async onMoveresult(move)
     {
-        await this.queueMove(move);
-        if(this.moveQueueThinkId)
+        if(move.partieId == this.state.partie?.id)
         {
-            clearTimeout(this.moveQueueThinkId);
-            this.moveQueueThinkId = null;
+            await this.queueMove(move.move);
+            if(this.moveQueueThinkId)
+            {
+                clearTimeout(this.moveQueueThinkId);
+                this.moveQueueThinkId = null;
+            }
+            this.moveQueueThinkId = setTimeout(this.moveQueueThink, 1000);
         }
-        this.moveQueueThinkId = setTimeout(this.moveQueueThink, 1000);
     }
 
     async makeAMove(move)
