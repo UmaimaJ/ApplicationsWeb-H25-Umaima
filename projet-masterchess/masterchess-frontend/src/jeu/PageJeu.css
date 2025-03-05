@@ -141,3 +141,28 @@
     font-size: 10px;
     color: rgba(255, 255, 255, 0.60);
 }
+
+.btn-retourner {
+    background-color: coral;
+    width: 100%;
+    height: 50px;
+    
+}
+
+/*Liste de parties en cours*/
+.panneau-parties-container {
+    width: 100%; 
+    height: 100%;
+}
+
+.liste-parties {
+    width: 100%; 
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-items: flex-start;
+    overflow-y: scroll;
+    box-sizing: border-box;
+    padding: 50px;
+}

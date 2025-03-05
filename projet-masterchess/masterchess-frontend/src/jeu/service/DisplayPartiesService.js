@@ -1,38 +1,9 @@
 import axios from 'axios';
-import { io } from "socket.io-client";
-
 import React from 'react';
 
-export class JeuService {
-    constructor(onConnection, onDisconnect, onMoveresult)
+export class DisplayPartiesService {
+    constructor()
     {
-        this.io = io("http://localhost:4000");
-
-        this.io.on("connect", (socket) => {
-            onConnection();
-        });
-
-        this.io.on("disconnect", (socket) => {
-            onDisconnect();
-        });
-
-        this.io.on("moveresult", (data) => {
-            onMoveresult(data);
-        });
-    }
-
-    async connectPartie(partieId, profiljeuId)
-    {
-        this.io.io.opts.query = {
-            partieId: partieId,
-            profiljeuId: profiljeuId
-         };
-        this.io.disconnect().connect();
-    }
-
-    async disconnectPartie()
-    {
-        this.io.disconnect();
     }
 
     async getAllPartiesEncours()
@@ -119,8 +90,8 @@ export class JeuService {
     }
 };
 
-export const JeuServiceContext = React.createContext(
+export const DisplayPartiesServiceContext = React.createContext(
     {
-        service: null
+        service: new DisplayPartiesService()
     }
 );

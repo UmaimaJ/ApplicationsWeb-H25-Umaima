@@ -1,0 +1,20 @@
+.partie-body {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    align-items: center;
+    align-self: stretch;
+
+    width: 160px;
+    height: 200px;
+}
+
+.partie-body:hover {
+    background-color: #5D7C36;
+}
+
+.partie-body-inner {
+    padding: 70px 0;
+    text-align: center;
+}

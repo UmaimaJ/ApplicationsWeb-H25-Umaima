@@ -192,12 +192,6 @@ class JeuService{
         //this.connections[socket.id].lastAction[profiljeuId] = Date.now();
     }
 
-    async selectAllPartiesEncours()
-    {
-        const [results, fields] = await this.mysql.query("SELECT * FROM partie WHERE statut <> 2;", [0]);
-        return results;
-    }
-
     async selectPartie(partieId)
     {
         const [results, fields] = await this.mysql.query("SELECT * FROM partie WHERE id = ?", [partieId]);

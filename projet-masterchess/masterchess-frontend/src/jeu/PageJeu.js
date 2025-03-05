@@ -9,7 +9,10 @@ import timericon from "../style/timer-icon.svg";
 import board from "../style/board.svg";
 
 import './PageJeu.css';
-import JeuService from "./service/JeuService";
+import DisplayPartieComponent from "./components/DisplayPartieComponent";
+
+import { JeuServiceContext, JeuService } from "./service/JeuService";
+import { DisplayPartiesServiceContext, DisplayPartiesService } from './service/DisplayPartiesService';
 
 const PartieContext = createContext(null);
 
@@ -22,6 +25,7 @@ class PageJeu extends React.Component {
         this.onJeuPieceDrop = this.onJeuPieceDrop.bind(this);
         this.onBtnCreer = this.onBtnCreer.bind(this);
         this.onBtnOuvrirPartie = this.onBtnOuvrirPartie.bind(this);
+        this.onBtnOuvrirListe = this.onBtnOuvrirListe.bind(this);
         this.onBtnRefreshPartiesEncours = this.onBtnRefreshPartiesEncours.bind(this);
         
         this.onConnect = this.onConnect.bind(this);
@@ -32,11 +36,13 @@ class PageJeu extends React.Component {
         this.moveQueueThinkId = null;
         this.moveQueue = [];
 
+        const displayPartiesService = new DisplayPartiesService();
         const jeuService = new JeuService(this.onConnect, this.onDisconnect, this.onMoveresult);
 
         this.state = {
             game: new Chess(),
             jeuService: jeuService,
+            displayPartiesService: displayPartiesService,
             enListe: true,
             connected: false,
             partie: null,
@@ -45,6 +51,7 @@ class PageJeu extends React.Component {
         }
 
     }
+
     static async getDerivedStateFromProps(props, state)
     {
         return {
@@ -79,6 +86,16 @@ class PageJeu extends React.Component {
                 partie: partie,
                 profiljeu1: profiljeu1,
                 profiljeu2: profiljeu2,
+            });
+        }
+        else
+        {
+            await this.state.jeuService.disconnectPartie();
+            this.setState({
+                game: null,
+                partie: null,
+                profiljeu1: null,
+                profiljeu2: null,
             });
         }
             
@@ -203,6 +220,14 @@ class PageJeu extends React.Component {
         });
     }
 
+    async onBtnOuvrirListe()
+    {
+        await this.updatePartie(null);
+        this.setState({
+            enListe: true
+        });
+    }
+
     async onBtnRefreshPartiesEncours()
     {
         await this.updatePartiesEncours();
@@ -212,20 +237,22 @@ class PageJeu extends React.Component {
         if(this.state.enListe)
         {
             return (
-                <div>
+                <div class="panneau-parties-container">
                     <button id="btnRefreshParties" onClick={this.onBtnRefreshPartiesEncours}>Refresh</button>
-                    <input id="idprofiljeu1Creer"></input>
-                    <input id="idprofiljeu2Creer"></input>
+                    <input id="nomprofiljeu1Creer"></input>
+                    <input id="nomprofiljeu2Creer"></input>
                     <button id="btnCreer" onClick={this.onBtnCreer}>Creer partie.</button>
-                    <div>
-                        {Object.values(this.state.partiesEncours).map((entry, i) =>
-                            <button key={entry.id} id={"btnOuvrir" + entry.id} onClick={() => this.onBtnOuvrirPartie(entry.id) }>Ouvrir {entry.id}</button>)}
-                    </div>
+                    <DisplayPartiesServiceContext.Provider value={ { service: this.state.displayPartiesService } }>
+                        <div class="liste-parties">
+                            {Object.values(this.state.partiesEncours).map((entry, i) =>
+                                <DisplayPartieComponent key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => this.onBtnOuvrirPartie(entry.id) }></DisplayPartieComponent>)}
+                        </div>
+                    </DisplayPartiesServiceContext.Provider>
                 </div>
             );
         }
         return (
-            <PartieContext.Provider value={this.state.partie}>
+            <JeuServiceContext.Provider value={ { service: this.state.jeuService} }>
                 <div class="jeu-container">
                     <div class="playpage-game">
                         <div class="playpage-infobar">
@@ -263,6 +290,7 @@ class PageJeu extends React.Component {
                         </div>
                     </div>
                     <div class="my-sidebar">
+                        <button class="btn-retourner" onClick={this.onBtnOuvrirListe}>Retourner</button>
                         <div class="move-info-panel">
                             {this.state?.game.history({ verbose: true }).map((entry, i) =>
                                 <label style={{color: (entry.color === 'w'? 'white' : "black"), backgroundColor: "grey"}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} from: {entry.from} to: {entry.to}
@@ -270,7 +298,7 @@ class PageJeu extends React.Component {
                         </div>
                     </div>
                 </div>           
-            </PartieContext.Provider>
+            </JeuServiceContext.Provider>
         );
     }
    

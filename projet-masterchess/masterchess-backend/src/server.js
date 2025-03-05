@@ -8,6 +8,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 
 import JeuService from "./jeu/JeuService.js";
+import PartiesService from "./jeu/PartiesService.js"
 
 
 const app = express(); 
@@ -25,6 +26,7 @@ const mymysql = mysql.createConnection({
 });
 
 const jeuService = new JeuService(server, await mymysql);
+const partiesService = new PartiesService(await mymysql);
 
 server.listen(4000, function() { 
     console.log("serveur fonctionne sur 4000... ! "); 
@@ -37,10 +39,14 @@ app.get("/", function (req, res) {
     res.send("serveur fonctionne");
 });
 
+// affichage liste de jeux
+
 app.get("/getAllPartiesEncours", async function (req, res, err) {
-    const result = await jeuService.selectAllPartiesEncours();
+    const result = await partiesService.selectAllPartiesEncours();
     res.send(result);
 });
+
+// page du jeu
 
 app.get("/getPartie", async function (req, res, err) {
     const result = await jeuService.selectPartie(req.query.id);
