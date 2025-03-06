@@ -44,3 +44,7 @@ button:hover {
     background-color: #475E2A; /* Adjust this color to match your navbar */
     cursor: pointer;
 }
+
+input {
+    color: white;
+}

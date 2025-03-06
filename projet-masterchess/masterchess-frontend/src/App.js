@@ -11,6 +11,7 @@ import PageJeu from "./jeu/PageJeu.js";
 
 //import outfitmedium from "./style/Outfit-Medium.ttf";
 import './App.css';
+import SignUp from "./login/signUp";
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
       </div>
       <div class="content">
         <Login> </Login>
+        <SignUp></SignUp>
       </div>
     </div>
   );
