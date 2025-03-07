@@ -59,7 +59,15 @@ class PageJeu extends React.Component {
 
     async componentDidMount()
     {
+        if(this.state.enListe)
+        {
+            await this.updatePartiesEncours();
+        }
+    }
         
+    async componentWillUnmount()
+    {
+        this.updatePartie(null);
     }
 
     async updatePartiesEncours()
