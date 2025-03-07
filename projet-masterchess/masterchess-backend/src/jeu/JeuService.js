@@ -46,7 +46,7 @@ class JeuService{
         };
         this.boundMove = this.boundMove.bind(this);
 
-        this.onMove.bind(this, null, socket);
+        this.onMove.bind(this);
         await socket.on("move", this.boundMove);
 
         //if c'est un bot au debut, aussi on ne part pas le timer
