@@ -12,6 +12,6 @@ export const AccueilServiceContext = React.createContext(
     {
         pageCourante: null,
         setPageCourante: () => {},
-        service: null
+        accueilService: null
     }
 );

@@ -12,8 +12,7 @@ export class DisplayPartiesService {
         params.append("id", idPartie);
         var result = null;
         await axios.get("http://localhost:4000/getPartie", {
-            params
-        }, {
+            params,
             withCredentials: true
         })
         .then(function (response) {
@@ -58,6 +57,7 @@ export class DisplayPartiesService {
         await axios.post("http://localhost:4000/createPartie", {
             idprofiljeu1: idprofiljeu1,
             idprofiljeu2: idprofiljeu2,
+        },{
             withCredentials: true
         })
         .then(function (response) {

@@ -114,6 +114,7 @@ export class JeuService {
         await axios.post("http://localhost:4000/createPartie", {
             idprofiljeu1: idprofiljeu1,
             idprofiljeu2: idprofiljeu2,
+        },{
             withCredentials: true
         })
         .then(function (response) {
