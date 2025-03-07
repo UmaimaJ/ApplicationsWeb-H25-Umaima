@@ -79,12 +79,12 @@ function App() {
                   <img class="my-icon" src={loginicon} />
                   <label class="my-optionlabel">Logout</label>                
                 </div>
+                <div class="my-navoption" onClick={handleJeuClick}>
+                  <img class="my-icon" src={loginicon} />
+                  <label class="my-optionlabel">Play</label>                 
+                </div>
                 </>
               }
-              <div class="my-navoption" onClick={handleJeuClick}>
-                <img class="my-icon" src={loginicon} />
-                <label class="my-optionlabel">Play</label>                 
-              </div>
               <div class="my-navoption">
                 <img class="my-icon" src={learnicon} />
                 <label class="my-optionlabel">Learn</label>
