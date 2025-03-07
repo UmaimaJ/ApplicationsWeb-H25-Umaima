@@ -52,9 +52,6 @@ class PageJeu extends React.Component {
 
     static async getDerivedStateFromProps(props, state)
     {
-        return {
-            //partiesEncours: state.jeuService.getAllPartiesEncours()
-        };
     }
 
     async componentDidMount()
@@ -67,7 +64,7 @@ class PageJeu extends React.Component {
 
     async componentWillUnmount()
     {
-        this.updatePartie(null);
+        await this.updatePartie(null);
     }
 
     async updatePartiesEncours()
