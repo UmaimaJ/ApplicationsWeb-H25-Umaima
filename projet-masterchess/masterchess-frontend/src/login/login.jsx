@@ -1,35 +1,42 @@
 import React, { useState } from 'react';
 import './login.css';
 
+import { AccueilServiceContext, AccueilService } from '../accueil/service/AccueilService';
 import { ComptesServiceContext, ComptesService } from './service/ComptesService';
+import SignUp from './signUp';
 
 const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = async (event, {sessionUsager, setSessionUsager, service}) => {
+    const handleSubmit = async (event, {pageCourante, setPageCourante, accueilService}, {sessionUsager, setSessionUsager, comptesService}) => {
         event.preventDefault();
-        const axiosResponse = await service.postLogin(username, password);
+        const axiosResponse = await comptesService.postLogin(username, password);
         const success = axiosResponse?.data?.success;
         console.log("DATA");
         console.log(axiosResponse?.data);
         if(success)
         {
-            const axiosResponse = await service.getSessionUsager();
+            const axiosResponse = await comptesService.getSessionUsager();
             const success = axiosResponse?.data?.success;
             if(success)
+            {
                 setSessionUsager(axiosResponse.data.usager);
+                setPageCourante(<></>);
+            }
         }
     };
 
     return (
+        <AccueilServiceContext.Consumer>
+        {({pageCourante, setPageCourante, accueilService}) => (
         <ComptesServiceContext.Consumer>
-        {({sessionUsager, setSessionUsager, service}) => (
+        {({sessionUsager, setSessionUsager, comptesService}) => (
         <div className="login-container">
             <h2>Login</h2>
             <form onSubmit={(event) => {
                     event.preventDefault();
-                    handleSubmit(event, {sessionUsager, setSessionUsager, service});
+                    handleSubmit(event, {pageCourante, setPageCourante, accueilService}, {sessionUsager, setSessionUsager, comptesService});
                 }}>
                 <div className="form-group">
                     <label htmlFor="username">Username:</label>
@@ -56,6 +63,8 @@ const Login = () => {
         </div>
         )}
         </ComptesServiceContext.Consumer>
+        )}
+        </AccueilServiceContext.Consumer>
     );
 };
 

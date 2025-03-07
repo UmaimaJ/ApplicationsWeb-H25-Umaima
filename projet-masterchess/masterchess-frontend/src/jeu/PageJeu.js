@@ -64,7 +64,7 @@ class PageJeu extends React.Component {
             await this.updatePartiesEncours();
         }
     }
-        
+
     async componentWillUnmount()
     {
         this.updatePartie(null);

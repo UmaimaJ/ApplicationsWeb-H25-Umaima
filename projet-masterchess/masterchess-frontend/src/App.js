@@ -11,12 +11,14 @@ import SignUp from "./login/signUp.jsx";
 import PageJeu from "./jeu/PageJeu.js";
 
 import { useState, useEffect } from 'react';
+import { AccueilServiceContext, AccueilService } from "./accueil/service/AccueilService.js";
 import { ComptesServiceContext, ComptesService } from "./login/service/ComptesService.js";
 
 import './App.css';
 
-const service = new ComptesService();
-const currentSessionUsager = (await service.getSessionUsager())?.data?.usager ?? null;
+const accueilService = new AccueilService();
+const comptesService = new ComptesService();
+const currentSessionUsager = (await comptesService.getSessionUsager())?.data?.usager ?? null;
 
 function App() {
   const [pageCourante, setPageCourante] = useState(null);
@@ -43,7 +45,8 @@ function App() {
   };
 
   return (
-    <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, service} }>
+    <AccueilServiceContext.Provider value={ {pageCourante, setPageCourante, accueilService} }>
+    <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, comptesService} }>
     <div id="container">
       <div class="my-sidebar">
         <div class="my-sidebar-header">
@@ -109,6 +112,7 @@ function App() {
       </div>
     </div>
     </ComptesServiceContext.Provider>
+    </AccueilServiceContext.Provider>
   );
 }
 
