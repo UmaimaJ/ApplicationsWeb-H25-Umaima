@@ -6,25 +6,6 @@ export class DisplayPartiesService {
     {
     }
 
-    async getAllPartiesEncours()
-    {
-        var result = null;
-        await axios.get("http://localhost:4000/getAllPartiesEncours")
-        .then(function (response) {
-            //handle success
-            result = response.data;
-        })
-        .catch(function (error) {
-            //handle error
-            console.log(error);
-        })
-        .finally(function () {
-            //always executed
-        });
-
-        return result;
-    }
-
     async getPartie(idPartie)
     {
         const params = new URLSearchParams();
@@ -32,10 +13,12 @@ export class DisplayPartiesService {
         var result = null;
         await axios.get("http://localhost:4000/getPartie", {
             params
+        }, {
+            withCredentials: true
         })
         .then(function (response) {
             //handle success
-            result = response.data;
+            result = response.result;
         })
         .catch(function (error) {
             //handle error
@@ -53,7 +36,8 @@ export class DisplayPartiesService {
         params.append("id", idProfil);
         var result = null;
         await axios.get("http://localhost:4000/getProfiljeu", {
-            params
+            params,
+            withCredentials: true
         })
         .then(function (response) {
             //handle success
@@ -73,7 +57,8 @@ export class DisplayPartiesService {
         var result = null;
         await axios.post("http://localhost:4000/createPartie", {
             idprofiljeu1: idprofiljeu1,
-            idprofiljeu2: idprofiljeu2
+            idprofiljeu2: idprofiljeu2,
+            withCredentials: true
         })
         .then(function (response) {
             //handle success

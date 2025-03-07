@@ -6,15 +6,44 @@ import gemicon from "./style/gem-icon.svg";
 import gemaddicon from "./style/gem-add-icon.svg";
 import rectangle from "./style/rectangle.svg";
 
-import Login from "./login/login";
+import Login from "./login/login.jsx";
+import SignUp from "./login/signUp.jsx";
 import PageJeu from "./jeu/PageJeu.js";
 
-//import outfitmedium from "./style/Outfit-Medium.ttf";
+import { useState, useEffect } from 'react';
+import { ComptesServiceContext, ComptesService } from "./login/service/ComptesService.js";
+
 import './App.css';
-import SignUp from "./login/signUp";
+
+const service = new ComptesService();
+const currentSessionUsager = (await service.getSessionUsager())?.data?.usager ?? null;
 
 function App() {
+  const [pageCourante, setPageCourante] = useState(null);
+  const [sessionUsager, setSessionUsager] = useState(currentSessionUsager);
+
+  useEffect(() => {
+    setSessionUsager(JSON.parse(window.sessionStorage.getItem("sessionUsager")));
+  }, []);
+
+  useEffect(() => {
+    window.sessionStorage.setItem("sessionUsager", JSON.stringify(sessionUsager));
+  }, [sessionUsager]);
+  
+  const handleLoginClick = async (event) => {
+    setPageCourante(<Login></Login>);
+  };
+
+  const handleSignUpClick = async (event) => {
+    setPageCourante(<SignUp></SignUp>);
+  };
+
+  const handleJeuClick = async (event) => {
+    setPageCourante(<PageJeu></PageJeu>);
+  };
+
   return (
+    <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, service} }>
     <div id="container">
       <div class="my-sidebar">
         <div class="my-sidebar-header">
@@ -23,9 +52,21 @@ function App() {
           </div>
           <div class="my-navbar">
             <div class="my-navbaroptions">
-              <div class="my-navoption">
+              {(!sessionUsager) &&
+                <>
+                <div class="my-navoption" onClick={handleLoginClick}>
+                  <img class="my-icon" src={loginicon} />
+                  <label class="my-optionlabel">Login</label>                
+                </div>
+                <div class="my-navoption" onClick={handleSignUpClick}>
+                  <img class="my-icon" src={loginicon} />
+                  <label class="my-optionlabel">Sign Up</label>                
+                </div>
+                </>
+              }
+              <div class="my-navoption" onClick={handleJeuClick}>
                 <img class="my-icon" src={loginicon} />
-                <label class="my-optionlabel">Login</label>
+                <label class="my-optionlabel">Play</label>                 
               </div>
               <div class="my-navoption">
                 <img class="my-icon" src={learnicon} />
@@ -51,19 +92,19 @@ function App() {
               <div class="my-sidebar-footer-userpfp">
                 <img class="my-gemicon" src={rectangle} />
               </div>
-              <div class="my-sidebar-footer-userdata">
-                <label class="my-sidebar-footer-username">Test</label>
-                <label class="my-sidebar-footer-informations">Informations</label>
-              </div>
+                <div class="my-sidebar-footer-userdata">
+                  <label class="my-sidebar-footer-username">{sessionUsager?.compte ?? "<blank>"}</label>
+                  <label class="my-sidebar-footer-informations">Informations</label>
+                </div>
             </div>
           </div>
         </div>
       </div>
       <div class="content">
-        <Login> </Login>
-        <SignUp></SignUp>
+        {pageCourante}
       </div>
     </div>
+    </ComptesServiceContext.Provider>
   );
 }
 

@@ -6,7 +6,10 @@ import React from 'react';
 export class JeuService {
     constructor(onConnection, onDisconnect, onMoveresult)
     {
-        this.io = io("http://localhost:4000");
+        this.io = io("http://localhost:4000", {
+            withCredentials: true,
+            autoConnect: false
+        });
 
         this.io.on("connect", (socket) => {
             onConnection();
@@ -37,17 +40,23 @@ export class JeuService {
 
     async getAllPartiesEncours()
     {
+        console.log("BEFORE");
         var result = null;
-        await axios.get("http://localhost:4000/getAllPartiesEncours")
+        await axios.get("http://localhost:4000/getAllPartiesEncours", {
+            withCredentials: true
+        })
         .then(function (response) {
             //handle success
-            result = response.data;
+            result = response.data.result;
+            console.log("SUCCESS");
         })
         .catch(function (error) {
             //handle error
+            console.log("ERROR");
             console.log(error);
         })
         .finally(function () {
+            console.log("FINALLY");
             //always executed
         });
 
@@ -60,11 +69,12 @@ export class JeuService {
         params.append("id", idPartie);
         var result = null;
         await axios.get("http://localhost:4000/getPartie", {
-            params
+            params,
+            withCredentials: true
         })
         .then(function (response) {
             //handle success
-            result = response.data;
+            result = response.data.result;
         })
         .catch(function (error) {
             //handle error
@@ -82,11 +92,12 @@ export class JeuService {
         params.append("id", idProfil);
         var result = null;
         await axios.get("http://localhost:4000/getProfiljeu", {
-            params
+            params,
+            withCredentials: true
         })
         .then(function (response) {
             //handle success
-            result = response.data;
+            result = response.data.result;
         })
         .catch(function (error) {
             //handle error
@@ -102,11 +113,12 @@ export class JeuService {
         var result = null;
         await axios.post("http://localhost:4000/createPartie", {
             idprofiljeu1: idprofiljeu1,
-            idprofiljeu2: idprofiljeu2
+            idprofiljeu2: idprofiljeu2,
+            withCredentials: true
         })
         .then(function (response) {
             //handle success
-            result = response.data;
+            result = response.data.result;
         })
         .catch(function (error) {
             //handle error

@@ -14,8 +14,6 @@ import DisplayPartieComponent from "./components/DisplayPartieComponent";
 import { JeuServiceContext, JeuService } from "./service/JeuService";
 import { DisplayPartiesServiceContext, DisplayPartiesService } from './service/DisplayPartiesService';
 
-const PartieContext = createContext(null);
-
 class PageJeu extends React.Component {
 
     constructor(props)
@@ -47,7 +45,7 @@ class PageJeu extends React.Component {
             connected: false,
             partie: null,
             profiljeuCourantId: 1,
-            partiesEncours: jeuService.getAllPartiesEncours()
+            partiesEncours: null
         }
 
     }
@@ -55,7 +53,7 @@ class PageJeu extends React.Component {
     static async getDerivedStateFromProps(props, state)
     {
         return {
-            partiesEncours: state.jeuService.getAllPartiesEncours()
+            //partiesEncours: state.jeuService.getAllPartiesEncours()
         };
     }
 
@@ -74,23 +72,35 @@ class PageJeu extends React.Component {
 
     async updatePartie(idPartie)
     {
-        const partie = await this.state.jeuService.getPartie(idPartie);
-        const profiljeu1 = await this.state.jeuService.getProfiljeu(partie?.id_joueur1);
-        const profiljeu2 = await this.state.jeuService.getProfiljeu(partie?.id_joueur2);
-
-        if(partie)
+        if(idPartie)
         {
-            await this.state.jeuService.connectPartie(partie.id, this.state.profiljeuCourantId);
-            this.setState({
-                game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
-                partie: partie,
-                profiljeu1: profiljeu1,
-                profiljeu2: profiljeu2,
-            });
+            const partie = await this.state.jeuService.getPartie(idPartie);
+            const profiljeu1 = await this.state.jeuService.getProfiljeu(partie?.id_joueur1);
+            const profiljeu2 = await this.state.jeuService.getProfiljeu(partie?.id_joueur2);
+    
+            if(partie)
+            {
+                await this.state.jeuService.connectPartie(partie.id, this.state.profiljeuCourantId);
+                this.setState({
+                    game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
+                    partie: partie,
+                    profiljeu1: profiljeu1,
+                    profiljeu2: profiljeu2,
+                });
+            }
+            else
+            {
+                await this.state.jeuService.disconnectPartie();
+                this.setState({
+                    game: null,
+                    partie: null,
+                    profiljeu1: null,
+                    profiljeu2: null,
+                });
+            }
         }
         else
         {
-            await this.state.jeuService.disconnectPartie();
             this.setState({
                 game: null,
                 partie: null,
@@ -106,9 +116,10 @@ class PageJeu extends React.Component {
         if(this.state.connected)
             await this.resetConnectionStatus();
 
-        this.setState({
-            connected: true
-        });
+        if(!this.state.connected)
+            this.setState({
+                connected: true
+            });
     }
 
     async resetConnectionStatus()
@@ -244,7 +255,7 @@ class PageJeu extends React.Component {
                     <button id="btnCreer" onClick={this.onBtnCreer}>Creer partie.</button>
                     <DisplayPartiesServiceContext.Provider value={ { service: this.state.displayPartiesService } }>
                         <div class="liste-parties">
-                            {Object.values(this.state.partiesEncours).map((entry, i) =>
+                            {Object.values(this.state.partiesEncours ? this.state.partiesEncours : [] ).map((entry, i) =>
                                 <DisplayPartieComponent key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => this.onBtnOuvrirPartie(entry.id) }></DisplayPartieComponent>)}
                         </div>
                     </DisplayPartiesServiceContext.Provider>
@@ -261,7 +272,7 @@ class PageJeu extends React.Component {
                                     <img class="playpage-profile-pfp-icon" src={rectangle} />
                                 </div>
                                 <div class="playpage-profile-userdata">
-                                    <label class="playpage-profile-username">{this.state.profiljeu2.compte}</label>
+                                    <label class="playpage-profile-username">{this.state.profiljeu2?.compte ?? "<blank>"}</label>
                                     <label class="playpage-profile-userinfo">Joueur 2</label>
                                 </div>
                             </div>
@@ -271,7 +282,7 @@ class PageJeu extends React.Component {
                             </div>
                         </div>
                         <div class="playpage-game-board">
-                            <Chessboard id="BasicBoard" position={this.state.game.fen()} onPieceDrop={this.onJeuPieceDrop}/>
+                            <Chessboard id="BasicBoard" position={this.state.game?.fen() ?? ""} onPieceDrop={this.onJeuPieceDrop}/>
                         </div>
                         <div class="playpage-infobar">
                             <div class="playpage-profile left clear">
@@ -279,7 +290,7 @@ class PageJeu extends React.Component {
                                     <img class="playpage-profile-pfp-icon" src={rectangle} />
                                 </div>
                                 <div class="playpage-profile-userdata">
-                                    <label class="playpage-profile-username">{this.state.profiljeu1.compte}</label>
+                                    <label class="playpage-profile-username">{this.state.profiljeu1?.compte ?? "<blank>"}</label>
                                     <label class="playpage-profile-userinfo">Joueur 1</label>
                                 </div>
                             </div>

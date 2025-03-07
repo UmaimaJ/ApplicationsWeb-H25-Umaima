@@ -2,12 +2,10 @@ import { Server } from "socket.io";
 import { Chess } from "chess.js";
 
 class JeuService{
-    constructor(httpServer, mysqlConnection)
+    constructor(httpServer, mysqlConnection, sessionMiddleware, corsOptions)
     {
         this.io = new Server(httpServer, {
-            cors: {
-                origin: "http://localhost:3000"
-            }
+            cors: corsOptions
         });
 
         this.mysql = mysqlConnection;
@@ -18,6 +16,7 @@ class JeuService{
         this.onDisconnect = this.onDisconnect.bind(this);
         this.onMove = this.onMove.bind(this);
 
+        this.io.engine.use(sessionMiddleware);
         this.io.on("connection", this.onConnect);
         this.io.on("disconnect", this.onDisconnect);
     }
