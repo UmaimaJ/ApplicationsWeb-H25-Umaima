@@ -79,6 +79,8 @@ function App() {
             </div>
           </div>
         </div>
+        {sessionUsager &&
+        <>
         <div class="my-sidebar-footer">
           <div class="my-gemcounter">
             <div class="my-gemindicator">
@@ -99,6 +101,8 @@ function App() {
             </div>
           </div>
         </div>
+        </>
+        }
       </div>
       <div class="content">
         {pageCourante}
