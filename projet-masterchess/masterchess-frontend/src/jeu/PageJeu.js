@@ -101,6 +101,7 @@ class PageJeu extends React.Component {
         }
         else
         {
+            await this.state.jeuService.disconnectPartie();
             this.setState({
                 game: null,
                 partie: null,
@@ -303,7 +304,7 @@ class PageJeu extends React.Component {
                     <div class="my-sidebar">
                         <button class="btn-retourner" onClick={this.onBtnOuvrirListe}>Retourner</button>
                         <div class="move-info-panel">
-                            {this.state?.game.history({ verbose: true }).map((entry, i) =>
+                            {this.state.game?.history({ verbose: true }).map((entry, i) =>
                                 <label style={{color: (entry.color === 'w'? 'white' : "black"), backgroundColor: "grey"}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} from: {entry.from} to: {entry.to}
                                 </label>)}
                         </div>
