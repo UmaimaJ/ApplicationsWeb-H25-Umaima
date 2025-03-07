@@ -123,7 +123,7 @@ app.post("/signup", async function (req, res) {
 });
 
 app.post('/logout', async function (req, res) {
-    await comptesService.updateSessionUsager(req.session?.user?.compte, null);
+    await comptesService.updateSessionUsager(req.session?.user?.usager?.compte, null);
     req.session.destroy(async (err) => {
         if (err) {
             return res.status(500).json({ success: false, message: 'Logout failed', error: err });
