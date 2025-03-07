@@ -83,7 +83,7 @@ function App() {
           <div class="my-gemcounter">
             <div class="my-gemindicator">
               <img class="my-gemicon" src={gemicon} />
-              <label class="my-gemcountlabel">300</label>
+              <label class="my-gemcountlabel">{sessionUsager?.points ?? 0}</label>
             </div>
             <img class="my-gemaddbutton" src={gemaddicon} />
           </div>
