@@ -122,14 +122,14 @@ app.post("/signup", async function (req, res) {
     }
 });
 
-app.post('/logout', function (req, res) {
+app.post('/logout', async function (req, res) {
+    await comptesService.updateSessionUsager(req.session.user.compte, null);
     req.session.destroy(async (err) => {
         if (err) {
             return res.status(500).json({ success: false, message: 'Logout failed', error: err });
         }
-        await comptesService.updateSessionUsager(req.session.user.compte, null);
-        res.json({ success: true, message: 'Logout successful' });
     });
+    res.json({ success: true, message: 'Logout successful' });
 });
 
 app.get("/getSession", async function (req, res) {

@@ -40,6 +40,12 @@ function App() {
     setPageCourante(<SignUp></SignUp>);
   };
 
+  const handleLogoutClick = async (event) => {
+    setPageCourante(<></>);
+    await comptesService.postLogout();
+    setSessionUsager(null);
+  };
+
   const handleJeuClick = async (event) => {
     setPageCourante(<PageJeu></PageJeu>);
   };
@@ -64,6 +70,14 @@ function App() {
                 <div class="my-navoption" onClick={handleSignUpClick}>
                   <img class="my-icon" src={loginicon} />
                   <label class="my-optionlabel">Sign Up</label>                
+                </div>
+                </>
+              }
+              {(sessionUsager) &&
+                <>
+                <div class="my-navoption" onClick={handleLogoutClick}>
+                  <img class="my-icon" src={loginicon} />
+                  <label class="my-optionlabel">Logout</label>                
                 </div>
                 </>
               }
