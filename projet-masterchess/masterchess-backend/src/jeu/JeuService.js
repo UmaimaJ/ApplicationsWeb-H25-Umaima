@@ -11,6 +11,7 @@ class JeuService{
         this.mysql = mysqlConnection;
 
         this.connections = {};
+        this.boundMove = () => {};
 
         this.onConnect = this.onConnect.bind(this);
         this.onDisconnect = this.onDisconnect.bind(this);
@@ -24,8 +25,8 @@ class JeuService{
     async onConnect(socket)
     {
         socket.data = {
-            profiljeuId: socket.handshake.query.profiljeuId,
-            partieId: socket.handshake.query.partieId
+            profiljeuId: socket?.request?.session?.user?.usager?.id_profiljeu,
+            partieId: socket?.handshake?.query?.partieId
         }
 
         if(!await this.isPartieEncours(socket.data.partieId))
@@ -35,8 +36,18 @@ class JeuService{
             return;
 
         //this.connections[socket.id].lastConnection[socket.data.profiljeuId] = Date.now();
+        this.connections[socket.id] = socket;
+        const socketarg = socket;
         await this.bumpConnection(socket, socket.data.profiljeuId);
-        await socket.on("move", this.onMove);
+
+        this.boundMove = async function(event, socket = socketarg)
+        {
+            await this.onMove(event, socket);
+        };
+        this.boundMove = this.boundMove.bind(this);
+
+        this.onMove.bind(this, null, socket);
+        await socket.on("move", this.boundMove);
 
         //if c'est un bot au debut, aussi on ne part pas le timer
         if(await this.isJoueurcourantBot(socket.data.partieId))
@@ -59,46 +70,51 @@ class JeuService{
 
     async onDisconnect(socket)
     {
-        if(!await this.isPartieEncours(socket.data.partieId))
-            return;
-
-        if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profiljeuId))
+        if(!socket?.request?.session?.user?.usager?.id_profiljeu)
             return;
 
         //this.connections[socket.id].lastDisconnect[socket.data.profiljeuId] = Date.now();
-        await this.bumpConnection(socket, socket.data.profiljeuId);
+        await this.bumpConnection(socket, socket?.request?.session?.user?.usager?.id_profiljeu);
     }
 
-    async onMove(socket)
+    async onMove(event, socket)
     {
-        if(!await this.isPartieEncours(socket.data.partieId))
+        if(!event?.data)
             return;
 
-        if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profiljeuId))
+        if(!socket?.request?.session?.user?.usager?.id_profiljeu)
+            return;
+        event.data.profiljeuId = socket.request.session.user.usager.id_profiljeu;
+
+        if(!await this.isPartieEncours(event.data.partieId))
             return;
 
-        //TODO isjoueurcourant
+        if(!await this.isJoueurDansPartie(event.data.partieId, event.data.profiljeuId))
+            return;
 
-        const moveresult = await this.doMove(socket.data.partieId, socket.data.move);
+        if(!await this.isJoueurCourant(event.data.partieId, event.data.profiljeuId))
+            return;
+
+        const moveresult = await this.doMove(event.data.partieId, event.data.move);
         if(moveresult)
         {
-            const nouveauJoueurcourant = await this.prochainProfiljeu(socket.data.partieId);
-            await this.updateJoueurcourantPartie({id: socket.data.partieId, id_joueurcourant: nouveauJoueurcourant});
+            const nouveauJoueurcourant = await this.prochainProfiljeu(event.data.partieId);
+            await this.updateJoueurcourantPartie({id: event.data.partieId, id_joueurcourant: nouveauJoueurcourant});
 
-            await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
-            if(this.io.emit("moveresult", { move: moveresult, partieId: socket.data.partieId }))
+            await this.bumpConnection(event.data.partieId, event.data.profiljeuId);
+            if(this.io.emit("moveresult", { move: moveresult, partieId: event.data.partieId }))
             {
                 await this.sleep(2000);
                 if(nouveauJoueurcourant == -1)
                 {
-                    const moveresult = await this.doBotMove(socket.data.partieId);
+                    const moveresult = await this.doBotMove(event.data.partieId);
                     if(moveresult)
                     {
-                        const nouveauJoueurcourant = await this.prochainProfiljeu(socket.data.partieId);
-                        await this.updateJoueurcourantPartie({id: socket.data.partieId, id_joueurcourant: nouveauJoueurcourant});
+                        const nouveauJoueurcourant = await this.prochainProfiljeu(event.data.partieId);
+                        await this.updateJoueurcourantPartie({id: event.data.partieId, id_joueurcourant: nouveauJoueurcourant});
             
                         //await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
-                        if(this.io.emit("moveresult", { move: moveresult, partieId: socket.data.partieId }))
+                        if(this.io.emit("moveresult", { move: moveresult, partieId: event.data.partieId }))
                         {
                         }
                         else
@@ -178,6 +194,25 @@ class JeuService{
     {
         const [results, fields] = await this.mysql.query("SELECT id FROM partie WHERE id=? AND ( id_joueur1=? OR id_joueur2=? ) AND statut<2;", [partieId, profiljeuId, profiljeuId]);
         return results.length > 0;
+    }
+
+    async isJoueurCourant(partieId, profiljeuId)
+    {
+        if(partieId)
+        {
+            const [results, fields] = await this.mysql.query(`
+                SELECT id
+                FROM partie
+                WHERE partie.id = ? AND partie.id_joueurcourant = ?;
+                `, [partieId, profiljeuId]);
+
+            return results.length > 0;
+        }
+        else
+        {
+            return false;
+        }
+        return true;
     }
 
     async isJoueurcourantBot(partieId)

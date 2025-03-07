@@ -60,8 +60,6 @@ app.use(function(req, res, next) {
 });
 
 function isAuthenticated(req, res, next) {
-    console.log(req.path);
-    console.log(req.session);
     if (req.session.user) {
         return next();
     } else {

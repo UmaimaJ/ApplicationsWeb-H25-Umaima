@@ -7,10 +7,10 @@ class ComptesService {
     async selectUsager(compte)
     {
         const [results] = await this.mysql.query(`
-            SELECT usager.id, compte, motdepasse, id_groupeprivileges, datecreation, courriel, points, elo, datedernierjeu, sessionid
+            SELECT usager.id, compte, motdepasse, id_groupeprivileges, datecreation, courriel, sessionid, pj.points, pj.elo, pj.datedernierjeu, pj.id AS id_profiljeu
             FROM usager
-            LEFT JOIN profiljeu ON usager.id = profiljeu.id_usager
-            WHERE compte = ?;
+            LEFT JOIN profiljeu AS pj ON usager.id = pj.id_usager
+            WHERE usager.compte = ?;
             `, [compte]);
 
         if(results.length > 0)
