@@ -269,9 +269,9 @@ class PageJeu extends React.Component {
                         </div>
                         <div class="input-group mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text" style={ { width: 125} } id="basic-addon1">Second player</span>
+                                <span class="input-group-text" style={ { width: 125} } id="basic-addon2">Second player</span>
                             </div>
-                            <input id="nomprofiljeu2Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"></input>
+                            <input id="nomprofiljeu2Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon2"></input>
                         </div>
                         <button id="btnCreer" class="buttonCreate" onClick={this.onBtnCreer}>Create match</button>
                         <button id="btnRefreshParties" class="buttonRefresh" onClick={this.onBtnRefreshPartiesEncours}>Refresh</button>
