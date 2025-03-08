@@ -110,7 +110,7 @@ class JeuService{
     {
         const [results, fields] = await this.mysql.query("SELECT * FROM partie WHERE id=? AND statut<2;", [partieId]);
         console.log("isPartieEncours " + partieId);
-        console.log(results);
+            console.log(results);
         return results.length > 0;
     }
 

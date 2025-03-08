@@ -1,0 +1,163 @@
+.accueil-container {
+    background-size: cover;
+    color: white;
+    text-align: center;
+    padding: 40px;
+    min-height: 100vh;
+    overflow-y: auto;
+    font-family: "Urbanist", sans-serif;
+}
+
+.section {
+    margin: 120px auto;
+    width: 90%;
+    max-width: 1300px;
+}
+
+.hero-section {
+    margin-bottom: 300px;
+    text-align: center;
+    padding-left: 150px;
+}
+
+.hero-section h1 {
+    color: #9CE83D;
+    font-size: 72px;
+}
+
+.hero-section p {
+    font-size: 40px;
+    color: #ddd;
+}
+
+.start-button, 
+.lessons-btn,
+.play-button {
+    background: #73AC2B;
+    border: 5px solid #547F1D;
+    padding: 15px 40px;
+    font-size: 26px;
+    font-weight: 600;
+    color: white;
+    cursor: pointer;
+    margin-top: 40px;
+    border-radius: 15px;
+    transition: 0.3s ease-in-out;
+}
+
+.start-button:hover, 
+.lessons-btn:hover, 
+.play-button:hover {
+    background: #547F1D;
+}
+
+.lesson-container {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: #1B1D1B;
+    padding: 120px;
+    margin: 120px auto;
+    width: 90%;
+    border-radius: 15px;
+    border: 6px solid #4D4D4D;
+    max-width: 1300px;
+    text-align: left;
+}
+
+.lesson-image {
+    width: 400px;
+    height: auto;
+    margin-right: 100px;
+}
+
+.lesson-content {
+    flex: 1;
+    color: white;
+}
+
+.lesson-title {
+    font-size: 36px;
+    font-weight: bold;
+}
+
+.lesson-description {
+    font-size: 40px;
+    margin-top: 40px;
+}
+
+.play-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #1B1D1B;
+    padding: 120px;
+    margin: 120px auto;
+    width: 90%;
+    border-radius: 15px;
+    border: 6px solid #4D4D4D;
+    max-width: 1300px;
+    flex-direction: row-reverse;
+    text-align: left;
+}
+
+.play-image {
+    width: 400px;
+    height: auto;
+    margin-left: 100px;
+}
+
+.play-content {
+    flex: 1;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.play-button {
+    align-self: flex-end;
+}
+
+.video-section {
+    margin: 120px auto;
+    margin-top: 200px;
+    width: 90%;
+    max-width: 1400px;
+}
+
+.video-section h2 {
+    font-size: 36px;
+    text-align: center;
+}
+
+.video-thumbnails {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 80px;
+    justify-content: center;
+    margin-top: 50px;
+}
+
+.video-thumbnails img {
+    width: 100%;
+    max-width: 700px; /* Augmenté pour rendre les vidéos plus grandes */
+    height: auto;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.video-thumbnails img:hover {
+    transform: scale(1.05);
+}
+
+footer {
+    margin-top: 200px;
+    padding: 40px;
+    border-top: 4px solid #151515;
+    text-align: center;
+}
+
+footer p {
+    color: #757373;
+    font-size: 30px;
+}

@@ -5,7 +5,7 @@ import buyicon from "./style/buy-icon.svg";
 import gemicon from "./style/gem-icon.svg";
 import gemaddicon from "./style/gem-add-icon.svg";
 import rectangle from "./style/rectangle.svg";
-
+import PageAccueil from "./accueil/PageAccueil"; 
 import PageJeu from "./jeu/PageJeu.js";
 
 //import outfitmedium from "./style/Outfit-Medium.ttf";
@@ -59,6 +59,7 @@ function App() {
       </div>
       <div class="content">
         <PageJeu></PageJeu>
+        <PageAccueil></PageAccueil>
       </div>
     </div>
   );
