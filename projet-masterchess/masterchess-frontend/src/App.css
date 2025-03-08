@@ -110,6 +110,7 @@ html, body, .App, #root{
 }
 
 .my-navoption .my-icon{
+  box-sizing: unset;
   display: flex;
   padding: 10px;
   justify-content: center;

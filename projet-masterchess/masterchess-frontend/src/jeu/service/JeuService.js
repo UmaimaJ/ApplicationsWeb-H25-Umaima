@@ -3,6 +3,7 @@ import { io } from "socket.io-client";
 
 import React from 'react';
 
+// Classe-service qui sert a organiser la communication avec le serveur au scope du jeu et de la PageJeu
 export class JeuService {
     constructor(onConnection, onDisconnect, onMoveresult)
     {
@@ -24,6 +25,7 @@ export class JeuService {
         });
     }
 
+    // Fonction qui permet a un utilisateur de partir une session wesockets
     async connectPartie(partieId, profiljeuId)
     {
         this.io.io.opts.query = {
@@ -33,11 +35,13 @@ export class JeuService {
         this.io.disconnect().connect();
     }
 
+    // Fonction qui met fin a la session websockets
     async disconnectPartie()
     {
         this.io.disconnect();
     }
 
+    // Fonction qui cherche toutes les parties en cours pour le client
     async getAllPartiesEncours()
     {
         console.log("BEFORE");
@@ -63,6 +67,7 @@ export class JeuService {
         return result;
     }
 
+    // Fonction qui demande au serveur la partie selon le id
     async getPartie(idPartie)
     {
         const params = new URLSearchParams();
@@ -86,6 +91,7 @@ export class JeuService {
         return result;
     }
     
+    // Fonction qui demande un profiljeu au serveur
     async getProfiljeu(idProfil)
     {
         const params = new URLSearchParams();
@@ -109,6 +115,7 @@ export class JeuService {
         return result;
     }
 
+    // Fonction qui demande au serveur de créer une nouvelle partie
     async createPartie(nomprofiljeu1, nomprofiljeu2) {
         var result = null;
         await axios.post("http://localhost:4000/createPartie", {
@@ -132,6 +139,7 @@ export class JeuService {
     }
 };
 
+// Contexte global qui contient la service au but de IoD dans l'ensemble du code qui en a besoin
 export const JeuServiceContext = React.createContext(
     {
         service: null

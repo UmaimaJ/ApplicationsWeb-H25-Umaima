@@ -8,6 +8,7 @@ import rectangle from "../style/rectangle.svg";
 import timericon from "../style/timer-icon.svg";
 import board from "../style/board.svg";
 
+import 'bootstrap/dist/css/bootstrap.css';
 import './PageJeu.css';
 import DisplayPartieComponent from "./components/DisplayPartieComponent";
 
@@ -260,23 +261,44 @@ class PageJeu extends React.Component {
             return (
                 <div class="panneau-parties-container">
                     <div class="panneau-parties-header">
-                        <input id="nomprofiljeu1Creer" class="inputNom"></input>
-                        <input id="nomprofiljeu2Creer" class="inputNom"></input>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" style={ { width: 125} } id="basic-addon1">First player</span>
+                            </div>
+                            <input id="nomprofiljeu1Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"></input>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" style={ { width: 125} } id="basic-addon1">Second player</span>
+                            </div>
+                            <input id="nomprofiljeu2Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"></input>
+                        </div>
                         <button id="btnCreer" class="buttonCreate" onClick={this.onBtnCreer}>Create match</button>
                         <button id="btnRefreshParties" class="buttonRefresh" onClick={this.onBtnRefreshPartiesEncours}>Refresh</button>
                     </div>
                     <DisplayPartiesServiceContext.Provider value={ { service: this.state.displayPartiesService } }>
-                        <div class="liste-parties">
+                    <div class="liste-parties">
+                        <table class="table table-hover table-dark">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Identifier</th>
+                                    <th scope="col">Player one</th>
+                                    <th scope="col">Player two</th>
+                                </tr>
+                            </thead>
+                            <tbody>
                             {Object.values(this.state.partiesEncours ? this.state.partiesEncours : [] ).map((entry, i) =>
                                 <DisplayPartieComponent key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => this.onBtnOuvrirPartie(entry.id) }></DisplayPartieComponent>)}
-                            <br></br>
-                            <div class="liste-parties-soak"></div>
-                        </div>
+                            </tbody>
+                        </table>
+                        <div class="liste-parties-soak"></div>
+                    </div>
                     </DisplayPartiesServiceContext.Provider>
                 </div>
             );
         }
         return (
+            // Rendre disponnible la service avec le contexte
             <JeuServiceContext.Provider value={ { service: this.state.jeuService} }>
                 <div class="jeu-container">
                     <div class="playpage-game">
