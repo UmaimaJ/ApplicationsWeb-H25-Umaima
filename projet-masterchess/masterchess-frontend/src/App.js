@@ -9,6 +9,7 @@ import rectangle from "./style/rectangle.svg";
 import Login from "./login/login.jsx";
 import SignUp from "./login/signUp.jsx";
 import PageJeu from "./jeu/PageJeu.js";
+import PageAccueil from "./accueil/PageAccueil.jsx";
 
 import { useState, useEffect } from 'react';
 import { AccueilServiceContext, AccueilService } from "./accueil/service/AccueilService.js";
@@ -21,7 +22,7 @@ const comptesService = new ComptesService();
 const currentSessionUsager = (await comptesService.getSessionUsager())?.data?.usager ?? null;
 
 function App() {
-  const [pageCourante, setPageCourante] = useState(null);
+  const [pageCourante, setPageCourante] = useState(<PageAccueil></PageAccueil>);
   const [sessionUsager, setSessionUsager] = useState(currentSessionUsager);
 
   useEffect(() => {
@@ -31,7 +32,11 @@ function App() {
   useEffect(() => {
     window.sessionStorage.setItem("sessionUsager", JSON.stringify(sessionUsager));
   }, [sessionUsager]);
-  
+ 
+  const handleAccueilClick = async (event) => {
+    setPageCourante(<PageAccueil></PageAccueil>);
+  };
+
   const handleLoginClick = async (event) => {
     setPageCourante(<Login></Login>);
   };
@@ -41,7 +46,7 @@ function App() {
   };
 
   const handleLogoutClick = async (event) => {
-    setPageCourante(<></>);
+    setPageCourante(<PageAccueil></PageAccueil>);
     await comptesService.postLogout();
     setSessionUsager(null);
   };
@@ -61,6 +66,10 @@ function App() {
           </div>
           <div class="my-navbar">
             <div class="my-navbaroptions">
+              <div class="my-navoption" onClick={handleAccueilClick}>
+                <img class="my-icon" src={loginicon} />
+                <label class="my-optionlabel">Accueil</label>                
+              </div>
               {(!sessionUsager) &&
                 <>
                 <div class="my-navoption" onClick={handleLoginClick}>
