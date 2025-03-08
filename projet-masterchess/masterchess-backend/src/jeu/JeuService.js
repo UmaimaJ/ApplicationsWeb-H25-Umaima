@@ -238,6 +238,16 @@ class JeuService{
         return results[0];
     }
 
+    async selectProfiljeuByCompte(compte)
+    {
+        const [results, fields] = await this.mysql.query("SELECT profiljeu.* FROM usager LEFT JOIN profiljeu ON usager.id = profiljeu.id_usager WHERE usager.compte = ?", [compte]);
+        
+        if(results.length > 0)
+            return results[0];
+
+        return null;
+    }
+
     async insertPartie(joueur1Id, joueur2Id)
     {
         const [results, fields] = await this.mysql.query("INSERT INTO partie (id_joueur1, id_joueur2, id_joueurcourant, statut, datedebut) VALUES (?, ?, ?, 0, NOW()); SELECT LAST_INSERT_ID() AS id;",
@@ -264,6 +274,24 @@ class JeuService{
         const [results, fields] = await this.mysql.query("UPDATE partie SET historiquetables = ? WHERE id = ?",
             [historique, partieId]);
         return true;
+    }
+
+    async createPartie(compte1, compte2)
+    {
+        const profiljeu1 = await this.selectProfiljeuByCompte(compte1);
+        const profiljeu2 = await this.selectProfiljeuByCompte(compte2);
+
+        const [results, fields] = await this.mysql.query(`
+                INSERT INTO partie(id_joueur1, id_joueur2, statut, id_joueurcourant)
+                VALUES(?, ?, 0, ?);
+                SELECT * from partie WHERE id = LAST_INSERT_ID();
+            `
+        , [profiljeu1.id, profiljeu2.id, profiljeu1.id]);
+
+        if(results.length > 0)
+            return results[0];
+
+        return null;
     }
 
     async sleep(ms)

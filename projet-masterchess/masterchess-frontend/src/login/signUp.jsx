@@ -30,7 +30,7 @@ const SignUp = () => {
                 }}>
                 <div className="form-group">
                     <label htmlFor="username">Username:</label>
-                    <input
+                    <input class="inputYasser"
                         type="text"
                         id="username"
                         value={username}
@@ -40,7 +40,7 @@ const SignUp = () => {
                 </div>
                 <div className="form-group">
                     <label htmlFor="email">Email:</label>
-                    <input
+                    <input class="inputYasser"
                         type="email"
                         id="email"
                         value={email}
@@ -50,7 +50,7 @@ const SignUp = () => {
                 </div>
                 <div className="form-group">
                     <label htmlFor="password">Password:</label>
-                    <input
+                    <input class="inputYasser"
                         type="password"
                         id="password"
                         value={password}
@@ -58,7 +58,7 @@ const SignUp = () => {
                         required
                     />
                 </div>
-                <button type="submit">Sign Up</button>
+                <button class="buttonYasser" type="submit">Sign Up</button>
             </form>
         </div>
         )}

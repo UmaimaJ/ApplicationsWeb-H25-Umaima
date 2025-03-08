@@ -223,10 +223,14 @@ class PageJeu extends React.Component {
 
     async onBtnCreer()
     {
-        const inputProfiljeu1 = document.querySelector("#idprofiljeu1Creer");
-        const inputProfiljeu2 = document.querySelector("#idprofiljeu2Creer");
+        const inputProfiljeu1 = document.querySelector("#nomprofiljeu1Creer");
+        const inputProfiljeu2 = document.querySelector("#nomprofiljeu2Creer");
 
-        const idPartie = await this.state.jeuService.createPartie(inputProfiljeu1.value, inputProfiljeu2.value);
+        const partie = await this.state.jeuService.createPartie(inputProfiljeu1.value, inputProfiljeu2.value);
+        if(partie)
+        {
+            await this.onBtnRefreshPartiesEncours();
+        }
     }
 
     async onBtnOuvrirPartie(idPartie)
@@ -255,14 +259,18 @@ class PageJeu extends React.Component {
         {
             return (
                 <div class="panneau-parties-container">
-                    <button id="btnRefreshParties" onClick={this.onBtnRefreshPartiesEncours}>Refresh</button>
-                    <input id="nomprofiljeu1Creer"></input>
-                    <input id="nomprofiljeu2Creer"></input>
-                    <button id="btnCreer" onClick={this.onBtnCreer}>Creer partie.</button>
+                    <div class="panneau-parties-header">
+                        <input id="nomprofiljeu1Creer" class="inputNom"></input>
+                        <input id="nomprofiljeu2Creer" class="inputNom"></input>
+                        <button id="btnCreer" class="buttonCreate" onClick={this.onBtnCreer}>Create match</button>
+                        <button id="btnRefreshParties" class="buttonRefresh" onClick={this.onBtnRefreshPartiesEncours}>Refresh</button>
+                    </div>
                     <DisplayPartiesServiceContext.Provider value={ { service: this.state.displayPartiesService } }>
                         <div class="liste-parties">
                             {Object.values(this.state.partiesEncours ? this.state.partiesEncours : [] ).map((entry, i) =>
                                 <DisplayPartieComponent key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => this.onBtnOuvrirPartie(entry.id) }></DisplayPartieComponent>)}
+                            <br></br>
+                            <div class="liste-parties-soak"></div>
                         </div>
                     </DisplayPartiesServiceContext.Provider>
                 </div>

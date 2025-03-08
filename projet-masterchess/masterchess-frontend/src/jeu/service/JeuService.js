@@ -109,11 +109,11 @@ export class JeuService {
         return result;
     }
 
-    async createPartie(idprofiljeu1, idprofiljeu2) {
+    async createPartie(nomprofiljeu1, nomprofiljeu2) {
         var result = null;
         await axios.post("http://localhost:4000/createPartie", {
-            idprofiljeu1: idprofiljeu1,
-            idprofiljeu2: idprofiljeu2,
+            nomprofiljeu1: nomprofiljeu1,
+            nomprofiljeu2: nomprofiljeu2,
         },{
             withCredentials: true
         })
