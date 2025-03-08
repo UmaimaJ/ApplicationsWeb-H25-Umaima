@@ -68,7 +68,7 @@ function App() {
             <div class="my-navbaroptions">
               <div class="my-navoption" onClick={handleAccueilClick}>
                 <img class="my-icon" src={loginicon} />
-                <label class="my-optionlabel">Accueil</label>                
+                <label class="my-optionlabel">Home</label>                
               </div>
               {(!sessionUsager) &&
                 <>
