@@ -27,3 +27,10 @@ npm run start -w masterchess-frontend
 ```
 
 Accédez à http://localhost:4000.
+
+Comptes test:
+```
+Gabriel gabriel
+Pro pro
+Noob noob
+```
