@@ -13,9 +13,9 @@ cd projet-masterchess
 ```
 npm install
 ```
-Il faut aussi déployer le scripte /ressources/projet_chess(version).sql dans la base de données en l'éxecutant soit à l'aide de Workbench soit dans un client de votre choix.
+Il faut aussi déployer le scripte /ressources/projet_chess(version).sql dans la base de données en l'exécutant soit à l'aide de Workbench soit dans un client de votre choix.
 
-## Éxecuter
+## Exécuter
 Pour démarrer le projet backend:
 ```
 npm run start -w masterchess-backend
@@ -26,3 +26,4 @@ Pour démarrer le projet frontend:
 npm run start -w masterchess-frontend
 ```
 
+Accédez à http://localhost:4000.
