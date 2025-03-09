@@ -1,0 +1,106 @@
+.cours-container {
+    background-size: cover;
+    color: white;
+    text-align: center;
+    padding: 80px;
+    min-height: 100vh;
+    overflow-y: auto;
+    font-family: "Urbanist", sans-serif;
+}
+
+.lesson-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.lesson-title {
+    font-size: 80px;
+    color: #9CE83D;
+    font-weight: bold;
+}
+
+.lesson-subtitle {
+    font-size: 40px;
+    color: #c0c0c0;
+    font-weight: 400;
+    margin-top: 10px;
+}
+
+.lesson-library {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 50px;
+}
+
+.category-dropdown, .lesson-search-input {
+    padding: 18px;
+    font-size: 28px;
+    border-radius: 10px;
+    border: 3px solid #73AC2B;
+    background: #1B1D1B;
+    color: white;
+    text-align: center;
+}
+
+.lesson-list-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.lesson-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    width: 90%;
+    max-width: 1600px;
+}
+
+.lesson-card {
+    display: flex;
+    align-items: center;
+    background-color: #1B1D1B;
+    padding: 40px;
+    border-radius: 30px;
+    border: 8px solid #4D4D4D;
+    max-width: 800px;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.lesson-card:hover {
+    transform: scale(1.03);
+    border-color: #9CE83D;
+}
+
+.lesson-thumbnail {
+    width: 180px;
+    height: 180px;
+    border-radius: 15px;
+    margin-right: 40px;
+}
+
+.lesson-info {
+    flex: 1;
+    text-align: left;
+}
+
+.lesson-title-green {
+    font-size: 45px;
+    font-weight: bold;
+    color: #9CE83D;
+}
+
+.lesson-title-white {
+    font-size: 45px;
+    font-weight: bold;
+    color: white;
+}
+
+.lesson-description {
+    font-size: 30px;
+    color: #ddd;
+}

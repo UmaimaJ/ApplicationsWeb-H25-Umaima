@@ -10,6 +10,7 @@ import Login from "./login/login.jsx";
 import SignUp from "./login/signUp.jsx";
 import PageJeu from "./jeu/PageJeu.js";
 import PageAccueil from "./accueil/PageAccueil.jsx";
+import PageCours from "./cours/PageCours.jsx";
 
 import { useState, useEffect } from 'react';
 import { AccueilServiceContext, AccueilService } from "./accueil/service/AccueilService.js";
@@ -55,6 +56,10 @@ function App() {
     setPageCourante(<PageJeu></PageJeu>);
   };
 
+  const handleLearnClick = async (event) => {
+    setPageCourante(<PageCours></PageCours>);
+  };
+
   return (
     <AccueilServiceContext.Provider value={ {pageCourante, setPageCourante, accueilService} }>
     <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, comptesService} }>
@@ -94,7 +99,7 @@ function App() {
                 </div>
                 </>
               }
-              <div class="my-navoption">
+              <div class="my-navoption" onClick={handleLearnClick}>
                 <img class="my-icon" src={learnicon} />
                 <label class="my-optionlabel">Learn</label>
               </div>
