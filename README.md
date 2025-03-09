@@ -5,7 +5,7 @@ https://www.figma.com/design/2OqbEfF6KRI5YjAjVX7X65/Inkspire?node-id=0-1&t=DjB6F
 
 # Environnement de développement
 ## Débuter
-Allez à la racine du projet a développer:
+Allez à la racine du projet à développer:
 ```
 cd projet-masterchess
 ```
