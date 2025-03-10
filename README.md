@@ -26,7 +26,7 @@ Pour démarrer le projet frontend:
 npm run start -w masterchess-frontend
 ```
 
-Accédez à http://localhost:4000.
+Accédez à http://localhost:3000.
 
 Comptes test:
 ```
