@@ -25,6 +25,14 @@ const Login = () => {
                 setPageCourante(<></>);
             }
         }
+        else {
+            if (axiosResponse?.data?.status === 500) {
+                alert("Server error");
+            }
+            else {
+                alert("Invalid username or password");
+            }
+        }
     };
 
     return (

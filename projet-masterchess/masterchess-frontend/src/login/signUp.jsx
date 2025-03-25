@@ -17,6 +17,9 @@ const SignUp = () => {
             console.log("Signed up and logged in: ", json.user.compte);
             setSessionUsager(json.usager);
         }
+        else {
+            alert("Server error");
+        }
     };
 
     return (
