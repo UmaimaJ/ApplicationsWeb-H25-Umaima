@@ -86,7 +86,7 @@ app.post('/login', async function (req, res) {
                 delete req.session.user.usager.motdepasse;
                 comptesService.updateSessionUsager(username, req.session.id);
                 req.session.save();
-                res.json({ success: true, message: 'Login successful', sesson_id: req.sessionID, cookie: req.session.cookie });
+                res.json({ success: true, message: 'Login successful', session_id: req.sessionID, cookie: req.session.cookie });
                 console.log('Logged in session data:', req.session.user.usager.compte); // Log the stored password
             } else {
                 console.log('Invalid password:', user.motdepasse); // Log the password
