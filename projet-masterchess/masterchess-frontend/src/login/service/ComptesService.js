@@ -9,7 +9,7 @@ export class ComptesService {
     async getSessionUsager()
     {
         var result = null;
-        await axios.get("http://localhost:4000/getSession", {
+        await axios.get("getSession", {
             withCredentials: true
         })
         .then(function (response) {
@@ -30,7 +30,7 @@ export class ComptesService {
     async postLogin(username, password)
     {
         var result = null;
-        await axios.post("http://localhost:4000/login", {
+        await axios.post("login", {
             username: username,
             password: password
         }, {
@@ -54,7 +54,7 @@ export class ComptesService {
     async postSignUp(username, password, email)
     {
         var result = null;
-        await axios.post("http://localhost:4000/signup", {
+        await axios.post("signup", {
             username: username,
             password: password,
             email: email
@@ -78,7 +78,7 @@ export class ComptesService {
     async postLogout()
     {
         var result = null;
-        await axios.post("http://localhost:4000/logout", {
+        await axios.post("logout", {
         }, {
             withCredentials: true
         })

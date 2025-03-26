@@ -6,7 +6,7 @@ export class ServiceCours {
 
   async getLessons() {
     try {
-      const response = await axios.get("http://localhost:4000/getLessons", {
+      const response = await axios.get("getLessons", {
         withCredentials: true,
       });
       return response.data;

@@ -19,6 +19,7 @@
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "helmet": "^8.0.0",
+    "https": "^1.0.0",
     "masterchess-backend": "file:",
     "morgan": "^1.10.0",
     "mysql2": "^3.12.0",

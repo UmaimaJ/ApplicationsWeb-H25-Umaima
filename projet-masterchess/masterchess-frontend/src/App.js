@@ -18,6 +18,10 @@ import { ComptesServiceContext, ComptesService } from "./login/service/ComptesSe
 
 import './App.css';
 
+import axios from 'axios';
+// Set a default base URL for all requests
+axios.defaults.baseURL = '/';
+
 const accueilService = new AccueilService();
 const comptesService = new ComptesService();
 const currentSessionUsager = (await comptesService.getSessionUsager())?.data?.usager ?? null;
@@ -53,6 +57,7 @@ function App() {
   };
 
   const handleJeuClick = async (event) => {
+    setPageCourante(<PageAccueil></PageAccueil>);
     setPageCourante(<PageJeu></PageJeu>);
   };
 

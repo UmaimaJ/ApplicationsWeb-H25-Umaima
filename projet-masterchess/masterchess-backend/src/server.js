@@ -1,5 +1,6 @@
 import express from "express";
-import http from "http";
+import https from "https";
+import fs from "fs";
 import mysql from "mysql2/promise";
 import cors from "cors";
 import bodyParser from "body-parser";
@@ -13,10 +14,16 @@ import ComptesService from "./comptes/ComptesService.js";
 import PartiesService from "./jeu/PartiesService.js"
 import JeuService from "./jeu/JeuService.js";
 
-const app = express(); 
-const server = http.createServer(app);
 const __filename = fileURLToPath(import.meta.url); 
 const __dirname = path.dirname(__filename);
+
+const app = express(); 
+
+const privateKey = fs.readFileSync(path.join(__dirname, 'localhost-key.pem'), 'utf8');
+const certificate = fs.readFileSync(path.join(__dirname, 'localhost.pem'), 'utf8');
+var options = { key: privateKey, cert: certificate };
+
+const server = https.createServer(options, app);
 
 const mymysql = await mysql.createConnection({
     host: "localhost",
@@ -28,7 +35,7 @@ const mymysql = await mysql.createConnection({
 });
 
 const corsOptions = { 
-    origin: 'http://localhost:3000', //< Change domain to suit your needs
+    origin: ['https://10.186.5.123:4000', 'https://10.0.0.228:4000', 'https://localhost:4000'],//https://10.186.5.123:3000', 'https://10.0.0.228:3000', 'https://localhost:3000'], //< Change domain to suit your needs
     credentials: true
 };
 
@@ -37,6 +44,10 @@ const sessionMiddleware = session({
     resave: false,
     saveUninitialized: true,
     cookie: {
+        httpOnly: false,
+        secure: true,
+        sameSite: "strict",
+        partitioned: true,
         maxAge: 1000 * 60 * 60 * 24 * 7 // (feel free to modify) max time to save (ms x min x hour x day x week)
     }
 })
@@ -49,15 +60,18 @@ server.listen(4000, function() {
     console.log("serveur fonctionne sur 4000... ! "); 
 });
 
-app.use(cors(corsOptions));
-app.use(bodyParser.json());
-app.use(sessionMiddleware);
+// reactjs serve static
+app.use(express.static(path.join(__dirname, '/../../masterchess-frontend/build'))); // this is where your built react js files are
 
+app.use(cors(corsOptions));
 app.use(function(req, res, next) {
-    res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    //res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
+    //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+
+app.use(bodyParser.json());
+app.use(sessionMiddleware);
 
 function isAuthenticated(req, res, next) {
     if (req.session.user) {
@@ -67,8 +81,8 @@ function isAuthenticated(req, res, next) {
     }
 }
 
-app.get("/", function (req, res) {
-    res.send("serveur fonctionne");
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname+'/../../masterchess-frontend/build/index.html'));
 });
 
 // gestion de session
