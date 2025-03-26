@@ -13,7 +13,7 @@ export class DisplayPartiesService {
         const params = new URLSearchParams();
         params.append("id", idPartie);
         var result = null;
-        await axios.get("http://localhost:4000/getPartie", {
+        await axios.get("getPartie", {
             params,
             withCredentials: true
         })
@@ -37,7 +37,7 @@ export class DisplayPartiesService {
         const params = new URLSearchParams();
         params.append("id", idProfil);
         var result = null;
-        await axios.get("http://localhost:4000/getProfiljeu", {
+        await axios.get("getProfiljeu", {
             params,
             withCredentials: true
         })
@@ -58,7 +58,7 @@ export class DisplayPartiesService {
     // Crée une nouvelle partie dans le serveur
     async createPartie(idprofiljeu1, idprofiljeu2) {
         var result = null;
-        await axios.post("http://localhost:4000/createPartie", {
+        await axios.post("createPartie", {
             idprofiljeu1: idprofiljeu1,
             idprofiljeu2: idprofiljeu2,
         },{

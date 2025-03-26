@@ -7,7 +7,7 @@ import React from 'react';
 export class JeuService {
     constructor(onConnection, onDisconnect, onMoveresult)
     {
-        this.io = io("http://localhost:4000", {
+        this.io = io(axios.defaults.baseURL, {
             withCredentials: true,
             autoConnect: false
         });
@@ -44,23 +44,19 @@ export class JeuService {
     // Fonction qui cherche toutes les parties en cours pour le client
     async getAllPartiesEncours()
     {
-        console.log("BEFORE");
         var result = null;
-        await axios.get("http://localhost:4000/getAllPartiesEncours", {
+        await axios.get("getAllPartiesEncours", {
             withCredentials: true
         })
         .then(function (response) {
             //handle success
             result = response.data.result;
-            console.log("SUCCESS");
         })
         .catch(function (error) {
             //handle error
-            console.log("ERROR");
             console.log(error);
         })
         .finally(function () {
-            console.log("FINALLY");
             //always executed
         });
 
@@ -73,7 +69,7 @@ export class JeuService {
         const params = new URLSearchParams();
         params.append("id", idPartie);
         var result = null;
-        await axios.get("http://localhost:4000/getPartie", {
+        await axios.get("getPartie", {
             params,
             withCredentials: true
         })
@@ -97,7 +93,7 @@ export class JeuService {
         const params = new URLSearchParams();
         params.append("id", idProfil);
         var result = null;
-        await axios.get("http://localhost:4000/getProfiljeu", {
+        await axios.get("getProfiljeu", {
             params,
             withCredentials: true
         })
@@ -118,7 +114,7 @@ export class JeuService {
     // Fonction qui demande au serveur de créer une nouvelle partie
     async createPartie(nomprofiljeu1, nomprofiljeu2) {
         var result = null;
-        await axios.post("http://localhost:4000/createPartie", {
+        await axios.post("createPartie", {
             nomprofiljeu1: nomprofiljeu1,
             nomprofiljeu2: nomprofiljeu2,
         },{
