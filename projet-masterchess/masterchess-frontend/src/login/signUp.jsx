@@ -8,12 +8,12 @@ const SignUp = () => {
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
 
-    const handleSubmit = async (event, {sessionUsager, setSessionUsager, service}) => {
+    const handleSubmit = async (event, {sessionUsager, setSessionUsager, comptesService}) => {
         event.preventDefault();
-        const success = service.postSignUp(username, password, email).success;
+        const success = comptesService.postSignUp(username, password, email).success;
         if(success)
         {
-            const json = service.getSessionUsager();
+            const json = comptesService.getSessionUsager();
             console.log("Signed up and logged in: ", json.user.compte);
             setSessionUsager(json.usager);
         }
@@ -21,12 +21,12 @@ const SignUp = () => {
 
     return (
         <ComptesServiceContext.Consumer>
-        {({sessionUsager, setSessionUsager, service}) => (
+        {({sessionUsager, setSessionUsager, comptesService}) => (
         <div className="login-container">
             <h2>Sign Up</h2>
             <form onSubmit={(event) => {
                     event.preventDefault();
-                    handleSubmit(event, {sessionUsager, setSessionUsager, service});
+                    handleSubmit(event, {sessionUsager, setSessionUsager, comptesService});
                 }}>
                 <div className="form-group">
                     <label htmlFor="username">Username:</label>
