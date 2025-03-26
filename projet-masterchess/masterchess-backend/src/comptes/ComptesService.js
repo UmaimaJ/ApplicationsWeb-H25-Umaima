@@ -24,8 +24,8 @@ class ComptesService {
     async insertUsager(username, password, email, sessionId)
     {
         // Insert the new user along with the session ID into the database
-        const [results] = await mymysql.query(
-            'INSERT INTO usager (compte, motdepasse, courriel, datecreation, session_id) VALUES (?, ?, ?, NOW(), ?)',
+        const [results] = await this.mysql.query(
+            'INSERT INTO usager (compte, motdepasse, courriel, datecreation, sessionid) VALUES (?, ?, ?, NOW(), ?);',
             [username, password, email, sessionId]
         );
 
