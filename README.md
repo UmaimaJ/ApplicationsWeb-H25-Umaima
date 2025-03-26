@@ -18,12 +18,7 @@ Il faut aussi déployer le scripte /ressources/projet_chess(version).sql dans la
 ## Exécuter
 Pour démarrer le projet backend:
 ```
-npm run start -w masterchess-backend
-```
-
-Pour démarrer le projet frontend:
-```
-npm run start -w masterchess-frontend
+npm run start
 ```
 
 Accédez à http://localhost:3000.
