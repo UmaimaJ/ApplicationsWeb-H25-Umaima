@@ -16,7 +16,7 @@ npm install
 Il faut aussi déployer le scripte /ressources/projet_chess(version).sql dans la base de données en l'exécutant soit à l'aide de Workbench soit dans un client de votre choix.
 
 ## Exécuter
-Pour démarrer le projet backend:
+Pour démarrer le projet en développement:
 ```
 npm run start
 ```
