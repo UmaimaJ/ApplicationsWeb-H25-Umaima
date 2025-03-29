@@ -26,11 +26,10 @@ export class JeuService {
     }
 
     // Fonction qui permet a un utilisateur de partir une session wesockets
-    async connectPartie(partieId, profiljeuId)
+    async connectPartie(partieId)
     {
         this.io.io.opts.query = {
-            partieId: partieId,
-            profiljeuId: profiljeuId
+            partieId: partieId
          };
         this.io.disconnect().connect();
     }

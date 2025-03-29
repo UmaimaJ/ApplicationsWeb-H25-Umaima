@@ -169,7 +169,7 @@ class JeuService{
                 id: partie.id,
                 historiquetables: gameCopy.fen(),
                 statut: gameCopy.isGameOver() ? 2 : 1,
-                id_gagnant: gameCopy.isCheckmate() ? (gameCopy.turn() == 'w' ? partie.id_joueur1 : partie.id_joueur2) : null,
+                id_gagnant: gameCopy.isCheckmate() ? (gameCopy.turn() == 'w' ? partie.id_joueur2 : partie.id_joueur1) : null,
                 id_joueurcourant: gameCopy.turn() == 'w' ? partie.id_joueur1 : partie.id_joueur2
             };
             await this.updateMovePartie(partieMoveDelta);
