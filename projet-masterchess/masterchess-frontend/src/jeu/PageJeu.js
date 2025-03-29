@@ -1,8 +1,9 @@
 import { createContext, useContext } from 'react';
 import React from 'react';
 
+import { toDests, pieceMap } from './utilJeu.js';
 import { Chessboard } from "react-chessboard";
-import { Chess } from "chess.js";
+import { Chess, Move, SQUARES } from "chess.js";
 
 import rectangle from "../style/rectangle.svg";
 import timericon from "../style/timer-icon.svg";
@@ -13,6 +14,7 @@ import './PageJeu.css';
 import DisplayPartieComponent from "./components/DisplayPartieComponent";
 
 import { JeuServiceContext, JeuService } from "./service/JeuService";
+import { ComptesServiceContext } from "../login/service/ComptesService.js"
 import { DisplayPartiesServiceContext, DisplayPartiesService } from './service/DisplayPartiesService';
 
 class PageJeu extends React.Component {
@@ -45,8 +47,9 @@ class PageJeu extends React.Component {
             enListe: true,
             connected: false,
             partie: null,
-            profiljeuCourantId: 1,
-            partiesEncours: null
+            partiesEncours: null,
+            gagnant: null,
+            choixPromotion: null
         }
 
     }
@@ -57,6 +60,7 @@ class PageJeu extends React.Component {
 
     async componentDidMount()
     {
+        console.log(this.context);
         if(this.state.enListe)
         {
             await this.updatePartiesEncours();
@@ -86,12 +90,13 @@ class PageJeu extends React.Component {
     
             if(partie)
             {
-                await this.state.jeuService.connectPartie(partie.id, this.state.profiljeuCourantId);
+                await this.state.jeuService.connectPartie(partie.id);
                 this.setState({
                     game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
                     partie: partie,
                     profiljeu1: profiljeu1,
                     profiljeu2: profiljeu2,
+                    gagnant: partie.id_gagnant
                 });
             }
             else
@@ -102,6 +107,7 @@ class PageJeu extends React.Component {
                     partie: null,
                     profiljeu1: null,
                     profiljeu2: null,
+                    gagnant: null
                 });
             }
         }
@@ -147,8 +153,6 @@ class PageJeu extends React.Component {
             while(moveframe = this.moveQueue.pop())
             {
                 if(moveframe) await this.simulateMove(moveframe);
-                console.log("test")
-                console.log(moveframe);
             }
         }
     }
@@ -181,14 +185,13 @@ class PageJeu extends React.Component {
 
     async makeAMove(move)
     {
-        if(this.state?.connected)
+        if(this.state.connected)
         {
             const data = {
                 partieId: this.state.partie.id,
                 profiljeuId: this.state.profiljeu1.id,
                 move: move
             };
-
             this.state.jeuService.io.emit("move", { data: data });
         }
     }
@@ -198,7 +201,20 @@ class PageJeu extends React.Component {
         try
         {
             const result = gameCopy.move(move);
-            this.setState({ game: gameCopy });
+            await this.setStateAsync({ game: gameCopy });
+            await this.thinkJoueurCourant();
+            if(this.state.game.isCheckmate())
+            {
+                const gagnant = this.state.game.turn() == "b" ? this.state.profiljeu1.id : this.state.profiljeu2.id;
+                this.setState({
+                    gagnant: gagnant,
+                    partie: {
+                        ...this.state.partie,
+                        id_gagnant: gagnant
+                    }
+                });
+                await this.thinkJoueurCourant();
+            }
             return result; // null if cant move
         }
         catch(err)
@@ -209,17 +225,28 @@ class PageJeu extends React.Component {
         
     }
 
-    async onJeuPieceDrop(sourceSquare, targetSquare)
+    async thinkJoueurCourant()
     {
-        const move = await this.makeAMove({
+        const joueurCourantId = this.state.partie.id_joueurcourant != this.state.partie.id_joueur1 ? this.state.partie.id_joueur1 : this.state.partie.id_joueur2;
+        this.setState(
+            {
+                partie: {
+                    ...this.state.partie,
+                    id_joueurcourant: joueurCourantId
+                }
+            }
+        );
+    }
+
+    async onJeuPieceDrop(sourceSquare, targetSquare, piece)
+    {
+        const promotion = pieceMap[piece];
+
+        await this.makeAMove({
             from: sourceSquare,
-            to: targetSquare
+            to: targetSquare,
+            promotion: promotion
         });
-
-        if(!move)
-            return false;
-
-        return true;
     }
 
     async onBtnCreer()
@@ -299,55 +326,71 @@ class PageJeu extends React.Component {
         }
         return (
             // Rendre disponnible la service avec le contexte
-            <JeuServiceContext.Provider value={ { service: this.state.jeuService} }>
-                <div class="jeu-container">
-                    <div class="playpage-game">
-                        <div class="playpage-infobar">
-                            <div class="playpage-profile left clear">
-                                <div class="playpage-profile-pfp">
-                                    <img class="playpage-profile-pfp-icon" src={rectangle} />
+            <ComptesServiceContext.Consumer>
+            {({sessionUsager, setSessionUsager, comptesService}) => (
+                <JeuServiceContext.Provider value={ { service: this.state.jeuService} }>
+                    <div class="jeu-container">
+                        <div class="playpage-game">
+                            <div class="playpage-infobar">
+                                <div class="playpage-profile left clear" style={ !this.state.gagnant ? {backgroundColor: this.state.partie.id_joueurcourant != sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                    <div class="playpage-profile-pfp">
+                                        <img class="playpage-profile-pfp-icon" src={rectangle} />
+                                    </div>
+                                    <div class="playpage-profile-userdata">
+                                        <label class="playpage-profile-username">{(this.state.profiljeu1.id == sessionUsager.id_profiljeu ? this.state.profiljeu2 : this.state.profiljeu1)?.compte ?? "<blank>"}</label>
+                                        <label class="playpage-profile-userinfo">Joueur 2</label>
+                                    </div>
                                 </div>
-                                <div class="playpage-profile-userdata">
-                                    <label class="playpage-profile-username">{this.state.profiljeu2?.compte ?? "<blank>"}</label>
-                                    <label class="playpage-profile-userinfo">Joueur 2</label>
-                                </div>
+                                { (this.state.gagnant != null) &&
+                                    (<div class="playpage-timer right">
+                                        <>
+                                            <label class="playpage-timer-label">{this.state.gagnant != sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
+                                        </>
+                                    </div>
+                                )}
                             </div>
-                            <div class="playpage-timer right">
-                                <img class="playpage-timer-icon" src={timericon} />
-                                <label class="playpage-timer-label">3:15</label>
+                            <div className="playpage-game-board board">
+                                <Chessboard id="BasicBoard" position={this.state.game?.fen() ?? ""} onPieceDrop={this.onJeuPieceDrop} boardOrientation={sessionUsager.id_profiljeu == this.state.profiljeu1.id? "white" : "black"}/>
+                            </div>
+                            <div class="playpage-infobar">
+                                <div class="playpage-profile left clear" style={ !this.state.gagnant ? {backgroundColor: this.state.partie.id_joueurcourant == sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                    <div class="playpage-profile-pfp">
+                                        <img class="playpage-profile-pfp-icon" src={rectangle} />
+                                    </div>
+                                    <div class="playpage-profile-userdata">
+                                        <label class="playpage-profile-username">{(this.state.profiljeu1.id == sessionUsager.id_profiljeu? this.state.profiljeu1 : this.state.profiljeu2)?.compte ?? "<blank>"}</label>
+                                        <label class="playpage-profile-userinfo">Joueur 1</label>
+                                    </div>
+                                </div>
+                                { (this.state.gagnant != null) &&
+                                    (<div class="playpage-timer right">
+                                        <>
+                                            <label class="playpage-timer-label">{this.state.gagnant == sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
+                                        </>
+                                    </div>
+                                )}
                             </div>
                         </div>
-                        <div class="playpage-game-board">
-                            <Chessboard id="BasicBoard" position={this.state.game?.fen() ?? ""} onPieceDrop={this.onJeuPieceDrop}/>
-                        </div>
-                        <div class="playpage-infobar">
-                            <div class="playpage-profile left clear">
-                                <div class="playpage-profile-pfp">
-                                    <img class="playpage-profile-pfp-icon" src={rectangle} />
-                                </div>
-                                <div class="playpage-profile-userdata">
-                                    <label class="playpage-profile-username">{this.state.profiljeu1?.compte ?? "<blank>"}</label>
-                                    <label class="playpage-profile-userinfo">Joueur 1</label>
-                                </div>
-                            </div>
-                            <div class="playpage-timer right">
-                                <img class="playpage-timer-icon" src={timericon} />
-                                <label class="playpage-timer-label">3:15</label>
+                        <div class="my-sidebar">
+                            <button class="btn-retourner" onClick={this.onBtnOuvrirListe}>Retourner</button>
+                            <div class="move-info-panel">
+                                {this.state.game?.history({ verbose: true }).map((entry, i) =>
+                                    <label style={{color: (entry.color === 'w'? 'white' : "black"), backgroundColor: "grey"}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} from: {entry.from} to: {entry.to}
+                                    </label>)}
                             </div>
                         </div>
                     </div>
-                    <div class="my-sidebar">
-                        <button class="btn-retourner" onClick={this.onBtnOuvrirListe}>Retourner</button>
-                        <div class="move-info-panel">
-                            {this.state.game?.history({ verbose: true }).map((entry, i) =>
-                                <label style={{color: (entry.color === 'w'? 'white' : "black"), backgroundColor: "grey"}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} from: {entry.from} to: {entry.to}
-                                </label>)}
-                        </div>
-                    </div>
-                </div>           
-            </JeuServiceContext.Provider>
+                </JeuServiceContext.Provider>
+            )}
+            </ComptesServiceContext.Consumer>
         );
     }
+
+    async setStateAsync(newState) {
+        return new Promise((resolve) => {
+            this.setState(newState, resolve);
+        });
+    };
    
 }
 
