@@ -128,7 +128,7 @@ app.post("/signup", async function (req, res) {
         const user = await comptesService.selectUsager(username);
 
         // Set session data
-        req.session.user = { id: user.id, username: user.compte, usager: req.session.user };
+        req.session.user = { id: user.id, username: user.compte, usager: user };
 
         res.json({ success: true, message: 'User registered successfully' });
     } catch (error) {
