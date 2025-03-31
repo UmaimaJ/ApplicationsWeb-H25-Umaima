@@ -11,7 +11,7 @@ class PartiesService
             SELECT partie.id AS id, partie.id_joueur1 AS id_joueur1, partie.id_joueur2 AS id_joueur2, partie.historiquetables AS historiquetables, partie.statut AS statut, partie.id_gagnant AS id_gagnant, partie.datedebut AS datedebut, partie.datefin AS datefin, partie.id_joueurcourant AS id_joueurcourant,
             u1.compte AS compte_joueur1, u2.compte AS compte_joueur2,
             ug.compte AS compte_gagnant,
-            ug.compte AS compte_courant
+            uc.compte AS compte_courant
             FROM partie
             LEFT JOIN profiljeu AS pj1 ON partie.id_joueur1 = pj1.id
             LEFT JOIN usager AS u1 ON pj1.id_usager = u1.id
