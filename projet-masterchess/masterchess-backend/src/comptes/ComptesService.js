@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 class ComptesService {
     constructor(mysqlConnection)
     {
@@ -7,7 +9,7 @@ class ComptesService {
     async selectUsager(compte)
     {
         const [results] = await this.mysql.query(`
-            SELECT usager.id, compte, motdepasse, id_groupeprivileges, datecreation, courriel, sessionid, pj.points, pj.elo, pj.datedernierjeu, pj.id AS id_profiljeu
+            SELECT usager.id, compte, motdepasse, id_groupeprivileges, datecreation, courriel, pays, sessionid, pj.points, pj.elo, pj.datedernierjeu, pj.id AS id_profiljeu
             FROM usager
             LEFT JOIN profiljeu AS pj ON usager.id = pj.id_usager
             WHERE usager.compte = ?;
@@ -21,12 +23,12 @@ class ComptesService {
         return null;
     }
 
-    async insertUsager(username, password, email, sessionId)
+    async insertUsager(username, password, email, country_code, sessionId)
     {
         // Insert the new user along with the session ID into the database
         const [results] = await this.mysql.query(
-            'INSERT INTO usager (compte, motdepasse, courriel, datecreation, sessionid) VALUES (?, ?, ?, NOW(), ?);',
-            [username, password, email, sessionId]
+            'INSERT INTO usager (compte, motdepasse, courriel, pays, datecreation, sessionid) VALUES (?, ?, ?, ?, NOW(), ?);',
+            [username, password, email, country_code, sessionId]
         );
 
         return results;
@@ -41,6 +43,25 @@ class ComptesService {
             `, [sessionId, compte]);
 
         return true;
+    }
+
+    async getCountryCode(ip)
+    {
+        var country_code = null;
+        try{
+            const response = await axios.get("http://ip-api.com/json/" + ip + "?fields=49154",
+                {
+                    proxy: false
+                }
+            );
+            country_code = response.data.countryCode;
+        }
+        catch(err)
+        {
+            console.error(err);
+        };
+
+        return country_code;
     }
 };
 

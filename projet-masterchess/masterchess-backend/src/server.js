@@ -69,6 +69,7 @@ app.use(function(req, res, next) {
     //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+app.set("trust proxy", true);
 
 app.use(bodyParser.json());
 app.use(sessionMiddleware);
@@ -120,9 +121,12 @@ app.post("/signup", async function (req, res) {
     try {
         // Generate a session ID
         const sessionId = req.sessionID;
+    
+        // Get country code by api
+        var country_code = await comptesService.getCountryCode(req.ip.split("::ffff:")[1]);
 
         // Insert into the database the user
-        const results = await  comptesService.insertUsager(username, password, email, sessionId);
+        const results = await comptesService.insertUsager(username, password, email, country_code, sessionId);
 
         // Retrieve the newly created user
         const user = await comptesService.selectUsager(username);
