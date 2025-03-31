@@ -13,6 +13,7 @@ import { fileURLToPath } from "url";
 import ComptesService from "./comptes/ComptesService.js";
 import PartiesService from "./jeu/PartiesService.js"
 import JeuService from "./jeu/JeuService.js";
+import ServiceCours from "./cours/ServiceCours.js";
 
 const __filename = fileURLToPath(import.meta.url); 
 const __dirname = path.dirname(__filename);
@@ -55,7 +56,7 @@ const sessionMiddleware = session({
 const jeuService = new JeuService(server, await mymysql, sessionMiddleware, corsOptions);
 const partiesService = new PartiesService(await mymysql);
 const comptesService = new ComptesService(await mymysql);
-
+const serviceCours = new ServiceCours(mymysql);
 server.listen(4000, function() {
     console.log("serveur fonctionne sur 4000... ! "); 
 });
@@ -174,3 +175,15 @@ app.post("/createPartie", isAuthenticated, async function (req, res, err) {
     const resultat = await jeuService.createPartie(req.body.nomprofiljeu1, req.body.nomprofiljeu2);
     res.send({ success: true, message: 'Data requested', result: resultat});
 });
+
+
+// Cours
+app.get("/getLessons", async (req, res) => {
+    try {
+      const lessons = await serviceCours.getAllLessons();
+      res.json(lessons);
+    } catch (error) {
+      console.error("Erreur dans /getLessons:", error);
+      res.status(500).json({ error: "Erreur lors de la récupération des cours." });
+    }
+  });
