@@ -30,17 +30,15 @@ class ComptesService {
                 (compte,
                 motdepasse,
                 courriel,
-                pays,
                 datecreation,
                 sessionid)
                 VALUES
                 (?,
                 ?,
                 ?,
-                ?,
                 NOW(),
                 ?);`,
-            [username, password, email, country_code, sessionId]
+            [username, password, email, sessionId]
         );
 
         await this.mysql.query(
