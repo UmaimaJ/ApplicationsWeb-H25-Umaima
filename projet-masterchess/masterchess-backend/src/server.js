@@ -36,7 +36,7 @@ const mymysql = await mysql.createConnection({
 });
 
 const corsOptions = { 
-    origin: ['https://10.186.5.123:4000', 'https://10.0.0.228:4000', 'https://localhost:4000'],//https://10.186.5.123:3000', 'https://10.0.0.228:3000', 'https://localhost:3000'], //< Change domain to suit your needs
+    origin: ['https://10.186.5.123:4000', 'https://10.0.0.228:4000', 'https://localhost:4000'],//< Change domain to suit your needs
     credentials: true
 };
 
@@ -53,12 +53,12 @@ const sessionMiddleware = session({
     }
 })
 
-const jeuService = new JeuService(server, await mymysql, sessionMiddleware, corsOptions);
-const partiesService = new PartiesService(await mymysql);
-const comptesService = new ComptesService(await mymysql);
+const jeuService = new JeuService(server, mymysql, sessionMiddleware, corsOptions);
+const partiesService = new PartiesService(mymysql);
+const comptesService = new ComptesService(mymysql);
 const serviceCours = new ServiceCours(mymysql);
 server.listen(4000, function() {
-    console.log("serveur fonctionne sur 4000... ! "); 
+    console.log("masterchess-backend en service sur https://localhost:4000");
 });
 
 // reactjs serve static
@@ -84,7 +84,7 @@ function isAuthenticated(req, res, next) {
 }
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname+'/../../masterchess-frontend/build/index.html'));
+    res.sendFile(path.join(__dirname+'/static/index.html'));
 });
 
 // gestion de session
@@ -94,18 +94,15 @@ app.post('/login', async function (req, res) {
     try {
         const user = await comptesService.selectUsager(username);
         if (user) {
-            //console.log('User:', user); // Log the user object
-            //console.log('Input Password:', password); // Log the input password
-            //console.log('Stored Password:', user.motdepasse); // Log the stored password
             if (password.trim() === user.motdepasse.trim()) {
                 req.session.user = { id: user.id, username: user.compte, usager: user };
                 delete req.session.user.usager.motdepasse;
                 comptesService.updateSessionUsager(username, req.session.id);
                 req.session.save();
                 res.json({ success: true, message: 'Login successful', session_id: req.sessionID, cookie: req.session.cookie });
-                console.log('Logged in session data:', req.session.user.usager.compte); // Log the stored password
+                console.log('Logged in:', req.session.user.usager.compte); // Log the stored password
             } else {
-                console.log('Invalid password:', user.motdepasse); // Log the password
+                console.log('Invalid password:', user.compte); // Log the invalid attempt
                 res.json({ success: false, message: 'Invalid password'});
             }
         } else {
