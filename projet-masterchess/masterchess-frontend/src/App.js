@@ -15,6 +15,8 @@ import PageCours from "./cours/PageCours.jsx";
 import { useState, useEffect } from 'react';
 import { AccueilServiceContext, AccueilService } from "./accueil/service/AccueilService.js";
 import { ComptesServiceContext, ComptesService } from "./login/service/ComptesService.js";
+import { ServiceCoursContext } from "./cours/service/ServiceCours";
+
 
 import './App.css';
 
