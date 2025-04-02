@@ -101,6 +101,12 @@
     line-height: normal;
 }
 
+.playpage-profile .playpage-profile-userdata .playpage-profile-userflag
+{
+    width: 20px;
+    height: 10px;
+}
+
 /*Playpage timer*/
 .playpage-timer {
     display: flex;

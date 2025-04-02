@@ -5,6 +5,8 @@ import { toDests, pieceMap } from './utilJeu.js';
 import { Chessboard } from "react-chessboard";
 import { Chess, Move, SQUARES } from "chess.js";
 
+import { findFlagUrlByIso2Code } from "country-flags-svg";
+
 import rectangle from "../style/rectangle.svg";
 import timericon from "../style/timer-icon.svg";
 import board from "../style/board.svg";
@@ -47,6 +49,10 @@ class PageJeu extends React.Component {
             enListe: true,
             connected: false,
             partie: null,
+            profiljeu1: null,
+            profiljeu2: null,
+            profiljeuUp: null,
+            profiljeuDown: null,
             partiesEncours: null,
             gagnant: null,
             choixPromotion: null
@@ -60,7 +66,6 @@ class PageJeu extends React.Component {
 
     async componentDidMount()
     {
-        console.log(this.context);
         if(this.state.enListe)
         {
             await this.updatePartiesEncours();
@@ -69,7 +74,7 @@ class PageJeu extends React.Component {
 
     async componentWillUnmount()
     {
-        await this.updatePartie(null);
+        // await this.updatePartie(null, null);
     }
 
     async updatePartiesEncours()
@@ -80,22 +85,27 @@ class PageJeu extends React.Component {
         });
     }
 
-    async updatePartie(idPartie)
+    async updatePartie(idPartie, sessionUsager)
     {
         if(idPartie)
         {
             const partie = await this.state.jeuService.getPartie(idPartie);
-            const profiljeu1 = await this.state.jeuService.getProfiljeu(partie?.id_joueur1);
-            const profiljeu2 = await this.state.jeuService.getProfiljeu(partie?.id_joueur2);
     
             if(partie)
             {
+                const profiljeu1 = await this.state.jeuService.getProfiljeu(partie?.id_joueur1);
+                const profiljeu2 = await this.state.jeuService.getProfiljeu(partie?.id_joueur2);
+                const profiljeuUp = (profiljeu1?.id == sessionUsager.id_profiljeu ? profiljeu2 : profiljeu1);
+                const profiljeuDown = (profiljeu1?.id != sessionUsager.id_profiljeu ? profiljeu2 : profiljeu1);
+
                 await this.state.jeuService.connectPartie(partie.id);
                 this.setState({
                     game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
                     partie: partie,
                     profiljeu1: profiljeu1,
                     profiljeu2: profiljeu2,
+                    profiljeuUp: profiljeuUp,
+                    profiljeuDown: profiljeuDown,
                     gagnant: partie.id_gagnant
                 });
             }
@@ -107,6 +117,8 @@ class PageJeu extends React.Component {
                     partie: null,
                     profiljeu1: null,
                     profiljeu2: null,
+                    profiljeuUp: null,
+                    profiljeuDown: null,
                     gagnant: null
                 });
             }
@@ -119,6 +131,9 @@ class PageJeu extends React.Component {
                 partie: null,
                 profiljeu1: null,
                 profiljeu2: null,
+                profiljeuUp: null,
+                profiljeuDown: null,
+                gagnant: null
             });
         }
             
@@ -261,9 +276,9 @@ class PageJeu extends React.Component {
         }
     }
 
-    async onBtnOuvrirPartie(idPartie)
+    async onBtnOuvrirPartie(idPartie, sessionUsager)
     {
-        await this.updatePartie(idPartie);
+        await this.updatePartie(idPartie, sessionUsager);
         this.setState({
             enListe: false
         });
@@ -271,7 +286,7 @@ class PageJeu extends React.Component {
 
     async onBtnOuvrirListe()
     {
-        await this.updatePartie(null);
+        await this.updatePartie(null, null);
         this.setState({
             enListe: true
         });
@@ -286,46 +301,50 @@ class PageJeu extends React.Component {
         if(this.state.enListe)
         {
             return (
-                <div class="panneau-parties-container">
-                    <div class="panneau-parties-header">
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" style={ { width: 125} } id="basic-addon1">First player</span>
+                <ComptesServiceContext.Consumer>
+                {({sessionUsager, setSessionUsager, comptesService}) => (
+                    <div class="panneau-parties-container">
+                        <div class="panneau-parties-header">
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style={ { width: 125} } id="basic-addon1">First player</span>
+                                </div>
+                                <input id="nomprofiljeu1Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"></input>
                             </div>
-                            <input id="nomprofiljeu1Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"></input>
-                        </div>
-                        <div class="input-group mb-3">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text" style={ { width: 125} } id="basic-addon2">Second player</span>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" style={ { width: 125} } id="basic-addon2">Second player</span>
+                                </div>
+                                <input id="nomprofiljeu2Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon2"></input>
                             </div>
-                            <input id="nomprofiljeu2Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon2"></input>
+                            <button id="btnCreer" class="buttonCreate" onClick={this.onBtnCreer}>Create match</button>
+                            <button id="btnRefreshParties" class="buttonRefresh" onClick={this.onBtnRefreshPartiesEncours}>Refresh</button>
                         </div>
-                        <button id="btnCreer" class="buttonCreate" onClick={this.onBtnCreer}>Create match</button>
-                        <button id="btnRefreshParties" class="buttonRefresh" onClick={this.onBtnRefreshPartiesEncours}>Refresh</button>
+                        <DisplayPartiesServiceContext.Provider value={ { service: this.state.displayPartiesService } }>
+                        <div class="liste-parties">
+                            <table class="table table-hover table-dark">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Identifier</th>
+                                        <th scope="col">Player one</th>
+                                        <th scope="col">Player two</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                {Object.values(this.state.partiesEncours ? this.state.partiesEncours : [] ).map((entry, i) =>
+                                    <DisplayPartieComponent key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => this.onBtnOuvrirPartie(entry.id, sessionUsager) }></DisplayPartieComponent>)}
+                                </tbody>
+                            </table>
+                            <div class="liste-parties-soak"></div>
+                        </div>
+                        </DisplayPartiesServiceContext.Provider>
                     </div>
-                    <DisplayPartiesServiceContext.Provider value={ { service: this.state.displayPartiesService } }>
-                    <div class="liste-parties">
-                        <table class="table table-hover table-dark">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Identifier</th>
-                                    <th scope="col">Player one</th>
-                                    <th scope="col">Player two</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {Object.values(this.state.partiesEncours ? this.state.partiesEncours : [] ).map((entry, i) =>
-                                <DisplayPartieComponent key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => this.onBtnOuvrirPartie(entry.id) }></DisplayPartieComponent>)}
-                            </tbody>
-                        </table>
-                        <div class="liste-parties-soak"></div>
-                    </div>
-                    </DisplayPartiesServiceContext.Provider>
-                </div>
+                )}
+                </ComptesServiceContext.Consumer>
             );
         }
         return (
-            // Rendre disponnible la service avec le contexte
+            // Rendre disponnible le service avec le contexte
             <ComptesServiceContext.Consumer>
             {({sessionUsager, setSessionUsager, comptesService}) => (
                 <JeuServiceContext.Provider value={ { service: this.state.jeuService} }>
@@ -337,8 +356,9 @@ class PageJeu extends React.Component {
                                         <img class="playpage-profile-pfp-icon" src={rectangle} />
                                     </div>
                                     <div class="playpage-profile-userdata">
-                                        <label class="playpage-profile-username">{(this.state.profiljeu1.id == sessionUsager.id_profiljeu ? this.state.profiljeu2 : this.state.profiljeu1)?.compte ?? "<blank>"}</label>
-                                        <label class="playpage-profile-userinfo">Joueur 2</label>
+                                        <label class="playpage-profile-username">{this.state.profiljeuUp?.compte ?? "<blank>"}</label>
+                                        <label class="playpage-profile-userinfo">{this.state.profiljeuUp?.elo ?? "sans placement"}</label>
+                                        <img className="playpage-profile-userflag" src={findFlagUrlByIso2Code(this.state.profiljeuUp?.pays ?? "")}></img>
                                     </div>
                                 </div>
                                 { (this.state.gagnant != null) &&
@@ -358,8 +378,9 @@ class PageJeu extends React.Component {
                                         <img class="playpage-profile-pfp-icon" src={rectangle} />
                                     </div>
                                     <div class="playpage-profile-userdata">
-                                        <label class="playpage-profile-username">{(this.state.profiljeu1.id == sessionUsager.id_profiljeu? this.state.profiljeu1 : this.state.profiljeu2)?.compte ?? "<blank>"}</label>
-                                        <label class="playpage-profile-userinfo">Joueur 1</label>
+                                        <label class="playpage-profile-username">{this.state.profiljeuDown?.compte ?? "<blank>"}</label>
+                                        <label class="playpage-profile-userinfo">{this.state.profiljeuDown?.elo ?? "sans placement"}</label>
+                                        <img className="playpage-profile-userflag" src={findFlagUrlByIso2Code(this.state.profiljeuDown?.pays ?? "")}></img>
                                     </div>
                                 </div>
                                 { (this.state.gagnant != null) &&
