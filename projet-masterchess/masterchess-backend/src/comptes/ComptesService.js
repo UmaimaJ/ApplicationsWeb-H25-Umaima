@@ -61,6 +61,11 @@ class ComptesService {
             console.error(err);
         };
 
+        if(!country_code)
+        {
+            country_code = "CA";
+        }
+
         return country_code;
     }
 };
