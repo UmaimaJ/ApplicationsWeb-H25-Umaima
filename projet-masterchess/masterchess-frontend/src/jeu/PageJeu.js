@@ -190,6 +190,12 @@ class PageJeu extends React.Component {
     {
         if(this.state.connected)
         {
+            if(this.moveQueue.length > 0)
+                return;
+
+            if(this.state.partie?.id_joueurcourant != this.state.profiljeuDown?.id)
+                return;
+
             const data = {
                 partieId: this.state.partie.id,
                 profiljeuId: this.state.profiljeu1.id,
