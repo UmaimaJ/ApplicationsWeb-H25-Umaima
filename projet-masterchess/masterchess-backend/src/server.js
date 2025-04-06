@@ -173,7 +173,7 @@ app.get("/getProfiljeu", isAuthenticated, async function (req, res, err) {
 });
 
 app.post("/createPartie", isAuthenticated, async function (req, res, err) {
-    const resultat = await jeuService.createPartie(req.body.nomprofiljeu1, req.body.nomprofiljeu2);
+    const resultat = await partiesService.createPartie(req.body.nomprofiljeu1, req.body.nomprofiljeu2);
     res.send({ success: true, message: 'Data requested', result: resultat});
 });
 

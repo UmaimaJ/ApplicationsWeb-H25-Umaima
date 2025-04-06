@@ -8,6 +8,7 @@ import rectangle from "./style/rectangle.svg";
 
 import Login from "./login/login.jsx";
 import SignUp from "./login/signUp.jsx";
+import PageListeJeux from "./jeu/PageListeJeux.jsx"
 import PageJeu from "./jeu/PageJeu.js";
 import PageAccueil from "./accueil/PageAccueil.jsx";
 import PageCours from "./cours/PageCours.jsx";
@@ -17,23 +18,24 @@ import { AccueilServiceContext, AccueilService } from "./accueil/service/Accueil
 import { ComptesServiceContext, ComptesService } from "./login/service/ComptesService.js";
 import { ServiceCoursContext } from "./cours/service/ServiceCours";
 
-
 import './App.css';
 
 import axios from 'axios';
 // Set a default base URL for all requests
 axios.defaults.baseURL = '/';
 
-const accueilService = new AccueilService();
-const comptesService = new ComptesService();
-const currentSessionUsager = (await comptesService.getSessionUsager())?.data?.usager ?? null;
-
 function App() {
+  const accueilService = new AccueilService();
+  const comptesService = new ComptesService();
+
   const [pageCourante, setPageCourante] = useState(<PageAccueil></PageAccueil>);
-  const [sessionUsager, setSessionUsager] = useState(currentSessionUsager);
+  const [sessionUsager, setSessionUsager] = useState(null);
 
   useEffect(() => {
-    setSessionUsager(JSON.parse(window.sessionStorage.getItem("sessionUsager")));
+    const str = window.sessionStorage.getItem("sessionUsager");
+    const result = JSON.parse(str !== "undefined" ? str : null );
+    const currentSessionUsager = (comptesService.getSessionUsager())?.data?.usager ?? null;
+    setSessionUsager(result?? currentSessionUsager);
   }, []);
 
   useEffect(() => {
@@ -59,8 +61,7 @@ function App() {
   };
 
   const handleJeuClick = async (event) => {
-    setPageCourante(<PageAccueil></PageAccueil>);
-    setPageCourante(<PageJeu></PageJeu>);
+    setPageCourante(<PageListeJeux></PageListeJeux>);
   };
 
   const handleLearnClick = async (event) => {

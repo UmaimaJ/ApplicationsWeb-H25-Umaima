@@ -12,16 +12,16 @@ export class JeuService {
             autoConnect: false
         });
 
-        this.io.on("connect", (socket) => {
-            onConnection();
+        this.io.on("connect", async (socket) => {
+            await onConnection();
         });
 
-        this.io.on("disconnect", (socket) => {
-            onDisconnect();
+        this.io.on("disconnect", async (socket) => {
+            await onDisconnect();
         });
 
-        this.io.on("moveresult", (data) => {
-            onMoveresult(data);
+        this.io.on("moveresult", async (data) => {
+            await onMoveresult(data);
         });
     }
 
@@ -109,34 +109,13 @@ export class JeuService {
         });
         return result;
     }
-
-    // Fonction qui demande au serveur de créer une nouvelle partie
-    async createPartie(nomprofiljeu1, nomprofiljeu2) {
-        var result = null;
-        await axios.post("createPartie", {
-            nomprofiljeu1: nomprofiljeu1,
-            nomprofiljeu2: nomprofiljeu2,
-        },{
-            withCredentials: true
-        })
-        .then(function (response) {
-            //handle success
-            result = response.data.result;
-        })
-        .catch(function (error) {
-            //handle error
-            console.log(error);
-        })
-        .finally(function () {
-            //always executed
-        });
-        return result;
-    }
 };
 
 // Contexte global qui contient la service au but de IoD dans l'ensemble du code qui en a besoin
 export const JeuServiceContext = React.createContext(
     {
-        service: null
+        partie: null,
+        setPartie: async () => {},
+        jeuService: null
     }
 );

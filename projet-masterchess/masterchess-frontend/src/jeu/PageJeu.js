@@ -18,6 +18,8 @@ import DisplayPartieComponent from "./components/DisplayPartieComponent";
 import { JeuServiceContext, JeuService } from "./service/JeuService";
 import { ComptesServiceContext } from "../login/service/ComptesService.js"
 import { DisplayPartiesServiceContext, DisplayPartiesService } from './service/DisplayPartiesService';
+import { AccueilServiceContext } from '../accueil/service/AccueilService.js';
+import PageListeJeux from './PageListeJeux.jsx';
 
 class PageJeu extends React.Component {
 
@@ -25,64 +27,40 @@ class PageJeu extends React.Component {
     {
         super(props);
 
-        this.onJeuPieceDrop = this.onJeuPieceDrop.bind(this);
-        this.onBtnCreer = this.onBtnCreer.bind(this);
-        this.onBtnOuvrirPartie = this.onBtnOuvrirPartie.bind(this);
-        this.onBtnOuvrirListe = this.onBtnOuvrirListe.bind(this);
-        this.onBtnRefreshPartiesEncours = this.onBtnRefreshPartiesEncours.bind(this);
-        
         this.onConnect = this.onConnect.bind(this);
         this.onDisconnect = this.onDisconnect.bind(this);
         this.onMoveresult = this.onMoveresult.bind(this);
-
+        this.onJeuPieceDrop = this.onJeuPieceDrop.bind(this);
         this.moveQueueThink = this.moveQueueThink.bind(this);
         this.moveQueueThinkId = null;
         this.moveQueue = [];
 
-        const displayPartiesService = new DisplayPartiesService();
         const jeuService = new JeuService(this.onConnect, this.onDisconnect, this.onMoveresult);
 
         this.state = {
-            game: new Chess(),
             jeuService: jeuService,
-            displayPartiesService: displayPartiesService,
-            enListe: true,
             connected: false,
             partie: null,
+            game: null,
             profiljeu1: null,
             profiljeu2: null,
             profiljeuUp: null,
             profiljeuDown: null,
-            partiesEncours: null,
-            gagnant: null,
-            choixPromotion: null
+            gagnant: null
         }
 
-    }
+        this.onBtnOuvrirListe = this.onBtnOuvrirListe.bind(this);
 
-    static async getDerivedStateFromProps(props, state)
-    {
     }
 
     async componentDidMount()
     {
-        if(this.state.enListe)
-        {
-            await this.updatePartiesEncours();
-        }
-    }
-
-    async componentWillUnmount()
-    {
-        // await this.updatePartie(null, null);
-    }
-
-    async updatePartiesEncours()
-    {
-        const partiesEncours = await this.state.jeuService.getAllPartiesEncours();
-        this.setState({
-            partiesEncours: partiesEncours
-        });
+        setTimeout(async () => {
+            if(this.props.idPartie)
+            {
+                await this.updatePartie(this.props.idPartie, this.props.sessionUsager);
+            }
+        }, 500);
     }
 
     async updatePartie(idPartie, sessionUsager)
@@ -97,11 +75,12 @@ class PageJeu extends React.Component {
                 const profiljeu2 = await this.state.jeuService.getProfiljeu(partie?.id_joueur2);
                 const profiljeuUp = (profiljeu1?.id == sessionUsager.id_profiljeu ? profiljeu2 : profiljeu1);
                 const profiljeuDown = (profiljeu1?.id != sessionUsager.id_profiljeu ? profiljeu2 : profiljeu1);
+                const game = partie.historiquetables ? new Chess(partie.historiquetables) : new Chess();
 
                 await this.state.jeuService.connectPartie(partie.id);
-                this.setState({
-                    game: partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess(),
+                await this.setStateAsync({
                     partie: partie,
+                    game: game,
                     profiljeu1: profiljeu1,
                     profiljeu2: profiljeu2,
                     profiljeuUp: profiljeuUp,
@@ -112,9 +91,9 @@ class PageJeu extends React.Component {
             else
             {
                 await this.state.jeuService.disconnectPartie();
-                this.setState({
-                    game: null,
+                await this.setStateAsync({
                     partie: null,
+                    game: null,
                     profiljeu1: null,
                     profiljeu2: null,
                     profiljeuUp: null,
@@ -126,9 +105,9 @@ class PageJeu extends React.Component {
         else
         {
             await this.state.jeuService.disconnectPartie();
-            this.setState({
-                game: null,
+            await this.setStateAsync({
                 partie: null,
+                game: null,
                 profiljeu1: null,
                 profiljeu2: null,
                 profiljeuUp: null,
@@ -145,7 +124,7 @@ class PageJeu extends React.Component {
             await this.resetConnectionStatus();
 
         if(!this.state.connected)
-            this.setState({
+            await this.setStateAsync({
                 connected: true
             });
     }
@@ -179,7 +158,7 @@ class PageJeu extends React.Component {
 
     async onDisconnect()
     {
-        this.setState({
+        await this.setStateAsync({
             connected: false
         });
     }
@@ -264,94 +243,23 @@ class PageJeu extends React.Component {
         });
     }
 
-    async onBtnCreer()
+    async onBtnOuvrirListe(event, setPageCourante)
     {
-        const inputProfiljeu1 = document.querySelector("#nomprofiljeu1Creer");
-        const inputProfiljeu2 = document.querySelector("#nomprofiljeu2Creer");
-
-        const partie = await this.state.jeuService.createPartie(inputProfiljeu1.value, inputProfiljeu2.value);
-        if(partie)
-        {
-            await this.onBtnRefreshPartiesEncours();
-        }
-    }
-
-    async onBtnOuvrirPartie(idPartie, sessionUsager)
-    {
-        await this.updatePartie(idPartie, sessionUsager);
-        this.setState({
-            enListe: false
-        });
-    }
-
-    async onBtnOuvrirListe()
-    {
-        await this.updatePartie(null, null);
-        this.setState({
-            enListe: true
-        });
-    }
-
-    async onBtnRefreshPartiesEncours()
-    {
-        await this.updatePartiesEncours();
+        setPageCourante(<PageListeJeux></PageListeJeux>);
     }
 
     render() {
-        if(this.state.enListe)
-        {
-            return (
-                <ComptesServiceContext.Consumer>
-                {({sessionUsager, setSessionUsager, comptesService}) => (
-                    <div class="panneau-parties-container">
-                        <div class="panneau-parties-header">
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" style={ { width: 125} } id="basic-addon1">First player</span>
-                                </div>
-                                <input id="nomprofiljeu1Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1"></input>
-                            </div>
-                            <div class="input-group mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" style={ { width: 125} } id="basic-addon2">Second player</span>
-                                </div>
-                                <input id="nomprofiljeu2Creer" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon2"></input>
-                            </div>
-                            <button id="btnCreer" class="buttonCreate" onClick={this.onBtnCreer}>Create match</button>
-                            <button id="btnRefreshParties" class="buttonRefresh" onClick={this.onBtnRefreshPartiesEncours}>Refresh</button>
-                        </div>
-                        <DisplayPartiesServiceContext.Provider value={ { service: this.state.displayPartiesService } }>
-                        <div class="liste-parties">
-                            <table class="table table-hover table-dark">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Identifier</th>
-                                        <th scope="col">Player one</th>
-                                        <th scope="col">Player two</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {Object.values(this.state.partiesEncours ? this.state.partiesEncours : [] ).map((entry, i) =>
-                                    <DisplayPartieComponent key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => this.onBtnOuvrirPartie(entry.id, sessionUsager) }></DisplayPartieComponent>)}
-                                </tbody>
-                            </table>
-                            <div class="liste-parties-soak"></div>
-                        </div>
-                        </DisplayPartiesServiceContext.Provider>
-                    </div>
-                )}
-                </ComptesServiceContext.Consumer>
-            );
-        }
-        return (
-            // Rendre disponnible le service avec le contexte
+        return ( this.state.connected &&
+            // Rendre disponnible la service avec le contexte aux composantes sous-jacentes
+            <AccueilServiceContext.Consumer>
+            {({pageCourante, setPageCourante, accueilService}) => (
             <ComptesServiceContext.Consumer>
             {({sessionUsager, setSessionUsager, comptesService}) => (
                 <JeuServiceContext.Provider value={ { service: this.state.jeuService} }>
                     <div class="jeu-container">
                         <div class="playpage-game">
                             <div class="playpage-infobar">
-                                <div class="playpage-profile left clear" style={ !this.state.gagnant ? {backgroundColor: this.state.partie.id_joueurcourant != sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                <div class="playpage-profile left clear" style={ !this.state.gagnant ? {backgroundColor: this.state.partie?.id_joueurcourant != sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
                                         <img class="playpage-profile-pfp-icon" src={rectangle} />
                                     </div>
@@ -370,10 +278,10 @@ class PageJeu extends React.Component {
                                 )}
                             </div>
                             <div className="playpage-game-board board">
-                                <Chessboard id="BasicBoard" position={this.state.game?.fen() ?? ""} onPieceDrop={this.onJeuPieceDrop} boardOrientation={sessionUsager.id_profiljeu == this.state.profiljeu1.id? "white" : "black"}/>
+                                <Chessboard id="BasicBoard" position={this.state.game?.fen() ?? "start"} onPieceDrop={this.onJeuPieceDrop} boardOrientation={sessionUsager.id_profiljeu == this.state.profiljeu1?.id ? "white" : "black"}/>
                             </div>
                             <div class="playpage-infobar">
-                                <div class="playpage-profile left clear" style={ !this.state.gagnant ? {backgroundColor: this.state.partie.id_joueurcourant == sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                <div class="playpage-profile left clear" style={ !this.state.gagnant ? {backgroundColor: this.state.partie?.id_joueurcourant == sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
                                         <img class="playpage-profile-pfp-icon" src={rectangle} />
                                     </div>
@@ -393,7 +301,7 @@ class PageJeu extends React.Component {
                             </div>
                         </div>
                         <div class="my-sidebar">
-                            <button class="btn-retourner" onClick={this.onBtnOuvrirListe}>Retourner</button>
+                            <button class="btn-retourner" onClick={(event) => this.onBtnOuvrirListe(event, setPageCourante)}>Retourner</button>
                             <div class="move-info-panel">
                                 {this.state.game?.history({ verbose: true }).map((entry, i) =>
                                     <label style={{color: (entry.color === 'w'? 'white' : "black"), backgroundColor: "grey"}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} from: {entry.from} to: {entry.to}
@@ -404,6 +312,8 @@ class PageJeu extends React.Component {
                 </JeuServiceContext.Provider>
             )}
             </ComptesServiceContext.Consumer>
+            )}
+            </AccueilServiceContext.Consumer>
         );
     }
 

@@ -5,6 +5,48 @@ class PartiesService
         this.mysql = mysqlConnection;
     }
 
+    async createPartie(compte1, compte2)
+    {
+        const profiljeu1 = await this.selectProfiljeuByCompte(compte1);
+        const profiljeu2 = await this.selectProfiljeuByCompte(compte2);
+
+        const [results, fields] = await this.mysql.query(`
+                INSERT INTO partie(id_joueur1, id_joueur2, statut, id_joueurcourant)
+                VALUES(?, ?, 0, ?);
+                SELECT * from partie WHERE id = LAST_INSERT_ID();
+            `
+        , [profiljeu1.id, profiljeu2.id, profiljeu1.id]);
+
+        if(results.length > 0)
+            return results[0];
+
+        return null;
+    }
+
+    async selectProfiljeu(usagerId)
+    {
+        const [results, fields] = await this.mysql.query(`
+            SELECT profiljeu.id AS id, usager.id AS id_usager,
+            compte, motdepasse, id_groupeprivileges, datecreation, courriel, pays, sessionid, points, elo, datedernierjeu
+            FROM usager LEFT JOIN profiljeu ON usager.id = profiljeu.id_usager WHERE usager.id = ?;
+        `, [usagerId]);
+        return results[0];
+    }
+
+    async selectProfiljeuByCompte(compte)
+    {
+        const [results, fields] = await this.mysql.query(`
+                SELECT profiljeu.id AS id, usager.id AS id_usager,
+                compte, motdepasse, id_groupeprivileges, datecreation, courriel, pays, sessionid, points, elo, datedernierjeu
+                FROM usager LEFT JOIN profiljeu ON usager.id = profiljeu.id_usager WHERE usager.compte = ?;
+            `, [compte]);
+        
+        if(results.length > 0)
+            return results[0];
+
+        return null;
+    }
+
     async selectAllPartiesEncours()
     {
         const [results, fields] = await this.mysql.query(`

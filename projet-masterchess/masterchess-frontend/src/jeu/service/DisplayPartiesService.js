@@ -7,6 +7,27 @@ export class DisplayPartiesService {
     {
     }
 
+    async getAllPartiesEncours()
+    {
+        var result = null;
+        await axios.get("getAllPartiesEncours", {
+            withCredentials: true
+        })
+        .then(function (response) {
+            //handle success
+            result = response.data.result;
+        })
+        .catch(function (error) {
+            //handle error
+            console.log(error);
+        })
+        .finally(function () {
+            //always executed
+        });
+
+        return result;
+    }
+
     // Cherche la partie selon le id dans le serveur
     async getPartie(idPartie)
     {
@@ -56,11 +77,11 @@ export class DisplayPartiesService {
     }
 
     // Crée une nouvelle partie dans le serveur
-    async createPartie(idprofiljeu1, idprofiljeu2) {
+    async createPartie(nomprofiljeu1, nomprofiljeu2) {
         var result = null;
         await axios.post("createPartie", {
-            idprofiljeu1: idprofiljeu1,
-            idprofiljeu2: idprofiljeu2,
+            nomprofiljeu1: nomprofiljeu1,
+            nomprofiljeu2: nomprofiljeu2,
         },{
             withCredentials: true
         })
@@ -81,6 +102,8 @@ export class DisplayPartiesService {
 
 export const DisplayPartiesServiceContext = React.createContext(
     {
-        service: new DisplayPartiesService()
+        partiesEncours: [],
+        setPartiesEncours: async () => {},
+        displayPartiesService: new DisplayPartiesService()
     }
 );
