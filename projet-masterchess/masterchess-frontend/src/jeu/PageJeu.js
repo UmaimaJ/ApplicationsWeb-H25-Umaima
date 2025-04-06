@@ -61,6 +61,15 @@ class PageJeu extends React.Component {
                 await this.updatePartie(this.props.idPartie, this.props.sessionUsager);
             }
         }, 500);
+
+        if(this.messagesEnd)
+            this.messagesEnd.scrollIntoView({ behavior: "smooth" });
+    }
+
+    async componentDidUpdate()
+    {
+        if(this.messagesEnd)
+            this.messagesEnd.scrollIntoView({ behavior: "smooth" });
     }
 
     async updatePartie(idPartie, sessionUsager)
@@ -300,12 +309,12 @@ class PageJeu extends React.Component {
                                 )}
                             </div>
                         </div>
-                        <div class="my-sidebar">
-                            <button class="btn-retourner" onClick={(event) => this.onBtnOuvrirListe(event, setPageCourante)}>Retourner</button>
-                            <div class="move-info-panel">
-                                {this.state.game?.history({ verbose: true }).map((entry, i) =>
-                                    <label style={{color: (entry.color === 'w'? 'white' : "black"), backgroundColor: "grey"}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} from: {entry.from} to: {entry.to}
-                                    </label>)}
+                        <div className="my-sidebar">
+                            <button className="btn-retourner" onClick={(event) => this.onBtnOuvrirListe(event, setPageCourante)}>Retourner</button>
+                            <div id="move-info-panel" className="move-info-panel">
+                                {this.state.game?.history({ verbose: true }).map((entry, i) => 
+                                    <div key={i} ref={(el) => { this.messagesEnd = el; }} className="move-entry"><label style={{color: (entry.color === 'w'? 'white' : "grey")}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} de: {entry.from} à: {entry.to}
+                                    </label></div>)}
                             </div>
                         </div>
                     </div>
