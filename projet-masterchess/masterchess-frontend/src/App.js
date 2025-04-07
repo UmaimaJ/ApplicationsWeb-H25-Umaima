@@ -81,7 +81,7 @@ function App() {
             <div class="my-navbaroptions">
               <div class="my-navoption" onClick={handleAccueilClick}>
                 <img class="my-icon" src={loginicon} />
-                <label class="my-optionlabel">Home</label>                
+                <label class="my-optionlabel">Accueil</label>                
               </div>
               {(!sessionUsager) &&
                 <>
@@ -91,7 +91,7 @@ function App() {
                 </div>
                 <div class="my-navoption" onClick={handleSignUpClick}>
                   <img class="my-icon" src={loginicon} />
-                  <label class="my-optionlabel">Sign Up</label>                
+                  <label class="my-optionlabel">Enregistrement</label>                
                 </div>
                 </>
               }
@@ -103,17 +103,17 @@ function App() {
                 </div>
                 <div class="my-navoption" onClick={handleJeuClick}>
                   <img class="my-icon" src={loginicon} />
-                  <label class="my-optionlabel">Play</label>                 
+                  <label class="my-optionlabel">Jouer</label>                 
                 </div>
                 </>
               }
               <div class="my-navoption" onClick={handleLearnClick}>
                 <img class="my-icon" src={learnicon} />
-                <label class="my-optionlabel">Learn</label>
+                <label class="my-optionlabel">Apprendre</label>
               </div>
               <div class="my-navoption">
                 <img class="my-icon" src={buyicon} />
-                <label class="my-optionlabel">Buy</label>
+                <label class="my-optionlabel">Acheter</label>
               </div>
             </div>
           </div>
