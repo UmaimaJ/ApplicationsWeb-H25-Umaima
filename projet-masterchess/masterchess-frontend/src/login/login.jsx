@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './login.css';
 
+import PageAccueil from '../accueil/PageAccueil';
 import { AccueilServiceContext, AccueilService } from '../accueil/service/AccueilService';
 import { ComptesServiceContext, ComptesService } from './service/ComptesService';
 import SignUp from './signUp';
@@ -13,8 +14,6 @@ const Login = () => {
         event.preventDefault();
         const axiosResponse = await comptesService.postLogin(username, password);
         const success = axiosResponse?.data?.success;
-        console.log("DATA");
-        console.log(axiosResponse?.data);
         if(success)
         {
             const axiosResponse = await comptesService.getSessionUsager();
@@ -22,7 +21,7 @@ const Login = () => {
             if(success)
             {
                 setSessionUsager(axiosResponse.data.usager);
-                setPageCourante(<></>);
+                setPageCourante(<PageAccueil></PageAccueil>);
             }
         }
     };
