@@ -10,6 +10,14 @@ const SignUp = () => {
 
     const handleSubmit = async (event, {sessionUsager, setSessionUsager, service}) => {
         event.preventDefault();
+
+        // Email validation regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Invalid email format");
+            return;
+        }
+
         const success = service.postSignUp(username, password, email).success;
         if(success)
         {
