@@ -66,11 +66,26 @@ class JeuService{
                     throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
             }
         }
+
+        await this.doMove(socket.data.partieId, null);// domove null value is just a check on this connection event to see if maybe it was won
+        if(this.io.emit("moveresult", { move: null, partieId: socket.data.partieId }))
+        {
+        }
+        else
+            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
     }
 
     async onDisconnect(socket)
     {
-        if(!socket?.request?.session?.user?.usager?.id_profiljeu)
+        socket.data = {
+            profiljeuId: socket?.request?.session?.user?.usager?.id_profiljeu,
+            partieId: socket?.handshake?.query?.partieId
+        }
+
+        if(!socket.data.profiljeuId)
+            return;
+
+        if(!socket.data.partieId)
             return;
 
         //this.connections[socket.id].lastDisconnect[socket.data.profiljeuId] = Date.now();
@@ -96,35 +111,29 @@ class JeuService{
             return;
 
         const moveresult = await this.doMove(event.data.partieId, event.data.move);
-        if(moveresult)
-        {
-            const nouveauJoueurcourant = await this.prochainProfiljeu(event.data.partieId);
-            await this.updateJoueurcourantPartie({id: event.data.partieId, id_joueurcourant: nouveauJoueurcourant});
+        const nouveauJoueurcourant = await this.prochainProfiljeu(event.data.partieId);
+        await this.updateJoueurcourantPartie({id: event.data.partieId, id_joueurcourant: nouveauJoueurcourant});
 
-            await this.bumpConnection(event.data.partieId, event.data.profiljeuId);
-            if(this.io.emit("moveresult", { move: moveresult, partieId: event.data.partieId }))
+        await this.bumpConnection(event.data.partieId, event.data.profiljeuId);
+        if(this.io.emit("moveresult", { move: moveresult, partieId: event.data.partieId }))
+        {
+            await this.sleep(2000);
+            if(nouveauJoueurcourant == -1)
             {
-                await this.sleep(2000);
-                if(nouveauJoueurcourant == -1)
+                const moveresult = await this.doBotMove(event.data.partieId);
+                const nouveauJoueurcourant = await this.prochainProfiljeu(event.data.partieId);
+                await this.updateJoueurcourantPartie({id: event.data.partieId, id_joueurcourant: nouveauJoueurcourant});
+    
+                //await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
+                if(this.io.emit("moveresult", { move: moveresult, partieId: event.data.partieId }))
                 {
-                    const moveresult = await this.doBotMove(event.data.partieId);
-                    if(moveresult)
-                    {
-                        const nouveauJoueurcourant = await this.prochainProfiljeu(event.data.partieId);
-                        await this.updateJoueurcourantPartie({id: event.data.partieId, id_joueurcourant: nouveauJoueurcourant});
-            
-                        //await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
-                        if(this.io.emit("moveresult", { move: moveresult, partieId: event.data.partieId }))
-                        {
-                        }
-                        else
-                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
-                    }
                 }
+                else
+                    throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
             }
-            else
-                throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
         }
+        else
+            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
     }
 
     async prochainProfiljeu(partieId)
@@ -147,7 +156,10 @@ class JeuService{
             game = new Chess();
 
         const moves = game.moves();
-        const move = moves[Math.floor(Math.random() * moves.length)];
+
+        var move = null;
+        if(moves.length > 0)
+            move = moves[Math.floor(Math.random() * moves.length)];
 
         return this.doMove(partieId, move);
     }
@@ -164,12 +176,16 @@ class JeuService{
         
         try
         {
-            const moveresult = gameCopy.move(move);
+            var moveresult = null;
+            //si move n'est pas null c'est pas juste un tick, c'est un move entier et on l'effectue
+            if(move)
+                moveresult = gameCopy.move(move);
+
             const partieMoveDelta = {
                 id: partie.id,
                 historiquetables: gameCopy.fen(),
                 statut: gameCopy.isGameOver() ? 2 : 1,
-                id_gagnant: gameCopy.isCheckmate() ? (gameCopy.turn() == 'w' ? partie.id_joueur2 : partie.id_joueur1) : null,
+                id_gagnant: gameCopy.isGameOver() ? (gameCopy.turn() == 'w' ? partie.id_joueur2 : partie.id_joueur1) : null,
                 id_joueurcourant: gameCopy.turn() == 'w' ? partie.id_joueur1 : partie.id_joueur2
             };
             await this.updateMovePartie(partieMoveDelta);

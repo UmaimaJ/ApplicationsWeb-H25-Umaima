@@ -150,19 +150,19 @@ class PageJeu extends React.Component {
 
     async moveQueueThink()
     {
-        let moveframe = null;
+        var move = null;
         if(this.state.connected)
         {
-            while(moveframe = this.moveQueue.pop())
+            while((move = this.moveQueue.pop()) !== undefined)
             {
-                if(moveframe) await this.simulateMove(moveframe);
+                await this.simulateMove(move);
             }
         }
     }
 
-    async queueMove(moveframe)
+    async queueMove(move)
     {
-        this.moveQueue.push(moveframe);
+        this.moveQueue.push(move);
     }
 
     async onDisconnect()
@@ -206,16 +206,21 @@ class PageJeu extends React.Component {
     }
 
     async simulateMove(move) {
+        console.log(move);
         const gameCopy = this.state.game;
         try
         {
-            const result = gameCopy.move(move);
-            await this.setStateAsync({ game: gameCopy });
-            await this.thinkJoueurCourant();
-            if(this.state.game.isCheckmate())
+            var result = null;
+            if(move)
+            {
+                result = gameCopy.move(move);
+                await this.setStateAsync({ game: gameCopy });
+                await this.thinkJoueurCourant();
+            }
+            if(this.state.game.isGameOver())
             {
                 const gagnant = this.state.game.turn() == "b" ? this.state.profiljeu1.id : this.state.profiljeu2.id;
-                this.setState({
+                await this.setStateAsync({
                     gagnant: gagnant,
                     partie: {
                         ...this.state.partie,
@@ -224,7 +229,7 @@ class PageJeu extends React.Component {
                 });
                 await this.thinkJoueurCourant();
             }
-            return result; // null if cant move
+            return result; // null if it wont move this time after move calculated
         }
         catch(err)
         {
@@ -319,7 +324,7 @@ class PageJeu extends React.Component {
                             <button className="btn-retourner" onClick={(event) => this.onBtnOuvrirListe(event, setPageCourante)}>Retourner</button>
                             <div id="move-info-panel" className="move-info-panel">
                                 {this.state.game?.history({ verbose: true }).map((entry, i) => 
-                                    <div key={i} ref={(el) => { this.messagesEnd = el; }} className="move-entry"><label style={{color: (entry.color === 'w'? 'white' : "grey")}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} de: {entry.from} à: {entry.to}
+                                    <div key={i} ref={(el) => { this.messagesEnd = el; }} className="move-entry"><label style={{color: (entry.color === 'w'? 'white' : "grey")}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} de: {entry.from} à: {entry.to} {entry.captured && " capturé: " + entry.captured}
                                     </label></div>)}
                             </div>
                         </div>
@@ -338,6 +343,11 @@ class PageJeu extends React.Component {
         });
     };
    
+    async delay(ms) 
+    {
+        return new Promise(res => setTimeout(res, ms));
+    }
+
 }
 
 export default PageJeu;
