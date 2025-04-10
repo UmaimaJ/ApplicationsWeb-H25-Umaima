@@ -161,7 +161,7 @@ class JeuService{
         if(moves.length > 0)
             move = moves[Math.floor(Math.random() * moves.length)];
 
-        return this.doMove(partieId, move);
+        return await this.doMove(partieId, move);
     }
 
     async doMove(partieId, move)
