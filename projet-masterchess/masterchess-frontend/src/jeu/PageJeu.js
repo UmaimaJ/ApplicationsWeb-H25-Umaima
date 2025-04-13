@@ -46,7 +46,7 @@ class PageJeu extends React.Component {
             profiljeu2: null,
             profiljeuUp: null,
             profiljeuDown: null,
-            gagnant: null
+            idGagnant: null
         }
 
         this.onBtnOuvrirListe = this.onBtnOuvrirListe.bind(this);
@@ -94,7 +94,7 @@ class PageJeu extends React.Component {
                     profiljeu2: profiljeu2,
                     profiljeuUp: profiljeuUp,
                     profiljeuDown: profiljeuDown,
-                    gagnant: partie.id_gagnant
+                    idGagnant: partie.id_gagnant
                 });
             }
             else
@@ -107,7 +107,7 @@ class PageJeu extends React.Component {
                     profiljeu2: null,
                     profiljeuUp: null,
                     profiljeuDown: null,
-                    gagnant: null
+                    idGagnant: null
                 });
             }
         }
@@ -121,7 +121,7 @@ class PageJeu extends React.Component {
                 profiljeu2: null,
                 profiljeuUp: null,
                 profiljeuDown: null,
-                gagnant: null
+                idGagnant: null
             });
         }
             
@@ -219,12 +219,12 @@ class PageJeu extends React.Component {
             }
             if(this.state.game.isGameOver())
             {
-                const gagnant = this.state.game.turn() == "b" ? this.state.profiljeu1.id : this.state.profiljeu2.id;
+                const idGagnant = this.state.game.turn() == "b" ? this.state.profiljeu1.id : this.state.profiljeu2.id;
                 await this.setStateAsync({
-                    gagnant: gagnant,
+                    idGagnant: idGagnant,
                     partie: {
                         ...this.state.partie,
-                        id_gagnant: gagnant
+                        id_gagnant: idGagnant
                     }
                 });
                 await this.thinkJoueurCourant();
@@ -279,7 +279,7 @@ class PageJeu extends React.Component {
                     <div class="jeu-container">
                         <div class="playpage-game">
                             <div class="playpage-infobar">
-                                <div class="playpage-profile left clear" style={ !this.state.gagnant ? {backgroundColor: this.state.partie?.id_joueurcourant != sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                <div class="playpage-profile left clear" style={ !this.state.idGagnant ? {backgroundColor: this.state.partie?.id_joueurcourant != sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
                                         <img class="playpage-profile-pfp-icon" src={rectangle} />
                                     </div>
@@ -289,10 +289,10 @@ class PageJeu extends React.Component {
                                         <img className="playpage-profile-userflag" src={findFlagUrlByIso2Code(this.state.profiljeuUp?.pays ?? "")}></img>
                                     </div>
                                 </div>
-                                { (this.state.gagnant != null) &&
+                                { (this.state.idGagnant != null) &&
                                     (<div class="playpage-timer right">
                                         <>
-                                            <label class="playpage-timer-label">{this.state.gagnant != sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
+                                            <label class="playpage-timer-label">{this.state.idGagnant != sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
                                         </>
                                     </div>
                                 )}
@@ -301,7 +301,7 @@ class PageJeu extends React.Component {
                                 <Chessboard id="BasicBoard" position={this.state.game?.fen() ?? "start"} onPieceDrop={this.onJeuPieceDrop} boardOrientation={sessionUsager.id_profiljeu == this.state.profiljeu1?.id ? "white" : "black"}/>
                             </div>
                             <div class="playpage-infobar">
-                                <div class="playpage-profile left clear" style={ !this.state.gagnant ? {backgroundColor: this.state.partie?.id_joueurcourant == sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                <div class="playpage-profile left clear" style={ !this.state.idGagnant ? {backgroundColor: this.state.partie?.id_joueurcourant == sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
                                         <img class="playpage-profile-pfp-icon" src={rectangle} />
                                     </div>
@@ -311,10 +311,10 @@ class PageJeu extends React.Component {
                                         <img className="playpage-profile-userflag" src={findFlagUrlByIso2Code(this.state.profiljeuDown?.pays ?? "")}></img>
                                     </div>
                                 </div>
-                                { (this.state.gagnant != null) &&
+                                { (this.state.idGagnant != null) &&
                                     (<div class="playpage-timer right">
                                         <>
-                                            <label class="playpage-timer-label">{this.state.gagnant == sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
+                                            <label class="playpage-timer-label">{this.state.idGagnant == sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
                                         </>
                                     </div>
                                 )}
