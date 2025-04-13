@@ -32,10 +32,16 @@ function App() {
   const [sessionUsager, setSessionUsager] = useState(null);
 
   useEffect(() => {
-    const str = window.sessionStorage.getItem("sessionUsager");
-    const result = JSON.parse(str !== "undefined" ? str : null );
-    const currentSessionUsager = (comptesService.getSessionUsager())?.data?.usager ?? null;
-    setSessionUsager(result?? currentSessionUsager);
+    const fetchData = async () => {
+      const sessionUsagerDB = (await comptesService.getSessionUsager())?.data?.usager ?? null;
+      return sessionUsagerDB;
+    }
+
+    fetchData().then((usager) => {
+      const cacheStr = window.sessionStorage.getItem("sessionUsager");
+      const cacheParsed = JSON.parse(cacheStr !== "undefined" ? cacheStr : "null" );
+      setSessionUsager(cacheParsed ?? usager)
+    });
   }, []);
 
   useEffect(() => {
