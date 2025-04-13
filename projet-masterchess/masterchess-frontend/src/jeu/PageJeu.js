@@ -29,13 +29,19 @@ class PageJeu extends React.Component {
 
         this.onConnect = this.onConnect.bind(this);
         this.onDisconnect = this.onDisconnect.bind(this);
+
         this.onMoveresult = this.onMoveresult.bind(this);
+        this.onCheckresult = this.onCheckresult.bind(this);
         this.onJeuPieceDrop = this.onJeuPieceDrop.bind(this);
+
         this.moveQueueThink = this.moveQueueThink.bind(this);
         this.moveQueueThinkId = null;
         this.moveQueue = [];
+        this.checkQueueThink = this.checkQueueThink.bind(this);
+        this.checkQueueThinkId = null;
+        this.checkQueue = [];
 
-        const jeuService = new JeuService(this.onConnect, this.onDisconnect, this.onMoveresult);
+        const jeuService = new JeuService(this.onConnect, this.onDisconnect, this.onMoveresult, this.onCheckresult);
 
         this.state = {
             jeuService: jeuService,
@@ -138,6 +144,13 @@ class PageJeu extends React.Component {
             });
     }
 
+    async onDisconnect()
+    {
+        await this.setStateAsync({
+            connected: false
+        });
+    }
+
     async resetConnectionStatus()
     {
         if(this.moveQueueThinkId)
@@ -145,6 +158,13 @@ class PageJeu extends React.Component {
             clearTimeout(this.moveQueueThinkId);
             this.moveQueue = [];
             this.moveQueueThinkId = null;
+        }
+
+        if(this.checkQueueThinkId)
+        {
+            clearTimeout(this.checkQueueThinkId);
+            this.checkQueue = [];
+            this.checkQueueThinkId = null;
         }
     }
 
@@ -165,11 +185,21 @@ class PageJeu extends React.Component {
         this.moveQueue.push(move);
     }
 
-    async onDisconnect()
+    async checkQueueThink()
     {
-        await this.setStateAsync({
-            connected: false
-        });
+        var check = null;
+        if(this.state.connected)
+        {
+            while((check = this.checkQueue.pop()) !== undefined)
+            {
+                await this.simulateCheck(check);
+            }
+        }
+    }
+
+    async queueCheck(check)
+    {
+        this.checkQueue.push(check);
     }
 
     async onMoveresult(moveframe)
@@ -183,6 +213,20 @@ class PageJeu extends React.Component {
                 this.moveQueueThinkId = null;
             }
             this.moveQueueThinkId = setTimeout(this.moveQueueThink, 1000);
+        }
+    }
+
+    async onCheckresult(checkframe)
+    {
+        if(checkframe.partieId == this.state.partie?.id)
+        {
+            await this.queueCheck(checkframe.check);
+            if(this.checkQueueThinkId)
+            {
+                clearTimeout(this.checkQueueThinkId);
+                this.checkQueueThinkId = null;
+            }
+            this.checkQueueThinkId = setTimeout(this.checkQueueThink, 1000);
         }
     }
 
@@ -217,18 +261,18 @@ class PageJeu extends React.Component {
                 await this.setStateAsync({ game: gameCopy });
                 await this.thinkJoueurCourant();
             }
-            if(this.state.game.isGameOver())
-            {
-                const idGagnant = this.state.game.turn() == "b" ? this.state.profiljeu1.id : this.state.profiljeu2.id;
-                await this.setStateAsync({
-                    idGagnant: idGagnant,
-                    partie: {
-                        ...this.state.partie,
-                        id_gagnant: idGagnant
-                    }
-                });
-                await this.thinkJoueurCourant();
-            }
+            // if(this.state.game.isGameOver())
+            // {
+            //     const idGagnant = this.state.game.turn() == "b" ? this.state.profiljeu1.id : this.state.profiljeu2.id;
+            //     await this.setStateAsync({
+            //         idGagnant: idGagnant,
+            //         partie: {
+            //             ...this.state.partie,
+            //             id_gagnant: idGagnant
+            //         }
+            //     });
+            //     await this.thinkJoueurCourant();
+            // }
             return result; // null if it wont move this time after move calculated
         }
         catch(err)
@@ -237,6 +281,17 @@ class PageJeu extends React.Component {
         }
         return null;
         
+    }
+
+    async simulateCheck(check)
+    {
+        await this.setStateAsync({
+            idGagnant: check.id_gagnant,
+            partie: {
+                ...this.state.partie,
+                id_gagnant: check.id_gagnant
+            }
+        });
     }
 
     async thinkJoueurCourant()

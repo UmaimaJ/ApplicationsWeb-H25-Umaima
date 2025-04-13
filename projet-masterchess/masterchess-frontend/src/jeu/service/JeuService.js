@@ -5,7 +5,7 @@ import React from 'react';
 
 // Classe-service qui sert a organiser la communication avec le serveur au scope du jeu et de la PageJeu
 export class JeuService {
-    constructor(onConnection, onDisconnect, onMoveresult)
+    constructor(onConnection, onDisconnect, onMoveresult, onCheckresult)
     {
         this.io = io(axios.defaults.baseURL, {
             withCredentials: true,
@@ -22,6 +22,10 @@ export class JeuService {
 
         this.io.on("moveresult", async (data) => {
             await onMoveresult(data);
+        });
+
+        this.io.on("checkresult", async (data) => {
+            await onCheckresult(data);
         });
     }
 
