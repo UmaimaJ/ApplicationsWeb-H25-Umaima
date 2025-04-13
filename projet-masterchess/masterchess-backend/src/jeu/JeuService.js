@@ -10,8 +10,7 @@ class JeuService{
 
         this.mysql = mysqlConnection;
 
-        this.connections = {};
-        this.boundMove = () => {};
+        this.partiesCache = {};
 
         this.onConnect = this.onConnect.bind(this);
         this.onDisconnect = this.onDisconnect.bind(this);
@@ -24,136 +23,145 @@ class JeuService{
 
     async onConnect(socket)
     {
-        socket.data = {
+        const data = {
             profiljeuId: socket?.request?.session?.user?.usager?.id_profiljeu,
             partieId: socket?.handshake?.query?.partieId
         }
 
-        if(!await this.isPartieEncours(socket.data.partieId))
+        if(!this.partiesCache[data.partieId])
+            this.partiesCache[data.partieId] = await this.selectPartie(data.partieId);
+
+        //partie existe
+        if(!this.partiesCache[data.partieId])
             return;
 
-        if(!await this.isJoueurDansPartie(socket.data.partieId, socket.data.profiljeuId))
+        //est joueur dans partie
+        if(!(this.partiesCache[data.partieId].id_joueur1 == data.profiljeuId || this.partiesCache[data.partieId].id_joueur2 == data.profiljeuId))
             return;
 
-        //this.connections[socket.id].lastConnection[socket.data.profiljeuId] = Date.now();
-        this.connections[socket.id] = socket;
+        //on sauve cette connection(ce socket) dans la partie
+        const numJoueurConnection = this.partiesCache[data.partieId].id_joueur1 == data.profiljeuId ? 1 : 2;
+        if(numJoueurConnection == 1)
+            this.partiesCache[data.partieId].socketJoueur1 = socket;
+        if(numJoueurConnection == 2)
+            this.partiesCache[data.partieId].socketJoueur2 = socket;
+
+        //event pour chaque connection sur boundMove
         const socketarg = socket;
-        await this.bumpConnection(socket, socket.data.profiljeuId);
-
-        this.boundMove = async function(event, socket = socketarg)
+        var boundMove = async function(event)
         {
-            await this.onMove(event, socket);
+            return await this.onMove(event, socketarg);
         };
-        this.boundMove = this.boundMove.bind(this);
+        boundMove = boundMove.bind(this);
+        this.partiesCache[data.partieId].boundMove = boundMove;
+        await socket.on("move", this.partiesCache[data.partieId].boundMove);
 
-        this.onMove.bind(this);
-        await socket.on("move", this.boundMove);
-
-        //if c'est un bot au debut, aussi on ne part pas le timer
-        if(await this.isJoueurcourantBot(socket.data.partieId))
+        //premier tick est fait pour le bot sur onConnect
+        if(this.partiesCache[data.partieId].id_joueurcourant == -1)
         {
-            const moveresult = await this.doBotMove(socket.data.partieId);
-            if(moveresult)
-            {
-                const nouveauJoueurcourant = await this.prochainProfiljeu(socket.data.partieId);
-                await this.updateJoueurcourantPartie({id: socket.data.partieId, id_joueurcourant: nouveauJoueurcourant});
-
-                if(this.io.emit("moveresult", { move: moveresult, partieId: socket.data.partieId }))
-                {
-
-                }
-                else
-                    throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
-            }
+            await this.sleep(2000);
+            const moveresult = await this.doBotMove(data.partieId);
+            const nouveauJoueurcourant = await this.prochainProfiljeu(data.partieId);
+            if(!socket.emit("moveresult", { move: moveresult, partieId: data.partieId }))
+                throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
+            this.partiesCache[data.partieId].id_joueurcourant = nouveauJoueurcourant;
+            await this.savePartie(this.partiesCache[data.partieId]);
         }
 
-        await this.doMove(socket.data.partieId, null);// domove null value is just a check on this connection event to see if maybe it was won
-        if(this.io.emit("moveresult", { move: null, partieId: socket.data.partieId }))
-        {
-        }
-        else
+        await this.doMove(data.partieId, null);// domove null value is just a tick on this connection event to see if maybe it was won on the client-side
+        if(!socket.emit("moveresult", { move: null, partieId: data.partieId }))
             throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
     }
 
     async onDisconnect(socket)
     {
-        socket.data = {
+        const data = {
             profiljeuId: socket?.request?.session?.user?.usager?.id_profiljeu,
             partieId: socket?.handshake?.query?.partieId
         }
 
-        if(!socket.data.profiljeuId)
+        if(!data.profiljeuId)
             return;
 
-        if(!socket.data.partieId)
+        if(!data.partieId)
             return;
 
-        //this.connections[socket.id].lastDisconnect[socket.data.profiljeuId] = Date.now();
-        await this.bumpConnection(socket, socket?.request?.session?.user?.usager?.id_profiljeu);
+        if(this.partiesCache[data.partieId])
+        {
+            const numJoueurConnection = this.partiesCache[data.partieId].id_joueur1 == data.profiljeuId ? 1 : 2;
+            if(numJoueurConnection == 1)
+                if(this.partiesCache[data.partieId].socketJoueur1.id == socket.id)
+                    delete this.partiesCache[data.partieId].socketJoueur1;
+            if(numJoueurConnection == 2)
+                if(this.partiesCache[data.partieId].socketJoueur2.id == socket.id)
+                    delete this.partiesCache[data.partieId].socketJoueur2;
+
+            await this.savePartie(this.partiesCache[data.partieId]);
+            
+        }
     }
 
     async onMove(event, socket)
     {
-        if(!event?.data)
+        const data = {
+            profiljeuId: socket?.request?.session?.user?.usager?.id_profiljeu,
+            partieId: socket?.handshake?.query?.partieId
+        }
+
+        const move = event?.data?.move;
+
+        if(!data.partieId)
             return;
 
-        if(!socket?.request?.session?.user?.usager?.id_profiljeu)
-            return;
-        event.data.profiljeuId = socket.request.session.user.usager.id_profiljeu;
-
-        if(!await this.isPartieEncours(event.data.partieId))
+        if(!data.profiljeuId)
             return;
 
-        if(!await this.isJoueurDansPartie(event.data.partieId, event.data.profiljeuId))
-            return;
-
-        if(!await this.isJoueurCourant(event.data.partieId, event.data.profiljeuId))
-            return;
-
-        const moveresult = await this.doMove(event.data.partieId, event.data.move);
-        const nouveauJoueurcourant = await this.prochainProfiljeu(event.data.partieId);
-        await this.updateJoueurcourantPartie({id: event.data.partieId, id_joueurcourant: nouveauJoueurcourant});
-
-        await this.bumpConnection(event.data.partieId, event.data.profiljeuId);
-        if(this.io.emit("moveresult", { move: moveresult, partieId: event.data.partieId }))
+        if(this.partiesCache[data.partieId])
         {
-            await this.sleep(2000);
-            if(nouveauJoueurcourant == -1)
+            //est partie en cours
+            if(this.partiesCache[data.partieId].statut == 2)
+                return;
+
+            //est joueur dans partie
+            if(!(this.partiesCache[data.partieId].id_joueur1 == data.profiljeuId || this.partiesCache[data.partieId].id_joueur2 == data.profiljeuId))
+                return;
+
+            //est joueur courant
+            if(this.partiesCache[data.partieId].id_joueurcourant != data.profiljeuId)
+                return;
+
+            const moveresult = await this.doMove(data.partieId, move);
+            const nouveauJoueurcourant = await this.prochainProfiljeu(data.partieId);
+            if(!socket.emit("moveresult", { move: moveresult, partieId: data.partieId }))
+                throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
+            this.partiesCache[data.partieId].id_joueurcourant = nouveauJoueurcourant;
+            await this.savePartie(this.partiesCache[data.partieId]);
+
+            if(this.partiesCache[data.partieId].id_joueurcourant == -1)
             {
-                const moveresult = await this.doBotMove(event.data.partieId);
-                const nouveauJoueurcourant = await this.prochainProfiljeu(event.data.partieId);
-                await this.updateJoueurcourantPartie({id: event.data.partieId, id_joueurcourant: nouveauJoueurcourant});
-    
-                //await this.bumpConnection(socket.data.partieId, socket.data.profiljeuId);
-                if(this.io.emit("moveresult", { move: moveresult, partieId: event.data.partieId }))
-                {
-                }
-                else
+                await this.sleep(2000);
+                const moveresult = await this.doBotMove(data.partieId);
+                const nouveauJoueurcourant = await this.prochainProfiljeu(data.partieId);
+                if(!socket.emit("moveresult", { move: moveresult, partieId: data.partieId }))
                     throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
+                this.partiesCache[data.partieId].id_joueurcourant = nouveauJoueurcourant;
+                await this.savePartie(this.partiesCache[data.partieId]);
             }
         }
-        else
-            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
     }
 
     async prochainProfiljeu(partieId)
     {
-        const partie = await this.selectPartie(partieId);
+        const partie = this.partiesCache[partieId];
         const prochainProfiljeu = partie.id_joueurcourant != partie.id_joueur1 ? partie.id_joueur2 : partie.id_joueur1;
-        const numJoueur = partie.id_joueurcourant != partie.id_joueur2 ? 1 : 2;
 
         return prochainProfiljeu;
     }
 
     async doBotMove(partieId)
     {
-        const partie = await this.selectPartie(partieId);
-
-        var game = null;
-        if(partie.historiquetables)
-            game = new Chess(partie.historiquetables);
-        else
-            game = new Chess();
+        const partie = this.partiesCache[partieId];
+        const game = partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess();
 
         const moves = game.moves();
 
@@ -166,8 +174,7 @@ class JeuService{
 
     async doMove(partieId, move)
     {
-        const partie = await this.selectPartie(partieId);
-
+        var partie = this.partiesCache[partieId];
         var gameCopy = null;
         if(partie.historiquetables)
             gameCopy = new Chess(partie.historiquetables);
@@ -188,7 +195,11 @@ class JeuService{
                 id_gagnant: gameCopy.isGameOver() ? (gameCopy.turn() == 'w' ? partie.id_joueur2 : partie.id_joueur1) : null,
                 id_joueurcourant: gameCopy.turn() == 'w' ? partie.id_joueur1 : partie.id_joueur2
             };
-            await this.updateMovePartie(partieMoveDelta);
+            partie = {
+                ...partie,
+                ...partieMoveDelta
+            }
+            this.partiesCache[partie.id] = { ...this.partiesCache[partie.id], ...partie };
             return moveresult;
         }
         catch(err)
@@ -297,6 +308,42 @@ class JeuService{
     {
         const [results, fields] = await this.mysql.query("UPDATE partie SET historiquetables = ? WHERE id = ?",
             [historique, partieId]);
+        return true;
+    }
+
+    async savePartie(partie)
+    {
+        try {
+            const [results, fields] = await this.mysql.query(`
+                UPDATE partie
+                SET
+                id_joueur1 = ?,
+                id_joueur2 = ?,
+                historiquetables = ?,
+                statut = ?,
+                id_gagnant = ?,
+                datedebut = ?,
+                datefin = ?,
+                id_joueurcourant = ?
+                WHERE id = ?
+                `,
+                [
+                    partie.id_joueur1,
+                    partie.id_joueur2,
+                    partie.historiquetables,
+                    partie.statut,
+                    partie.id_gagnant,
+                    partie.datedebut,
+                    partie.datefin,
+                    partie.id_joueurcourant,
+                    partie.id
+                ]);
+        }
+        catch(error)
+        {
+            console.log(error);
+        }
+
         return true;
     }
 
