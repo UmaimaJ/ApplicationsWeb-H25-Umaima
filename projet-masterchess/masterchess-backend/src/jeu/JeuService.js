@@ -11,7 +11,7 @@ class JeuService{
         this.mysql = mysqlConnection;
 
         this.partiesCache = {};
-        this.maxtimer = 600000;
+        this.maxtimer = 60000;
 
         this.onConnect = this.onConnect.bind(this);
         this.onDisconnect = this.onDisconnect.bind(this);
