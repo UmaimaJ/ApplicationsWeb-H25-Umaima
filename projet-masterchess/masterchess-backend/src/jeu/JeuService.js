@@ -30,7 +30,10 @@ class JeuService{
         }
 
         if(!this.partiesCache[data.partieId])
+        {
             this.partiesCache[data.partieId] = await this.selectPartie(data.partieId);
+            this.partiesCache[data.partieId].boundMoves = [];
+        }
 
         //partie existe
         if(!this.partiesCache[data.partieId])
@@ -49,13 +52,13 @@ class JeuService{
 
         //event pour chaque connection sur boundMove
         const socketarg = socket;
-        var boundMove = async function(event)
+        var boundMove = async function(event, socket = socketarg)
         {
-            return await this.onMove(event, socketarg);
+            return await this.onMove(event, socket);
         };
         boundMove = boundMove.bind(this);
-        this.partiesCache[data.partieId].boundMove = boundMove;
-        socket.on("move", this.partiesCache[data.partieId].boundMove);
+        // const idBoundMove = this.partiesCache[data.partieId].boundMoves.push(boundMove);
+        socket.on("move", boundMove);
 
         //premier check peu importe qui est le joueur courant
         const checkresult = await this.doCheck(data.partieId);
@@ -285,8 +288,16 @@ class JeuService{
                 const checkresult = await this.doTimeoutCheck(partieId, newjoueurcourant);
                 if(checkresult)
                 {
-                    if(!await partie.socketJoueur1.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}))
-                        throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    try{
+                        if(!(await partie.socketJoueur1?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
+                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                        if(!(await partie.socketJoueur2?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
+                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    }
+                    catch(err)
+                    {
+                        console.log(err);
+                    }
                 }
                 this.savePartie(this.partiesCache[partieId]);
             }, (this.maxtimer - timer1) + 100) : null,
@@ -295,8 +306,16 @@ class JeuService{
                 const checkresult = await this.doTimeoutCheck(partieId, newjoueurcourant);
                 if(checkresult)
                 {
-                    if(!await partie.socketJoueur2.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}))
-                        throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    try{
+                        if(!(await partie.socketJoueur1?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
+                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                        if(!(await partie.socketJoueur2?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
+                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    }
+                    catch(err)
+                    {
+                        console.log(err);
+                    }
                 }
                 this.savePartie(this.partiesCache[partieId]);
             }, (this.maxtimer - timer2) + 100) : null
