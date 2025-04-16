@@ -32,6 +32,7 @@ class PageJeu extends React.Component {
 
         this.onMoveresult = this.onMoveresult.bind(this);
         this.onCheckresult = this.onCheckresult.bind(this);
+        this.onEndroundresult = this.onEndroundresult.bind(this);
         this.onJeuPieceDrop = this.onJeuPieceDrop.bind(this);
 
         this.moveQueueThink = this.moveQueueThink.bind(this);
@@ -40,8 +41,11 @@ class PageJeu extends React.Component {
         this.checkQueueThink = this.checkQueueThink.bind(this);
         this.checkQueueThinkId = null;
         this.checkQueue = [];
+        this.endroundQueueThink = this.endroundQueueThink.bind(this);
+        this.endroundQueueThinkId = null;
+        this.endroundQueue = [];
 
-        const jeuService = new JeuService(this.onConnect, this.onDisconnect, this.onMoveresult, this.onCheckresult);
+        const jeuService = new JeuService(this.onConnect, this.onDisconnect, this.onMoveresult, this.onCheckresult, this.onEndroundresult);
 
         this.state = {
             jeuService: jeuService,
@@ -52,6 +56,8 @@ class PageJeu extends React.Component {
             profiljeu2: null,
             profiljeuUp: null,
             profiljeuDown: null,
+            timerUp: null,
+            timerDown: null,
             idGagnant: null
         }
 
@@ -90,6 +96,8 @@ class PageJeu extends React.Component {
                 const profiljeu2 = await this.state.jeuService.getProfiljeu(partie?.id_joueur2);
                 const profiljeuUp = (profiljeu1?.id == sessionUsager.id_profiljeu ? profiljeu2 : profiljeu1);
                 const profiljeuDown = (profiljeu1?.id != sessionUsager.id_profiljeu ? profiljeu2 : profiljeu1);
+                const timerUp = (profiljeu1?.id == sessionUsager.id_profiljeu ? partie.timer2 : partie.timer1);
+                const timerDown = (profiljeu1?.id != sessionUsager.id_profiljeu ? partie.timer2 : partie.timer1);
                 const game = partie.historiquetables ? new Chess(partie.historiquetables) : new Chess();
 
                 await this.state.jeuService.connectPartie(partie.id);
@@ -100,6 +108,8 @@ class PageJeu extends React.Component {
                     profiljeu2: profiljeu2,
                     profiljeuUp: profiljeuUp,
                     profiljeuDown: profiljeuDown,
+                    timerUp: timerUp,
+                    timerDown: timerDown,
                     idGagnant: partie.id_gagnant
                 });
             }
@@ -113,6 +123,8 @@ class PageJeu extends React.Component {
                     profiljeu2: null,
                     profiljeuUp: null,
                     profiljeuDown: null,
+                    timerUp: null,
+                    timerDown: null,
                     idGagnant: null
                 });
             }
@@ -127,6 +139,8 @@ class PageJeu extends React.Component {
                 profiljeu2: null,
                 profiljeuUp: null,
                 profiljeuDown: null,
+                timerUp: null,
+                timerDown: null,
                 idGagnant: null
             });
         }
@@ -202,6 +216,23 @@ class PageJeu extends React.Component {
         this.checkQueue.push(check);
     }
 
+    async endroundQueueThink()
+    {
+        var endround = null;
+        if(this.state.connected)
+        {
+            while((endround = this.endroundQueue.pop()) !== undefined)
+            {
+                await this.simulateEndround(endround);
+            }
+        }
+    }
+
+    async queueEndround(endround)
+    {
+        this.endroundQueue.push(endround);
+    }
+
     async onMoveresult(moveframe)
     {
         if(moveframe.partieId == this.state.partie?.id)
@@ -230,14 +261,25 @@ class PageJeu extends React.Component {
         }
     }
 
+    async onEndroundresult(endroundframe)
+    {
+        if(endroundframe.partieId == this.state.partie?.id)
+        {
+            await this.queueEndround(endroundframe.endround);
+            if(this.endroundQueueThinkId)
+            {
+                clearTimeout(this.endroundQueueThinkId);
+                this.endroundQueueThinkId = null;
+            }
+            this.endroundQueueThinkId = setTimeout(this.endroundQueueThink, 1000);
+        }
+    }
+
     async makeAMove(move)
     {
         if(this.state.connected)
         {
-            if(this.moveQueue.length > 0)
-                return;
-
-            if(this.state.partie?.id_joueurcourant != this.state.profiljeuDown?.id)
+            if(this.state.partie.id_joueurcourant != this.state.profiljeuDown.id)
                 return;
 
             const data = {
@@ -259,20 +301,7 @@ class PageJeu extends React.Component {
             {
                 result = gameCopy.move(move);
                 await this.setStateAsync({ game: gameCopy });
-                await this.thinkJoueurCourant();
             }
-            // if(this.state.game.isGameOver())
-            // {
-            //     const idGagnant = this.state.game.turn() == "b" ? this.state.profiljeu1.id : this.state.profiljeu2.id;
-            //     await this.setStateAsync({
-            //         idGagnant: idGagnant,
-            //         partie: {
-            //             ...this.state.partie,
-            //             id_gagnant: idGagnant
-            //         }
-            //     });
-            //     await this.thinkJoueurCourant();
-            // }
             return result; // null if it wont move this time after move calculated
         }
         catch(err)
@@ -291,6 +320,24 @@ class PageJeu extends React.Component {
                 ...this.state.partie,
                 id_gagnant: check.id_gagnant
             }
+        });
+    }
+
+    async simulateEndround(endround)
+    {
+        const partie = this.state.partie;
+        const timerUp = (this.state.profiljeu1?.id == this.state.profiljeuDown.id ? endround.timer2 : partie.timer1);
+        const timerDown = (this.state.profiljeu1?.id != this.state.profiljeuDown.id ? endround.timer2 : endround.timer1);
+
+        await this.setStateAsync({
+            partie: {
+                ...this.state.partie,
+                id_joueurcourant: endround.id_joueurcourant,
+                timer1: endround.timer1,
+                timer2: endround.timer2
+            },
+            timerUp: timerUp,
+            timerDown: timerDown
         });
     }
 
@@ -351,6 +398,13 @@ class PageJeu extends React.Component {
                                         </>
                                     </div>
                                 )}
+                                { (this.state.idGagnant == null) &&
+                                    (<div class="playpage-timer right">
+                                        <>
+                                            <label class="playpage-timer-label">{ this.state.timerUp }</label>
+                                        </>
+                                    </div>
+                                )}
                             </div>
                             <div className="playpage-game-board board">
                                 <Chessboard id="BasicBoard" position={this.state.game?.fen() ?? "start"} onPieceDrop={this.onJeuPieceDrop} boardOrientation={sessionUsager.id_profiljeu == this.state.profiljeu1?.id ? "white" : "black"}/>
@@ -370,6 +424,13 @@ class PageJeu extends React.Component {
                                     (<div class="playpage-timer right">
                                         <>
                                             <label class="playpage-timer-label">{this.state.idGagnant == sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
+                                        </>
+                                    </div>
+                                )}
+                                { (this.state.idGagnant == null) &&
+                                    (<div class="playpage-timer right">
+                                        <>
+                                            <label class="playpage-timer-label">{ this.state.timerDown }</label>
                                         </>
                                     </div>
                                 )}
