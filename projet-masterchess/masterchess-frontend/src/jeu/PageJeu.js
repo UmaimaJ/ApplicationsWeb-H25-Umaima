@@ -58,7 +58,8 @@ class PageJeu extends React.Component {
             profiljeuDown: null,
             timerUp: null,
             timerDown: null,
-            idGagnant: null
+            gagnantId: null,
+            joueurcourantId: null
         }
 
         this.onBtnOuvrirListe = this.onBtnOuvrirListe.bind(this);
@@ -110,7 +111,8 @@ class PageJeu extends React.Component {
                     profiljeuDown: profiljeuDown,
                     timerUp: timerUp,
                     timerDown: timerDown,
-                    idGagnant: partie.id_gagnant
+                    gagnantId: partie.id_gagnant,
+                    joueurcourantId: partie.id_joueurcourant
                 });
             }
             else
@@ -125,7 +127,8 @@ class PageJeu extends React.Component {
                     profiljeuDown: null,
                     timerUp: null,
                     timerDown: null,
-                    idGagnant: null
+                    gagnantId: null,
+                    joueurcourantId: null
                 });
             }
         }
@@ -141,7 +144,8 @@ class PageJeu extends React.Component {
                 profiljeuDown: null,
                 timerUp: null,
                 timerDown: null,
-                idGagnant: null
+                gagnantId: null,
+                joueurcourantId: null
             });
         }
             
@@ -199,23 +203,6 @@ class PageJeu extends React.Component {
         this.moveQueue.push(move);
     }
 
-    async checkQueueThink()
-    {
-        var check = null;
-        if(this.state.connected)
-        {
-            while((check = this.checkQueue.pop()) !== undefined)
-            {
-                await this.simulateCheck(check);
-            }
-        }
-    }
-
-    async queueCheck(check)
-    {
-        this.checkQueue.push(check);
-    }
-
     async endroundQueueThink()
     {
         var endround = null;
@@ -233,10 +220,30 @@ class PageJeu extends React.Component {
         this.endroundQueue.push(endround);
     }
 
+    async checkQueueThink()
+    {
+        var check = null;
+        if(this.state.connected)
+        {
+            while((check = this.checkQueue.pop()) !== undefined)
+            {
+                await this.simulateCheck(check);
+            }
+        }
+    }
+
+    async queueCheck(check)
+    {
+        this.checkQueue.push(check);
+    }
+
     async onMoveresult(moveframe)
     {
         if(moveframe.partieId == this.state.partie?.id)
         {
+            if(this.state.partie.statut == 2)
+                return;
+
             await this.queueMove(moveframe.move);
             if(this.moveQueueThinkId)
             {
@@ -247,24 +254,13 @@ class PageJeu extends React.Component {
         }
     }
 
-    async onCheckresult(checkframe)
-    {
-        if(checkframe.partieId == this.state.partie?.id)
-        {
-            await this.queueCheck(checkframe.check);
-            if(this.checkQueueThinkId)
-            {
-                clearTimeout(this.checkQueueThinkId);
-                this.checkQueueThinkId = null;
-            }
-            this.checkQueueThinkId = setTimeout(this.checkQueueThink, 1000);
-        }
-    }
-
     async onEndroundresult(endroundframe)
     {
         if(endroundframe.partieId == this.state.partie?.id)
         {
+            if(this.state.partie.statut == 2)
+                return;
+
             await this.queueEndround(endroundframe.endround);
             if(this.endroundQueueThinkId)
             {
@@ -275,11 +271,31 @@ class PageJeu extends React.Component {
         }
     }
 
+    async onCheckresult(checkframe)
+    {
+        if(checkframe.partieId == this.state.partie?.id)
+        {
+            if(this.state.partie.statut == 2)
+                return;
+
+            await this.queueCheck(checkframe.check);
+            if(this.checkQueueThinkId)
+            {
+                clearTimeout(this.checkQueueThinkId);
+                this.checkQueueThinkId = null;
+            }
+            this.checkQueueThinkId = setTimeout(this.checkQueueThink, 1000);
+        }
+    }
+
     async makeAMove(move)
     {
         if(this.state.connected)
         {
-            if(this.state.partie.id_joueurcourant != this.state.profiljeuDown.id)
+            if(this.state.partie.statut == 2)
+                return;
+
+            if(this.state.joueurcourantId != this.state.profiljeuDown.id)
                 return;
 
             const data = {
@@ -292,6 +308,9 @@ class PageJeu extends React.Component {
     }
 
     async simulateMove(move) {
+        if(this.state.partie.statut == 2)
+            return;
+
         console.log(move);
         const gameCopy = this.state.game;
         try
@@ -312,22 +331,14 @@ class PageJeu extends React.Component {
         
     }
 
-    async simulateCheck(check)
-    {
-        await this.setStateAsync({
-            idGagnant: check.id_gagnant,
-            partie: {
-                ...this.state.partie,
-                id_gagnant: check.id_gagnant
-            }
-        });
-    }
-
     async simulateEndround(endround)
     {
+        if(this.state.partie.statut == 2)
+            return;
+
         const partie = this.state.partie;
-        const timerUp = (this.state.profiljeu1?.id == this.state.profiljeuDown.id ? endround.timer2 : partie.timer1);
-        const timerDown = (this.state.profiljeu1?.id != this.state.profiljeuDown.id ? endround.timer2 : endround.timer1);
+        const timerUp = (this.state.profiljeu1?.id == this.state.profiljeuDown.id ? endround.timer2 : endround.timer1);//2 == up
+        const timerDown = (this.state.profiljeu1?.id != this.state.profiljeuDown.id ? endround.timer2 : endround.timer1);//2 == down
 
         await this.setStateAsync({
             partie: {
@@ -337,21 +348,24 @@ class PageJeu extends React.Component {
                 timer2: endround.timer2
             },
             timerUp: timerUp,
-            timerDown: timerDown
+            timerDown: timerDown,
+            joueurcourantId: endround.id_joueurcourant
         });
     }
 
-    async thinkJoueurCourant()
+    async simulateCheck(check)
     {
-        const joueurCourantId = this.state.partie.id_joueurcourant != this.state.partie.id_joueur1 ? this.state.partie.id_joueur1 : this.state.partie.id_joueur2;
-        this.setState(
-            {
-                partie: {
-                    ...this.state.partie,
-                    id_joueurcourant: joueurCourantId
-                }
-            }
-        );
+        if(this.state.partie.statut == 2)
+            return;
+
+        await this.setStateAsync({
+            partie: {
+                ...this.state.partie,
+                id_gagnant: check.id_gagnant,
+                statut: check.statut
+            },
+            gagnantId: check.id_gagnant
+        });
     }
 
     async onJeuPieceDrop(sourceSquare, targetSquare, piece)
@@ -381,7 +395,7 @@ class PageJeu extends React.Component {
                     <div class="jeu-container">
                         <div class="playpage-game">
                             <div class="playpage-infobar">
-                                <div class="playpage-profile left clear" style={ !this.state.idGagnant ? {backgroundColor: this.state.partie?.id_joueurcourant != sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                <div class="playpage-profile left clear" style={ !this.state.gagnantId ? {backgroundColor: this.state.joueurcourantId != sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
                                         <img class="playpage-profile-pfp-icon" src={rectangle} />
                                     </div>
@@ -391,14 +405,14 @@ class PageJeu extends React.Component {
                                         <img className="playpage-profile-userflag" src={findFlagUrlByIso2Code(this.state.profiljeuUp?.pays ?? "")}></img>
                                     </div>
                                 </div>
-                                { (this.state.idGagnant != null) &&
+                                { (this.state.gagnantId != null) &&
                                     (<div class="playpage-timer right">
                                         <>
-                                            <label class="playpage-timer-label">{this.state.idGagnant != sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
+                                            <label class="playpage-timer-label">{this.state.gagnantId != sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
                                         </>
                                     </div>
                                 )}
-                                { (this.state.idGagnant == null) &&
+                                { (this.state.gagnantId == null) &&
                                     (<div class="playpage-timer right">
                                         <>
                                             <label class="playpage-timer-label">{ this.state.timerUp }</label>
@@ -410,7 +424,7 @@ class PageJeu extends React.Component {
                                 <Chessboard id="BasicBoard" position={this.state.game?.fen() ?? "start"} onPieceDrop={this.onJeuPieceDrop} boardOrientation={sessionUsager.id_profiljeu == this.state.profiljeu1?.id ? "white" : "black"}/>
                             </div>
                             <div class="playpage-infobar">
-                                <div class="playpage-profile left clear" style={ !this.state.idGagnant ? {backgroundColor: this.state.partie?.id_joueurcourant == sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                <div class="playpage-profile left clear" style={ !this.state.gagnantId ? {backgroundColor: this.state.joueurcourantId == sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
                                         <img class="playpage-profile-pfp-icon" src={rectangle} />
                                     </div>
@@ -420,14 +434,14 @@ class PageJeu extends React.Component {
                                         <img className="playpage-profile-userflag" src={findFlagUrlByIso2Code(this.state.profiljeuDown?.pays ?? "")}></img>
                                     </div>
                                 </div>
-                                { (this.state.idGagnant != null) &&
+                                { (this.state.gagnantId != null) &&
                                     (<div class="playpage-timer right">
                                         <>
-                                            <label class="playpage-timer-label">{this.state.idGagnant == sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
+                                            <label class="playpage-timer-label">{this.state.gagnantId == sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
                                         </>
                                     </div>
                                 )}
-                                { (this.state.idGagnant == null) &&
+                                { (this.state.gagnantId == null) &&
                                     (<div class="playpage-timer right">
                                         <>
                                             <label class="playpage-timer-label">{ this.state.timerDown }</label>

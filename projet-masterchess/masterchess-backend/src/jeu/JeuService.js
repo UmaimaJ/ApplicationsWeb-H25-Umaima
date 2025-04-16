@@ -57,13 +57,16 @@ class JeuService{
             return await this.onMove(event, socket);
         };
         boundMove = boundMove.bind(this);
-        // const idBoundMove = this.partiesCache[data.partieId].boundMoves.push(boundMove);
         socket.on("move", boundMove);
 
         //premier check peu importe qui est le joueur courant
+        await this.sleep(2000);
         const checkresult = await this.doCheck(data.partieId);
-        if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
-            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check.");
+        if(checkresult)
+        {
+            if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
+                throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+        }
 
         //premier check et move est fait pour le bot sur onConnect
         if(this.partiesCache[data.partieId].id_joueurcourant == -1)
@@ -288,16 +291,10 @@ class JeuService{
                 const checkresult = await this.doTimeoutCheck(partieId, newjoueurcourant);
                 if(checkresult)
                 {
-                    try{
-                        if(!(await partie.socketJoueur1?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
-                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
-                        if(!(await partie.socketJoueur2?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
-                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
-                    }
-                    catch(err)
-                    {
-                        console.log(err);
-                    }
+                    if(!(await partie.socketJoueur1?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
+                        console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    if(!(await partie.socketJoueur2?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
+                        console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
                 }
                 this.savePartie(this.partiesCache[partieId]);
             }, (this.maxtimer - timer1) + 100) : null,
@@ -306,16 +303,10 @@ class JeuService{
                 const checkresult = await this.doTimeoutCheck(partieId, newjoueurcourant);
                 if(checkresult)
                 {
-                    try{
-                        if(!(await partie.socketJoueur1?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
-                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
-                        if(!(await partie.socketJoueur2?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
-                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
-                    }
-                    catch(err)
-                    {
-                        console.log(err);
-                    }
+                    if(!(await partie.socketJoueur1?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
+                        console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    if(!(await partie.socketJoueur2?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
+                        console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
                 }
                 this.savePartie(this.partiesCache[partieId]);
             }, (this.maxtimer - timer2) + 100) : null
