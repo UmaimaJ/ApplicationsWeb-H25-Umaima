@@ -58,7 +58,7 @@ class JeuService{
         boundMove = boundMove.bind(this);
         socket.on("move", boundMove);
 
-        if(this.partiesCache[data.partieId].socketJoueur1 && this.partiesCache[data.partieId].socketJoueur2)
+        if((this.partiesCache[data.partieId].socketJoueur1 || this.partiesCache[data.partieId].id_joueur1 == -1) && (this.partiesCache[data.partieId].socketJoueur2 || this.partiesCache[data.partieId].id_joueur2 == -1))
         {
             await this.onStart(data);
         }
