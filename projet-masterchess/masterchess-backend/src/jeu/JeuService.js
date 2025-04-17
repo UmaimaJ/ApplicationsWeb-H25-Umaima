@@ -32,7 +32,6 @@ class JeuService{
         if(!this.partiesCache[data.partieId])
         {
             this.partiesCache[data.partieId] = await this.selectPartie(data.partieId);
-            this.partiesCache[data.partieId].boundMoves = [];
         }
 
         //partie existe
@@ -59,35 +58,63 @@ class JeuService{
         boundMove = boundMove.bind(this);
         socket.on("move", boundMove);
 
-        //premier check peu importe qui est le joueur courant
-        await this.sleep(2000);
-        const checkresult = await this.doCheck(data.partieId);
-        if(checkresult)
+        if(this.partiesCache[data.partieId].socketJoueur1 && this.partiesCache[data.partieId].socketJoueur2)
         {
-            if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
-                throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+            await this.onStart(data);
+        }
+    }
+
+    async onStart(data)
+    {
+        var sockets = [];
+        if(this.partiesCache[data.partieId].socketJoueur1)
+            sockets.push(this.partiesCache[data.partieId].socketJoueur1);
+        if(this.partiesCache[data.partieId].socketJoueur2)
+            sockets.push(this.partiesCache[data.partieId].socketJoueur2);
+
+        const checkresult = await this.doCheck(data.partieId);
+        for(var i=0; i< sockets.length; i++)
+        {
+            const socket = sockets.at(i);
+            if(checkresult)
+            {
+                if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
+                    throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+            }
         }
 
         //premier check et move est fait pour le bot sur onConnect
         if(this.partiesCache[data.partieId].id_joueurcourant == -1)
         {
             await this.sleep(2000);
-
+        
             const moveresult = await this.doBotMove(data.partieId);
             if(moveresult)
             {
-                if(!await socket.timeout(10000).emit("moveresult", { move: moveresult, partieId: data.partieId}))
-                    throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
+                for(var i=0; i< sockets.length; i++)
+                {
+                    const socket = sockets.at(i);
+                    if(!await socket.timeout(10000).emit("moveresult", { move: moveresult, partieId: data.partieId}))
+                        throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
+                }
                 const endroundresult = await this.doEndround(data.partieId);
                 if(endroundresult)
                 {
-                    if(!await socket.timeout(10000).emit("endroundresult", { endround: endroundresult, partieId: data.partieId}))
-                        throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du endround event.");
+                    for(var i=0; i< sockets.length; i++)
+                    {
+                        const socket = sockets.at(i);
+                        if(!await socket.timeout(10000).emit("endroundresult", { endround: endroundresult, partieId: data.partieId}))
+                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du endround event.");
+                    }
                     const checkresult = await this.doCheck(data.partieId);
                     if(checkresult)
                     {
-                        if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
-                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                        for(var i=0; i< sockets.length; i++)
+                        {
+                            const socket = sockets.at(i);
+                            if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
+                                throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                        }
                     }
                 }
             }
@@ -152,21 +179,39 @@ class JeuService{
             if(this.partiesCache[data.partieId].id_joueurcourant != data.profiljeuId)
                 return;
 
+            var sockets = [];
+            if(this.partiesCache[data.partieId].socketJoueur1)
+                sockets.push(this.partiesCache[data.partieId].socketJoueur1);
+            if(this.partiesCache[data.partieId].socketJoueur2)
+                sockets.push(this.partiesCache[data.partieId].socketJoueur2);
+
             const moveresult = await this.doMove(data.partieId, move);
             if(moveresult)
             {
-                if(!await socket.timeout(10000).emit("moveresult", { move: moveresult, partieId: data.partieId}))
-                    throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
+                for(var i=0; i< sockets.length; i++)
+                {
+                    const socket = sockets.at(i);
+                    if(!await socket.timeout(10000).emit("moveresult", { move: moveresult, partieId: data.partieId}))
+                        throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
+                }
                 const endroundresult = await this.doEndround(data.partieId);
                 if(endroundresult)
                 {
-                    if(!await socket.timeout(10000).emit("endroundresult", { endround: endroundresult, partieId: data.partieId}))
-                        throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du endround event.");
+                    for(var i=0; i< sockets.length; i++)
+                    {
+                        const socket = sockets.at(i);
+                        if(!await socket.timeout(10000).emit("endroundresult", { endround: endroundresult, partieId: data.partieId}))
+                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du endround event.");
+                    }
                     const checkresult = await this.doCheck(data.partieId);
                     if(checkresult)
                     {
-                        if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
-                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                        for(var i=0; i< sockets.length; i++)
+                        {
+                            const socket = sockets.at(i);
+                            if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
+                                throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                        }
                     }
                 }
             }
@@ -178,18 +223,30 @@ class JeuService{
                 const moveresult = await this.doBotMove(data.partieId);
                 if(moveresult)
                 {
-                    if(!await socket.timeout(10000).emit("moveresult", { move: moveresult, partieId: data.partieId}))
-                        throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
+                    for(var i=0; i< sockets.length; i++)
+                    {
+                        const socket = sockets.at(i);
+                        if(!await socket.timeout(10000).emit("moveresult", { move: moveresult, partieId: data.partieId}))
+                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du mouvement de piece.");
+                    }
                     const endroundresult = await this.doEndround(data.partieId);
                     if(endroundresult)
                     {
-                        if(!await socket.timeout(10000).emit("endroundresult", { endround: endroundresult, partieId: data.partieId}))
-                            throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du endround event.");
+                        for(var i=0; i< sockets.length; i++)
+                        {
+                            const socket = sockets.at(i);
+                            if(!await socket.timeout(10000).emit("endroundresult", { endround: endroundresult, partieId: data.partieId}))
+                                throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du endround event.");
+                        }
                         const checkresult = await this.doCheck(data.partieId);
                         if(checkresult)
                         {
-                            if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
-                                throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                            for(var i=0; i< sockets.length; i++)
+                            {
+                                const socket = sockets.at(i);
+                                if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: data.partieId}))
+                                    throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                            }
                         }
                     }
                 }
