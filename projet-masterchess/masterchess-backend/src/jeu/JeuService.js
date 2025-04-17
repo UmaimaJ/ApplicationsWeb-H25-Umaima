@@ -335,6 +335,12 @@ class JeuService{
             timer2: timer2
         };
 
+        var sockets = [];
+        if(this.partiesCache[partieId].socketJoueur1)
+            sockets.push(this.partiesCache[partieId].socketJoueur1);
+        if(this.partiesCache[partieId].socketJoueur2)
+            sockets.push(this.partiesCache[partieId].socketJoueur2);
+
         //consume old timer if its still going
         clearTimeout(oldnumjoueur == 1 ? partie.timer1functionId : partie.timer2functionId);
         const partieEndroundresultDelta = {
@@ -345,25 +351,29 @@ class JeuService{
             timer2roundstart: newjoueurcourant == partie.id_joueur2 ? Date.now() : (partie.timer2roundstart ?? Date.now()),
             timer1functionId: newnumjoueur == 1 ? setTimeout(async () => {
                 const partie = this.partiesCache[partieId];
-                const checkresult = await this.doTimeoutCheck(partieId, newjoueurcourant);
+                const checkresult = await this.doCheck(partieId);
                 if(checkresult)
                 {
-                    if(!(await partie.socketJoueur1?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
-                        console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
-                    if(!(await partie.socketJoueur2?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
-                        console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    for(var i=0; i< sockets.length; i++)
+                    {
+                        const socket = sockets.at(i);
+                        if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}))
+                            console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    }
                 }
                 this.savePartie(this.partiesCache[partieId]);
             }, (this.maxtimer - timer1) + 100) : null,
             timer2functionId: newnumjoueur == 2 ? setTimeout(async () => {
                 const partie = this.partiesCache[partieId];
-                const checkresult = await this.doTimeoutCheck(partieId, newjoueurcourant);
+                const checkresult = await this.doCheck(partieId);
                 if(checkresult)
                 {
-                    if(!(await partie.socketJoueur1?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
-                        console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
-                    if(!(await partie.socketJoueur2?.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}) ?? false))
-                        console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    for(var i=0; i< sockets.length; i++)
+                    {
+                        const socket = sockets.at(i);
+                        if(!await socket.timeout(10000).emit("checkresult", { check: checkresult, partieId: partieId}))
+                            console.log("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
+                    }
                 }
                 this.savePartie(this.partiesCache[partieId]);
             }, (this.maxtimer - timer2) + 100) : null
