@@ -59,7 +59,10 @@ class PageJeu extends React.Component {
             timerUp: null,
             timerDown: null,
             gagnantId: null,
-            joueurcourantId: null
+            joueurcourantId: null,
+            timerfuncIdUp: null,
+            timerfuncIdDown: null,
+            timersPartis: false
         }
 
         this.onBtnOuvrirListe = this.onBtnOuvrirListe.bind(this);
@@ -114,6 +117,12 @@ class PageJeu extends React.Component {
                     gagnantId: partie.id_gagnant,
                     joueurcourantId: partie.id_joueurcourant
                 });
+
+                if(this.state.timerUp !== null && this.state.timerDown !== null)
+                {
+                    if(!this.state.timersPartis)
+                        await this.startTimers();
+                }
             }
             else
             {
@@ -349,7 +358,46 @@ class PageJeu extends React.Component {
             },
             timerUp: timerUp,
             timerDown: timerDown,
-            joueurcourantId: endround.id_joueurcourant
+            joueurcourantId: endround.id_joueurcourant,
+        });
+
+        //les deux joueurs ont fait leur premier move
+        if(this.state.timerUp !== null && this.state.timerDown !== null)
+        {
+            if(!this.state.timersPartis)
+                await this.startTimers();
+        }
+    }
+
+    async startTimers()
+    {
+        const timerfuncIdUp = this.state.timerfuncIdUp? this.state.timerfuncIdUp : setInterval(async () => {
+            await this.setStateAsync({
+                timerUp: this.state.joueurcourantId == this.state.profiljeuUp.id ? this.state.timerUp + 1000 : this.state.timerUp
+            })
+        }, 1000);
+        const timerfuncIdDown = this.state.timerfuncIdDown? this.state.timerfuncIdDown : setInterval(async () => {
+            await this.setStateAsync({
+                timerDown: this.state.joueurcourantId == this.state.profiljeuDown.id ? this.state.timerDown + 1000 : this.state.timerDown
+            })
+        }, 1000);
+        await this.setStateAsync({
+            timerfuncIdUp: timerfuncIdUp,
+            timerfuncIdDown: timerfuncIdDown,
+            timersPartis: true
+        });
+    }
+
+    async stopTimers()
+    {
+        if(this.state.timerfuncIdUp)
+            clearInterval(this.state.timerfuncIdUp);
+        if(this.state.timerfuncIdDown)
+            clearInterval(this.state.timerfuncIdDown);
+        await this.setStateAsync({
+            timerfuncIdUp: null,
+            timerfuncIdDown: null,
+            timersPartis: false
         });
     }
 
@@ -357,6 +405,11 @@ class PageJeu extends React.Component {
     {
         if(this.state.partie.statut == 2)
             return;
+
+        if(check.id_gagnant)
+        {
+            await this.stopTimers();
+        }
 
         await this.setStateAsync({
             partie: {
@@ -415,7 +468,7 @@ class PageJeu extends React.Component {
                                 { (this.state.gagnantId == null) &&
                                     (<div class="playpage-timer right">
                                         <>
-                                            <label class="playpage-timer-label">{ this.state.timerUp }</label>
+                                            <label class="playpage-timer-label">{ Math.floor((60000 - this.state.timerUp) / 1000) }</label>
                                         </>
                                     </div>
                                 )}
@@ -444,7 +497,7 @@ class PageJeu extends React.Component {
                                 { (this.state.gagnantId == null) &&
                                     (<div class="playpage-timer right">
                                         <>
-                                            <label class="playpage-timer-label">{ this.state.timerDown }</label>
+                                            <label class="playpage-timer-label">{ Math.floor((60000 - this.state.timerDown) / 1000) }</label>
                                         </>
                                     </div>
                                 )}
