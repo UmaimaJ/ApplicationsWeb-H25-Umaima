@@ -18,7 +18,7 @@ class JeuService{
         this.onMove = this.onMove.bind(this);
 
         this.io.engine.use(sessionMiddleware);
-        this.io.on("connection", this.onConnect);
+        this.io.on("connect", this.onConnect);
         this.io.on("disconnect", this.onDisconnect);
     }
 
@@ -30,9 +30,7 @@ class JeuService{
         }
 
         if(!this.partiesCache[data.partieId])
-        {
             this.partiesCache[data.partieId] = await this.selectPartie(data.partieId);
-        }
 
         //partie existe
         if(!this.partiesCache[data.partieId])
@@ -58,10 +56,45 @@ class JeuService{
         boundMove = boundMove.bind(this);
         socket.on("move", boundMove);
 
-        if((this.partiesCache[data.partieId].socketJoueur1 || this.partiesCache[data.partieId].id_joueur1 == -1) && (this.partiesCache[data.partieId].socketJoueur2 || this.partiesCache[data.partieId].id_joueur2 == -1))
+        if((this.partiesCache[data.partieId].socketJoueur1 || this.partiesCache[data.partieId].id_joueur1 == -1)
+            && (this.partiesCache[data.partieId].socketJoueur2 || this.partiesCache[data.partieId].id_joueur2 == -1))
         {
-            await this.onStart(data);
+            if(this.partiesCache[data.partieId].statut == 0)
+                await this.onStart(data);
         }
+
+        var sockets = [];
+        if(this.partiesCache[data.partieId].socketJoueur1)
+            sockets.push(this.partiesCache[data.partieId].socketJoueur1);
+        if(this.partiesCache[data.partieId].socketJoueur2)
+            sockets.push(this.partiesCache[data.partieId].socketJoueur2);
+
+        const endroundresult = await this.doUpdateTimers(data.partieId);
+        for(var i=0; i< sockets.length; i++)
+        {
+            const socket = sockets.at(i);
+            if(endroundresult)
+            {
+                if(!await socket.timeout(10000).emit("endroundresult", { endround: endroundresult, partieId: data.partieId}))
+                    throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du endroundresult d'etat du jeu.");
+            }
+        }
+        await this.savePartie(this.partiesCache[data.partieId]);
+    }
+
+    async doUpdateTimers(partieId)
+    {
+        var partie = this.partiesCache[partieId];
+
+        if(!partie)
+            return null;
+
+        if(partie.statut == 2)
+            return null;
+
+        const endroundresult = await this.doEndround(partieId, false);
+
+        return endroundresult;
     }
 
     async onStart(data)
@@ -82,6 +115,7 @@ class JeuService{
                     throw new Error("On a renconre une erreur lors de la diffusion du resultat server-side du check d'etat du jeu.");
             }
         }
+        await this.savePartie(this.partiesCache[data.partieId]);
 
         //premier check et move est fait pour le bot sur onConnect
         if(this.partiesCache[data.partieId].id_joueurcourant == -1)
@@ -144,9 +178,6 @@ class JeuService{
             if(numJoueurConnection == 2)
                 if(this.partiesCache[data.partieId].socketJoueur2.id == socket.id)
                     delete this.partiesCache[data.partieId].socketJoueur2;
-
-            await this.savePartie(this.partiesCache[data.partieId]);
-            
         }
     }
 
@@ -314,25 +345,30 @@ class JeuService{
 
     }
 
-    async doEndround(partieId)
+    async doEndround(partieId, endTheRound = true)
     {
         var partie = this.partiesCache[partieId];
 
         if(partie.statut == 2)
             return null;
 
-        const oldjoueurcourant = partie.id_joueurcourant ?? partie.id_joueur2;
-        const newjoueurcourant = await this.prochainProfiljeu(partieId);
+        const oldjoueurcourant = endTheRound ? partie.id_joueurcourant : await this.prochainProfiljeu(partieId);
+        const newjoueurcourant = endTheRound ? await this.prochainProfiljeu(partieId) : partie.id_joueurcourant;
         const oldnumjoueur = oldjoueurcourant == partie.id_joueur2 ? 2 : 1;
         const newnumjoueur = newjoueurcourant == partie.id_joueur2 ? 2 : 1;
 
-        const timer1 = oldjoueurcourant == partie.id_joueur1 ? partie.timer1 + (Date.now() - (partie.timer1roundstart ?? Date.now())) : partie.timer1;
-        const timer2 = oldjoueurcourant == partie.id_joueur2 ? partie.timer2 + (Date.now() - (partie.timer2roundstart ?? Date.now())) : partie.timer2;
+        const timer1roundsum = oldjoueurcourant == partie.id_joueur1 ? ( endTheRound ? partie.timer1roundsum + (Date.now() - (partie.timer1roundstart ?? Date.now())) : partie.timer1roundsum ) : partie.timer1roundsum;
+        const timer2roundsum = oldjoueurcourant == partie.id_joueur2 ? ( endTheRound ? partie.timer2roundsum + (Date.now() - (partie.timer2roundstart ?? Date.now())) : partie.timer2roundsum ) : partie.timer1roundsum;
+
+        const timer1roundstart = endTheRound ? (newjoueurcourant == partie.id_joueur1 ? Date.now() : null) : partie.timer1roundstart;
+        const timer2roundstart = endTheRound ? (newjoueurcourant == partie.id_joueur2 ? Date.now() : null) : partie.timer2roundstart;
 
         var endroundresult = {
             id_joueurcourant: newjoueurcourant,
-            timer1: timer1,
-            timer2: timer2
+            timer1roundsum: timer1roundsum,
+            timer2roundsum: timer2roundsum,
+            timer1roundstart: timer1roundstart,
+            timer2roundstart: timer2roundstart
         };
 
         var sockets = [];
@@ -345,13 +381,18 @@ class JeuService{
         clearTimeout(oldnumjoueur == 1 ? partie.timer1functionId : partie.timer2functionId);
         const partieEndroundresultDelta = {
             id_joueurcourant: newjoueurcourant,
-            timer1: timer1,
-            timer2: timer2,
-            timer1roundstart: newjoueurcourant == partie.id_joueur1 ? Date.now() : (partie.timer1roundstart ?? Date.now()),
-            timer2roundstart: newjoueurcourant == partie.id_joueur2 ? Date.now() : (partie.timer2roundstart ?? Date.now()),
+            timer1roundsum: timer1roundsum,
+            timer2roundsum: timer2roundsum,
+            timer1roundstart: timer1roundstart,
+            timer2roundstart: timer2roundstart,
             timer1functionId: newnumjoueur == 1 ? setTimeout(async () => {
-                const partie = this.partiesCache[partieId];
-                const checkresult = await this.doCheck(partieId);
+                var sockets = [];
+                if(this.partiesCache[partieId].socketJoueur1)
+                    sockets.push(this.partiesCache[partieId].socketJoueur1);
+                if(this.partiesCache[partieId].socketJoueur2)
+                    sockets.push(this.partiesCache[partieId].socketJoueur2);
+
+                const checkresult = await this.doTimeoutCheck(partieId, newjoueurcourant);
                 if(checkresult)
                 {
                     for(var i=0; i< sockets.length; i++)
@@ -362,10 +403,14 @@ class JeuService{
                     }
                 }
                 this.savePartie(this.partiesCache[partieId]);
-            }, (this.maxtimer - timer1) + 100) : null,
+            }, (this.maxtimer - timer1roundsum) + 100) : null,
             timer2functionId: newnumjoueur == 2 ? setTimeout(async () => {
-                const partie = this.partiesCache[partieId];
-                const checkresult = await this.doCheck(partieId);
+                var sockets = [];
+                if(this.partiesCache[partieId].socketJoueur1)
+                    sockets.push(this.partiesCache[partieId].socketJoueur1);
+                if(this.partiesCache[partieId].socketJoueur2)
+                    sockets.push(this.partiesCache[partieId].socketJoueur2);
+                const checkresult = await this.doTimeoutCheck(partieId, newjoueurcourant);
                 if(checkresult)
                 {
                     for(var i=0; i< sockets.length; i++)
@@ -376,7 +421,7 @@ class JeuService{
                     }
                 }
                 this.savePartie(this.partiesCache[partieId]);
-            }, (this.maxtimer - timer2) + 100) : null
+            }, (this.maxtimer - timer2roundsum) + 100) : null
         };
         
         partie = {
@@ -430,8 +475,8 @@ class JeuService{
         const autrejoueur = joueurcourant == partie.id_joueur2 ? partie.id_joueur1 : partie.id_joueur2;
         const numjoueur = joueurcourant == partie.id_joueur2 ? 2 : 1;
 
-        const timer1 = joueurcourant == partie.id_joueur1 ? partie.timer1 + (Date.now() - (partie.timer1roundstart ?? Date.now())) : partie.timer1;
-        const timer2 = joueurcourant == partie.id_joueur2 ? partie.timer2 + (Date.now() - (partie.timer2roundstart ?? Date.now())) : partie.timer2;
+        const timer1 = joueurcourant == partie.id_joueur1 ? partie.timer1roundsum + (Date.now() - (partie.timer1roundstart ?? Date.now())) : partie.timer1roundsum;
+        const timer2 = joueurcourant == partie.id_joueur2 ? partie.timer2roundsum + (Date.now() - (partie.timer2roundstart ?? Date.now())) : partie.timer2roundsum;
         const partiefiniemats = gameCopy.isGameOver();
         const partiefinietimer =  numjoueur == 1 ? timer1 > this.maxtimer : timer2 > this.maxtimer;
 
@@ -575,8 +620,8 @@ class JeuService{
                 datedebut = ?,
                 datefin = ?,
                 id_joueurcourant = ?,
-                timer1 = ?,
-                timer2 = ?
+                timer1roundsum = ?,
+                timer2roundsum = ?
                 WHERE id = ?
                 `,
                 [

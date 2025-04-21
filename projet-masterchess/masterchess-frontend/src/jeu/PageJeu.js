@@ -58,6 +58,8 @@ class PageJeu extends React.Component {
             profiljeuDown: null,
             timerUp: null,
             timerDown: null,
+            timerUproundstart: null,
+            timerDownroundstart: null,
             gagnantId: null,
             joueurcourantId: null,
             timerfuncIdUp: null,
@@ -88,6 +90,12 @@ class PageJeu extends React.Component {
             this.messagesEnd.scrollIntoView({ behavior: "smooth" });
     }
 
+    async componentWillUnmount()
+    {
+        await this.stopTimers();
+        await this.updatePartie(null);
+    }
+
     async updatePartie(idPartie, sessionUsager)
     {
         if(idPartie)
@@ -100,8 +108,10 @@ class PageJeu extends React.Component {
                 const profiljeu2 = await this.state.jeuService.getProfiljeu(partie?.id_joueur2);
                 const profiljeuUp = (profiljeu1?.id == sessionUsager.id_profiljeu ? profiljeu2 : profiljeu1);
                 const profiljeuDown = (profiljeu1?.id != sessionUsager.id_profiljeu ? profiljeu2 : profiljeu1);
-                const timerUp = (profiljeu1?.id == sessionUsager.id_profiljeu ? partie.timer2 : partie.timer1);
-                const timerDown = (profiljeu1?.id != sessionUsager.id_profiljeu ? partie.timer2 : partie.timer1);
+                const timerUp = (profiljeu1?.id == sessionUsager.id_profiljeu ? partie.timer2roundsum : partie.timer1roundsum);
+                const timerDown = (profiljeu1?.id != sessionUsager.id_profiljeu ? partie.timer2roundsum : partie.timer1roundsum);
+                const timerUproundstart = (profiljeu1?.id == sessionUsager.id_profiljeu ? partie.timer2roundstart : partie.timer1roundstart);
+                const timerDownroundstart = (profiljeu1?.id != sessionUsager.id_profiljeu ? partie.timer2roundstart : partie.timer1roundstart);
                 const game = partie.historiquetables ? new Chess(partie.historiquetables) : new Chess();
 
                 await this.state.jeuService.connectPartie(partie.id);
@@ -114,11 +124,15 @@ class PageJeu extends React.Component {
                     profiljeuDown: profiljeuDown,
                     timerUp: timerUp,
                     timerDown: timerDown,
+                    timerUproundstart: timerUproundstart,
+                    timerDownroundstart: timerDownroundstart,
+                    timerDisplayUp: timerUp,
+                    timerDisplayDown: timerDown,
                     gagnantId: partie.id_gagnant,
-                    joueurcourantId: partie.id_joueurcourant
+                    joueurcourantId: partie.id_joueurcourant,
                 });
 
-                if(this.state.timerUp !== null && this.state.timerDown !== null)
+                if(this.state.timerUp && this.state.timerDown)
                 {
                     if(!this.state.timersPartis)
                         await this.startTimers();
@@ -136,8 +150,13 @@ class PageJeu extends React.Component {
                     profiljeuDown: null,
                     timerUp: null,
                     timerDown: null,
+                    timerDisplayUp: null,
+                    timerDisplayDown: null,
                     gagnantId: null,
-                    joueurcourantId: null
+                    joueurcourantId: null,
+                    timerfuncIdUp: null,
+                    timerfuncIdDown: null,
+                    timersPartis: false
                 });
             }
         }
@@ -153,8 +172,13 @@ class PageJeu extends React.Component {
                 profiljeuDown: null,
                 timerUp: null,
                 timerDown: null,
+                timerDisplayUp: null,
+                timerDisplayDown: null,
                 gagnantId: null,
-                joueurcourantId: null
+                joueurcourantId: null,
+                timerfuncIdUp: null,
+                timerfuncIdDown: null,
+                timersPartis: false
             });
         }
             
@@ -259,7 +283,7 @@ class PageJeu extends React.Component {
                 clearTimeout(this.moveQueueThinkId);
                 this.moveQueueThinkId = null;
             }
-            this.moveQueueThinkId = setTimeout(this.moveQueueThink, 1000);
+            this.moveQueueThinkId = setTimeout(this.moveQueueThink, 100);
         }
     }
 
@@ -276,7 +300,7 @@ class PageJeu extends React.Component {
                 clearTimeout(this.endroundQueueThinkId);
                 this.endroundQueueThinkId = null;
             }
-            this.endroundQueueThinkId = setTimeout(this.endroundQueueThink, 1000);
+            this.endroundQueueThinkId = setTimeout(this.endroundQueueThink, 100);
         }
     }
 
@@ -293,7 +317,7 @@ class PageJeu extends React.Component {
                 clearTimeout(this.checkQueueThinkId);
                 this.checkQueueThinkId = null;
             }
-            this.checkQueueThinkId = setTimeout(this.checkQueueThink, 1000);
+            this.checkQueueThinkId = setTimeout(this.checkQueueThink, 100);
         }
     }
 
@@ -320,7 +344,6 @@ class PageJeu extends React.Component {
         if(this.state.partie.statut == 2)
             return;
 
-        console.log(move);
         const gameCopy = this.state.game;
         try
         {
@@ -346,18 +369,26 @@ class PageJeu extends React.Component {
             return;
 
         const partie = this.state.partie;
-        const timerUp = (this.state.profiljeu1?.id == this.state.profiljeuDown.id ? endround.timer2 : endround.timer1);//2 == up
-        const timerDown = (this.state.profiljeu1?.id != this.state.profiljeuDown.id ? endround.timer2 : endround.timer1);//2 == down
+        const timerUp = (this.state.profiljeu1?.id == this.state.profiljeuDown.id ? endround.timer2roundsum : endround.timer1roundsum);//2 == up
+        const timerDown = (this.state.profiljeu1?.id != this.state.profiljeuDown.id ? endround.timer2roundsum : endround.timer1roundsum);//2 == down
+        const timerUproundstart = (this.state.profiljeu1?.id == this.state.profiljeuDown.id ? endround.timer2roundstart : endround.timer1roundstart);//2 == up
+        const timerDownroundstart = (this.state.profiljeu1?.id != this.state.profiljeuDown.id ? endround.timer2roundstart : endround.timer1roundstart);//2 == down
 
         await this.setStateAsync({
             partie: {
                 ...this.state.partie,
                 id_joueurcourant: endround.id_joueurcourant,
-                timer1: endround.timer1,
-                timer2: endround.timer2
+                timer1roundsum: endround.timer1roundsum,
+                timer2roundsum: endround.timer2roundsum,
+                timer1roundstart: endround.timer1roundstart,
+                timer2roundstart: endround.timer2roundstart
             },
             timerUp: timerUp,
             timerDown: timerDown,
+            timerDisplayUp: timerUp,
+            timerDisplayDown: timerDown,
+            timerUproundstart: timerUproundstart,
+            timerDownroundstart: timerDownroundstart,
             joueurcourantId: endround.id_joueurcourant,
         });
 
@@ -371,16 +402,16 @@ class PageJeu extends React.Component {
 
     async startTimers()
     {
-        const timerfuncIdUp = this.state.timerfuncIdUp? this.state.timerfuncIdUp : setInterval(async () => {
+        var timerfuncIdUp = this.state.timerfuncIdUp ? this.state.timerfuncIdUp : setInterval((async () => {
             await this.setStateAsync({
-                timerUp: this.state.joueurcourantId == this.state.profiljeuUp.id ? this.state.timerUp + 1000 : this.state.timerUp
-            })
-        }, 1000);
-        const timerfuncIdDown = this.state.timerfuncIdDown? this.state.timerfuncIdDown : setInterval(async () => {
+                timerDisplayUp: this.state.timerUproundstart ? this.state.timerUp + (Date.now() - (this.state.timerUproundstart ?? Date.now())) : this.state.timerUp
+            });
+        }).bind(this), 1000);
+        var timerfuncIdDown = this.state.timerfuncIdDown ? this.state.timerfuncIdDown : setInterval((async () => {
             await this.setStateAsync({
-                timerDown: this.state.joueurcourantId == this.state.profiljeuDown.id ? this.state.timerDown + 1000 : this.state.timerDown
-            })
-        }, 1000);
+                timerDisplayDown: this.state.timerDownroundstart ? this.state.timerDown + (Date.now() - (this.state.timerDownroundstart ?? Date.now())) : this.state.timerDown
+            });
+        }).bind(this), 1000);
         await this.setStateAsync({
             timerfuncIdUp: timerfuncIdUp,
             timerfuncIdDown: timerfuncIdDown,
@@ -399,6 +430,11 @@ class PageJeu extends React.Component {
             timerfuncIdDown: null,
             timersPartis: false
         });
+    }
+
+    async sleep(ms)
+    {
+        return await new Promise(resolve => setTimeout(resolve, ms));
     }
 
     async simulateCheck(check)
@@ -468,7 +504,7 @@ class PageJeu extends React.Component {
                                 { (this.state.gagnantId == null) &&
                                     (<div class="playpage-timer right">
                                         <>
-                                            <label class="playpage-timer-label">{ Math.floor((60000 - this.state.timerUp) / 1000) }</label>
+                                            <label class="playpage-timer-label">{ Math.floor((60000 - this.state.timerDisplayUp) / 1000) }</label>
                                         </>
                                     </div>
                                 )}
@@ -497,7 +533,7 @@ class PageJeu extends React.Component {
                                 { (this.state.gagnantId == null) &&
                                     (<div class="playpage-timer right">
                                         <>
-                                            <label class="playpage-timer-label">{ Math.floor((60000 - this.state.timerDown) / 1000) }</label>
+                                            <label class="playpage-timer-label">{ Math.floor((60000 - this.state.timerDisplayDown) / 1000) }</label>
                                         </>
                                     </div>
                                 )}
