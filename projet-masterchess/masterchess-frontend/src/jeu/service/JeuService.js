@@ -7,7 +7,7 @@ import React from 'react';
 export class JeuService {
     constructor(onConnection, onDisconnect, onMoveresult, onCheckresult, onEndroundresult)
     {
-        this.io = io(axios.defaults.baseURL, {
+        this.io = io(axios.defaults.baseURL + "/jeuservice", {
             withCredentials: true,
             autoConnect: false
         });

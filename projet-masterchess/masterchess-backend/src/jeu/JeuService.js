@@ -7,6 +7,7 @@ class JeuService{
         this.io = new Server(httpServer, {
             cors: corsOptions
         });
+        this.io.engine.use(sessionMiddleware);
 
         this.mysql = mysqlConnection;
 
@@ -17,9 +18,9 @@ class JeuService{
         this.onDisconnect = this.onDisconnect.bind(this);
         this.onMove = this.onMove.bind(this);
 
-        this.io.engine.use(sessionMiddleware);
-        this.io.on("connect", this.onConnect);
-        this.io.on("disconnect", this.onDisconnect);
+        const namespace = this.io.of("/jeuservice");
+        namespace.on("connect", this.onConnect);
+        namespace.on("disconnect", this.onDisconnect);
     }
 
     async onConnect(socket)
