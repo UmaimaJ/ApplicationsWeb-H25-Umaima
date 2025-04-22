@@ -1,5 +1,6 @@
 import express from "express";
 import https from "https";
+import { Server } from "socket.io";
 import fs from "fs";
 import mysql from "mysql2/promise";
 import cors from "cors";
@@ -53,7 +54,12 @@ const sessionMiddleware = session({
     }
 })
 
-const jeuService = new JeuService(server, mymysql, sessionMiddleware, corsOptions);
+var myio = new Server(server, {
+    cors: corsOptions
+});
+myio.engine.use(sessionMiddleware);
+
+const jeuService = new JeuService(myio, mymysql);
 const partiesService = new PartiesService(mymysql);
 const comptesService = new ComptesService(mymysql);
 const serviceCours = new ServiceCours(mymysql);

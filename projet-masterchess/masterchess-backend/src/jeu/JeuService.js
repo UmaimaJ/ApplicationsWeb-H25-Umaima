@@ -1,13 +1,9 @@
-import { Server } from "socket.io";
 import { Chess } from "chess.js";
 
 class JeuService{
-    constructor(httpServer, mysqlConnection, sessionMiddleware, corsOptions)
+    constructor(io, mysqlConnection)
     {
-        this.io = new Server(httpServer, {
-            cors: corsOptions
-        });
-        this.io.engine.use(sessionMiddleware);
+        this.io = io;
 
         this.mysql = mysqlConnection;
 
