@@ -14,6 +14,7 @@ import { fileURLToPath } from "url";
 import ComptesService from "./comptes/ComptesService.js";
 import PartiesService from "./jeu/PartiesService.js"
 import JeuService from "./jeu/JeuService.js";
+import TrouverPartiesService from "./jeu/TrouverPartiesService.js";
 import ServiceCours from "./cours/ServiceCours.js";
 
 const __filename = fileURLToPath(import.meta.url); 
@@ -61,6 +62,7 @@ myio.engine.use(sessionMiddleware);
 
 const jeuService = new JeuService(myio, mymysql);
 const partiesService = new PartiesService(mymysql);
+const trouverPartiesService = new TrouverPartiesService(myio, mymysql, partiesService);
 const comptesService = new ComptesService(mymysql);
 const serviceCours = new ServiceCours(mymysql);
 server.listen(4000, function() {

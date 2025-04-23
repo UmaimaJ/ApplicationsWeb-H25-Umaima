@@ -23,6 +23,28 @@ class PartiesService
         return null;
     }
 
+    async createPartieWithIds(profiljeu1Id, profiljeu2Id)
+    {
+        const [result, fields] = await this.mysql.query(`
+                INSERT INTO partie(id_joueur1, id_joueur2, statut, id_joueurcourant)
+                VALUES(?, ?, 0, ?);
+            `
+        , [profiljeu1Id, profiljeu2Id, profiljeu1Id]);
+
+        if(result.affectedRows > 0)
+        {
+            const id = result.insertId;
+            const [ result2, fields2 ] = await this.mysql.query(`
+                SELECT * from partie WHERE id = ?;
+            `, [id]);
+    
+            return result2[0];
+        }
+
+        return null;
+
+    }
+
     async selectProfiljeu(usagerId)
     {
         const [results, fields] = await this.mysql.query(`

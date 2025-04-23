@@ -7,9 +7,10 @@ import React from 'react';
 export class JeuService {
     constructor(onConnection, onDisconnect, onMoveresult, onCheckresult, onEndroundresult)
     {
-        this.io = io(axios.defaults.baseURL + "/jeuservice", {
+        this.io = io("/jeuservice", {
             withCredentials: true,
-            autoConnect: false
+            autoConnect: false,
+            forceNew: true
         });
 
         this.io.on("connect", async (socket) => {

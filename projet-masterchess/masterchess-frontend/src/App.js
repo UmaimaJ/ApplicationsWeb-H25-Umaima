@@ -22,7 +22,7 @@ import './App.css';
 
 import axios from 'axios';
 // Set a default base URL for all requests
-axios.defaults.baseURL = 'https://localhost:4000';
+axios.defaults.baseURL = '/';
 
 function App() {
   const accueilService = new AccueilService();
