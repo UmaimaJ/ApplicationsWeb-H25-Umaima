@@ -9,7 +9,7 @@ class ComptesService {
     async selectUsager(compte)
     {
         const [results] = await this.mysql.query(`
-            SELECT usager.id, compte, motdepasse, id_groupeprivileges, datecreation, courriel, pays, sessionid, pj.points, pj.elo, pj.datedernierjeu, pj.id AS id_profiljeu
+            SELECT usager.id, compte, motdepasse, id_groupeprivileges, datecreation, courriel, pays, sessionid, pj.points, pj.elo, pj.datedernierjeu, pj.rechercheencours, pj.id AS id_profiljeu
             FROM usager
             LEFT JOIN profiljeu AS pj ON usager.id = pj.id_usager
             WHERE usager.compte = ?;
@@ -57,9 +57,9 @@ class ComptesService {
                 1200,
                 NOW());`
         );
-        this.mysql.commit();
+        await this.mysql.commit();
 
-        return this.selectUsager(username);
+        return await this.selectUsager(username);
     }
 
     async updateSessionUsager(compte, sessionId)
@@ -69,6 +69,18 @@ class ComptesService {
             SET usager.sessionid = ?
             WHERE usager.compte = ?;
             `, [sessionId, compte]);
+
+        const usager = await this.selectUsager(compte);
+
+        if(!sessionId && usager)
+        {
+            const [results2] = await this.mysql.query(`
+                UPDATE profiljeu
+                SET profiljeu.rechercheencours = 0
+                WHERE profiljeu.id = ?;
+                `, [usager.id_profiljeu]);
+        }
+
 
         return true;
     }

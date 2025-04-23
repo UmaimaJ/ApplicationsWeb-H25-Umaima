@@ -19,7 +19,8 @@ function PageListeJeux() {
 
     const trouverPartieService = new TrouverPartieService(onConnection, onDisconnect, onTrouveresult);
     const [ partieEncours, setPartieEncours ] = useState(null);
-    const [ chercherEncours, setChercherEncours ] = useState(false);
+    const [ rechercheEncours, setRechercheEncours ] = useState(sessionUsager.rechercheencours);
+    const [ disponnibleChercher, setDisponnibleChercher] = useState(false);
     
 
     useEffect(() => {
@@ -63,28 +64,26 @@ function PageListeJeux() {
 
     async function onBtnChercherPartie()
     {
-        if(!chercherEncours)
+        if(!rechercheEncours)
         {
             await trouverPartieService.startTrouver();
-            setChercherEncours(true);
+            setRechercheEncours(1);
         }
         else
         {
             await trouverPartieService.endTrouver();
-            setChercherEncours(false);
+            setRechercheEncours(0);
         }
     }
 
     async function onConnection()
     {
-        const buttonChercherPartie = document.querySelector("#btnChercherPartie");
-        // buttonChercherPartie.setAttribute("hidden", "false");
+        setDisponnibleChercher(true);
     }
 
     async function onDisconnect()
     {
-        const buttonChercherPartie = document.querySelector("#btnChercherPartie");
-        // buttonChercherPartie.setAttribute("hidden", "true");
+        setDisponnibleChercher(false);
     }
 
     async function onTrouveresult(trouveframe)
@@ -115,7 +114,8 @@ function PageListeJeux() {
                 </div>
                 <button id="btnCreer" class="buttonCreate" onClick={onBtnCreer}>Créer match</button>
                 <button id="btnRafraichirParties" class="buttonRefresh" onClick={onBtnRefreshPartiesEncours}>Rafraichir</button>
-                <button id="btnChercherPartie" class="buttonChercher" hidden={false} onClick={onBtnChercherPartie}>Chercher</button>
+                { disponnibleChercher && <button id="btnChercherPartie" class="buttonChercher" onClick={onBtnChercherPartie}>Chercher</button> }
+                { rechercheEncours == 1 && <label id="lblChercherPartie">recherche en cours</label> }
             </div>
             <DisplayPartiesServiceContext.Provider value={ { partiesEncours, setPartiesEncours, displayPartiesService } }>
             <div class="liste-parties">

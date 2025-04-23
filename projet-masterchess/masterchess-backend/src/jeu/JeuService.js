@@ -555,7 +555,7 @@ class JeuService{
     {
         const [results, fields] = await this.mysql.query(`
             SELECT profiljeu.id AS id, usager.id AS id_usager,
-            compte, motdepasse, id_groupeprivileges, datecreation, courriel, pays, sessionid, points, elo, datedernierjeu
+            compte, motdepasse, id_groupeprivileges, datecreation, courriel, pays, sessionid, points, elo, datedernierjeu, rechercheencours
             FROM usager LEFT JOIN profiljeu ON usager.id = profiljeu.id_usager WHERE usager.id = ?;
         `, [usagerId]);
         return results[0];
@@ -565,7 +565,7 @@ class JeuService{
     {
         const [results, fields] = await this.mysql.query(`
                 SELECT profiljeu.id AS id, usager.id AS id_usager,
-                compte, motdepasse, id_groupeprivileges, datecreation, courriel, pays, sessionid, points, elo, datedernierjeu
+                compte, motdepasse, id_groupeprivileges, datecreation, courriel, pays, sessionid, points, elo, datedernierjeu, rechercheencours
                 FROM usager LEFT JOIN profiljeu ON usager.id = profiljeu.id_usager WHERE usager.compte = ?;
             `, [compte]);
         

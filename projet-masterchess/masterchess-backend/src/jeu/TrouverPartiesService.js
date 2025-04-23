@@ -76,6 +76,7 @@ class TrouverPartiesService
             return;
 
         data.startedRecherche = Date.now();
+        await this.setRechercheEncours(data.profiljeuId, 1);
 
         this.recherches[data.profiljeuId] = { data: data };
     }
@@ -89,6 +90,7 @@ class TrouverPartiesService
         if(!data.profiljeuId)
             return;
 
+        await this.setRechercheEncours(data.profiljeuId, 0);
         await this.clearData(data.profiljeuId);
     }
 
@@ -114,10 +116,11 @@ class TrouverPartiesService
     async trouve(data1, data2)
     {
         const partie = await this.partiesService.createPartieWithIds(data1.profiljeuId, data2.profiljeuId);
-        console.log("PARTIE");
-        console.log(partie);
         data1.socket.emit("trouveresult", { partieId: partie.id });
         data2.socket.emit("trouveresult", { partieId: partie.id });
+
+        await this.setRechercheEncours(data1.profiljeuId, 0);
+        await this.setRechercheEncours(data2.profiljeuId, 0);
 
         delete this.recherches[data1.profiljeuId];
         delete this.recherches[data2.profiljeuId];
@@ -126,6 +129,21 @@ class TrouverPartiesService
     async clearData(profiljeuId)
     {
         delete this.recherches[profiljeuId];
+    }
+
+    async setRechercheEncours(profiljeuId, value)
+    {
+        const [ results, fields ] = await this.mysql.query(`
+            UPDATE profiljeu
+            SET
+            rechercheencours = ?
+            WHERE id = ?;
+            `, [ value, profiljeuId ]);
+
+        if(results > 0)
+            return true;
+
+        return false;
     }
 
     async sleep(ms)
