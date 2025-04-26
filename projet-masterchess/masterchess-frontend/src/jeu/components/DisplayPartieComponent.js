@@ -24,21 +24,11 @@ class DisplayPartieComponent extends React.Component {
             //Consommer la service DisplayPartieService
             <DisplayPartiesServiceContext.Consumer>
             {({service}) => (
-                // <div class="partie-body" id={"divPartie" + this.state.partie.id} onClick={this.state.onClick}>
-                //     <div class="partie-body-inner">
-                //         <label>{ this.state.partie.compte_joueur1 }</label>
-                //         <br></br>
-                //         <label>vs</label>
-                //         <br></br>
-                //         <label>{ this.state.partie.compte_joueur2 }</label>
-                //     </div>
-                // </div>
                 <tr id={"divPartie" + this.state.partie.id} onClick={this.state.onClick}>
-                    <th scope="row" style={ { width: 25 } }>{ this.state.partie?.id }</th>
+                    <th scope="row">{ this.state.partie?.id }</th>
                     <td>{ this.state.partie.compte_joueur1 }</td>
                     <td>{ this.state.partie.compte_joueur2 }</td>
                 </tr>
-
             )}
             </DisplayPartiesServiceContext.Consumer>
         )

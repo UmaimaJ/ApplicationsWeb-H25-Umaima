@@ -163,24 +163,25 @@
 .btn-retourner {
     border-radius: 10px;
     background-color: coral;
-    width: 100%;
-    height: 50px;
+    width: 25px;
+    height: 25px;
+    align-self: flex-start;
 }
 
 /*Liste de parties en cours*/
-.panneau-parties-container {
+.parties-container {
     width: 100%; 
     height: 100%;
 }
 
 .panneau-parties-header {
-    padding-top: 25px;
-    padding-left: 25px;
+    margin: 25px;
+    width: 600px;
 }
 
-.liste-parties {
-    width: 100%; 
-    height: 100%;
+/* .panneau-liste-parties {
+    margin: 25px;
+    height: 600px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -188,14 +189,21 @@
     align-content: flex-start;
     overflow-y: scroll;
     box-sizing: border-box;
-    padding-top: 25px;
-    padding-left: 25px;
 }
 
 .liste-parties-soak {
     position: relative;
     width: 100%;
-    height: 200px;
+    height: 50px;
+} */
+
+.browser-parties{
+    height: 500px;
+}
+
+.table-parties thead tr th{
+    position: sticky;
+    top: 0;
 }
 
 .inputNom {
@@ -205,17 +213,21 @@
 
 .buttonCreate {
     border-radius: 10px;
-    background-color: coral;
+    max-width: 125px;
+    background-color: #5D7C36;
+    color: white;
 }
 
 .buttonRefresh {
-    margin-left: 50px;
     border-radius: 10px;
-    background-color: coral;
+    max-width: 125px;
+    background-color: #5D7C36;
+    color: white;
 }
 
 .buttonChercher {
-    margin-left: 50px;
     border-radius: 10px;
-    background-color: greenyellow;
+    max-width: 125px;
+    background-color: #5D7C36;
+    color: white;
 }
