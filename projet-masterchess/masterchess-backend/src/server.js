@@ -39,6 +39,7 @@ const mymysql = await mysql.createConnection({
 
 const corsOptions = { 
     origin: ['https://10.186.5.123:4000', 'https://10.0.0.228:4000', 'https://localhost:4000'],//< Change domain to suit your needs
+    methods: ["GET", "POST"],
     credentials: true
 };
 
@@ -56,6 +57,7 @@ const sessionMiddleware = session({
 })
 
 var myio = new Server(server, {
+    transports: ["websocket"],
     cors: corsOptions
 });
 myio.engine.use(sessionMiddleware);

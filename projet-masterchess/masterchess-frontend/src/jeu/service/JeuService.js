@@ -10,7 +10,7 @@ export class JeuService {
         this.io = io("/jeuservice", {
             withCredentials: true,
             autoConnect: false,
-            forceNew: true
+            transports: ["websocket"]
         });
 
         this.io.on("connect", async (socket) => {
@@ -40,7 +40,7 @@ export class JeuService {
         this.io.io.opts.query = {
             partieId: partieId
          };
-        this.io.disconnect().connect();
+        this.io.connect();
     }
 
     // Fonction qui met fin a la session websockets

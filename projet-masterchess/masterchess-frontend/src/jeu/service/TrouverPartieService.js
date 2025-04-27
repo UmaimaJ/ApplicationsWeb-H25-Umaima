@@ -10,7 +10,7 @@ export class TrouverPartieService
         this.io = io("/trouverservice", {
             withCredentials: true,
             autoConnect: false,
-            forceNew: true
+            transports: ["websocket"]
         });
 
         this.io.on("connect", async (socket) => {
