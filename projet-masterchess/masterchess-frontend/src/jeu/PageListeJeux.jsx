@@ -105,6 +105,7 @@ function PageListeJeux() {
 
     return (
         <div className="parties-container">
+            { disponnibleChercher && 
             <div className="panneau-parties-header card">
                 <div className="card-body">
                     <h5 class="card-title">Trouver une partie</h5>
@@ -123,7 +124,7 @@ function PageListeJeux() {
                     <div className="input-group mw-100 p-2">
                         <button id="btnCreer" className="buttonCreate" onClick={onBtnCreer}>Créer match</button>
                         <button id="btnRafraichirParties" className="buttonRefresh" onClick={onBtnRefreshPartiesEncours}>Rafraichir</button>
-                        { disponnibleChercher && <button id="btnChercherPartie" className="buttonChercher" onClick={onBtnChercherPartie}>Trouver</button> }
+                        <button id="btnChercherPartie" className="buttonChercher" onClick={onBtnChercherPartie}>Trouver</button>
                         { rechercheEncours == 1 && <label id="lblChercherPartie">recherche en cours</label> }
                     </div>
                 </div>
@@ -159,6 +160,7 @@ function PageListeJeux() {
                     </div>
                 </div>
             </div>
+            }
         </div>
     );
    
