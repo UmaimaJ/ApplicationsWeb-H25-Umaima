@@ -393,7 +393,7 @@ class PageJeu extends React.Component {
         });
 
         //les deux joueurs ont fait leur premier move
-        if(this.state.timerUp !== null && this.state.timerDown !== null)
+        if(this.state.timerUp !== null || this.state.timerDown !== null)
         {
             if(!this.state.timersPartis)
                 await this.startTimers();
