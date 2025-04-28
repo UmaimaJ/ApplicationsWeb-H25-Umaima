@@ -93,13 +93,19 @@ function isAuthenticated(req, res, next) {
     }
 }
 
+const router = express.Router();
+
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname+'/static/index.html'));
+    res.sendFile(path.join(__dirname, '/../../masterchess-frontend/build/index.html'), function(err) {
+        if (err) {
+          res.status(500).send(err)
+        }
+    });
 });
 
 // gestion de session
 
-app.post('/login', async function (req, res) {
+router.post('/login', async function (req, res) {
     const { username, password } = req.body;
     try {
         const user = await comptesService.selectUsager(username);
@@ -124,7 +130,7 @@ app.post('/login', async function (req, res) {
     }
 });
 
-app.post("/signup", async function (req, res) {
+router.post("/signup", async function (req, res) {
     const { username, password, email } = req.body;
     try {
         // Generate a session ID
@@ -148,7 +154,7 @@ app.post("/signup", async function (req, res) {
     }
 });
 
-app.post('/logout', async function (req, res) {
+router.post('/logout', async function (req, res) {
     await comptesService.updateSessionUsager(req.session?.user?.usager?.compte, null);
     req.session.destroy(async (err) => {
         if (err) {
@@ -158,38 +164,38 @@ app.post('/logout', async function (req, res) {
     res.json({ success: true, message: 'Logout successful' });
 });
 
-app.get("/getSession", async function (req, res) {
+router.get("/getSession", async function (req, res) {
     res.json({ success: true, message: 'Data requested', usager: req.session?.user?.usager});
 });
 
 // affichage liste de jeux
 
 // Add isAuthenticated middleware to the route if you want to only be accessed to user that logged in
-app.get("/getAllPartiesEncours", isAuthenticated, async function (req, res, err) {
+router.get("/getAllPartiesEncours", isAuthenticated, async function (req, res, err) {
     const resultat = await partiesService.selectAllPartiesEncours();
     res.send({ success: true, message: 'Data requested', result: resultat});
 });
 
 // page du jeu
 
-app.get("/getPartie", isAuthenticated, async function (req, res, err) {
+router.get("/getPartie", isAuthenticated, async function (req, res, err) {
     const resultat = await jeuService.selectPartie(req.query.id);
     res.send({ success: true, message: 'Data requested', result: resultat});
 });
 
-app.get("/getProfiljeu", isAuthenticated, async function (req, res, err) {
+router.get("/getProfiljeu", isAuthenticated, async function (req, res, err) {
     const resultat = await jeuService.selectProfiljeu(req.query.id);
     res.send({ success: true, message: 'Data requested', result: resultat});
 });
 
-app.post("/createPartie", isAuthenticated, async function (req, res, err) {
+router.post("/createPartie", isAuthenticated, async function (req, res, err) {
     const resultat = await partiesService.createPartie(req.body.nomprofiljeu1, req.body.nomprofiljeu2);
     res.send({ success: true, message: 'Data requested', result: resultat});
 });
 
 
 // Cours
-app.get("/getLessons", async (req, res) => {
+router.get("/getLessons", async (req, res) => {
     try {
       const lessons = await serviceCours.getAllLessons();
       res.json(lessons);
@@ -197,4 +203,14 @@ app.get("/getLessons", async (req, res) => {
       console.error("Erreur dans /getLessons:", error);
       res.status(500).json({ error: "Erreur lors de la récupération des cours." });
     }
-  });
+});
+
+app.use('/data', router);
+
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '/../../masterchess-frontend/build/index.html'), function(err) {
+        if (err) {
+          res.status(500).send(err)
+        }
+    });
+});

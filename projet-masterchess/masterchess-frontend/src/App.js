@@ -11,7 +11,7 @@ import PageCours from "./cours/PageCours.jsx";
 
 import axios from 'axios';
 // Set a default base URL for all requests
-axios.defaults.baseURL = '/';
+axios.defaults.baseURL = '/data/';
 
 function App() {
 
