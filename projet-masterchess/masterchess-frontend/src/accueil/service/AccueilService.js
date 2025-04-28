@@ -10,8 +10,7 @@ export class AccueilService {
 
 export const AccueilServiceContext = React.createContext(
     {
-        pageCourante: null,
-        setPageCourante: () => {},
+        navigate: async () => {},
         accueilService: null
     }
 );

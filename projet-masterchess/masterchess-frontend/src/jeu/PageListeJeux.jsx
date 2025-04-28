@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
+import { Navigate } from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.css';
 import './style/PageListeJeux.css';
@@ -11,7 +12,9 @@ import { DisplayPartiesServiceContext, DisplayPartiesService } from './service/D
 import { TrouverPartieServiceContext, TrouverPartieService } from "./service/TrouverPartieService";
 
 function PageListeJeux() {
-    const { pageCourante, setPageCourante, accueilService } = useContext(AccueilServiceContext);
+    const { navigate, accueilService } = useContext(AccueilServiceContext);
+    const [ toJeu, setToJeu ] = useState(null);
+
     const { sessionUsager, setSessionUsager, comptesService } = useContext(ComptesServiceContext);
 
     const displayPartiesService = new DisplayPartiesService();
@@ -62,7 +65,11 @@ function PageListeJeux() {
 
     async function onBtnOuvrirPartie(idPartie, sessionUsager)
     {
-        setPageCourante(<PageJeu idPartie={idPartie} sessionUsager={sessionUsager}></PageJeu>)
+        if(idPartie)
+            setToJeu({ idPartie: idPartie, sessionUsager: sessionUsager });
+        // navigate("/PageJeu/" + idPartie, { state: {
+        //     sessionUsager: sessionUsager
+        // } });
     }
 
     async function onBtnRefreshPartiesEncours()
@@ -99,8 +106,13 @@ function PageListeJeux() {
         const partieId = trouveframe.partieId;
         if(partieId)
         {
-            setPageCourante(<PageJeu idPartie={partieId} sessionUsager={sessionUsager}></PageJeu>)
+            // navigate("/jeu/" + partieId);
+            this.setToJeu({ idPartie: partieId, sessionUsager: sessionUsager });
         }
+    }
+
+    if (toJeu) {
+        return <Navigate to={"/PageJeu/" + toJeu.idPartie} state={toJeu} replace={true} />;
     }
 
     return (

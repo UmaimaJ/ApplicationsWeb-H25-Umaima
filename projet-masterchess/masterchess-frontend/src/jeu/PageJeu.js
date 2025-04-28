@@ -1,5 +1,6 @@
 import { createContext, useContext } from 'react';
-import React from 'react';
+import React, { Component } from "react";
+import { withParams, withLocation, withNavigation } from '../util/wrappers.js';
 
 import { toDests, pieceMap } from './utilJeu.js';
 import { Chessboard } from "react-chessboard";
@@ -13,13 +14,11 @@ import board from "../style/board.svg";
 
 import 'bootstrap/dist/css/bootstrap.css';
 import './PageJeu.css';
-import DisplayPartieComponent from "./components/DisplayPartieComponent";
 
 import { JeuServiceContext, JeuService } from "./service/JeuService";
 import { ComptesServiceContext } from "../login/service/ComptesService.js"
 import { DisplayPartiesServiceContext, DisplayPartiesService } from './service/DisplayPartiesService';
 import { AccueilServiceContext } from '../accueil/service/AccueilService.js';
-import PageListeJeux from './PageListeJeux.jsx';
 
 class PageJeu extends React.Component {
 
@@ -74,9 +73,9 @@ class PageJeu extends React.Component {
     async componentDidMount()
     {
         setTimeout(async () => {
-            if(this.props.idPartie)
+            if(this.props.params.idPartie)
             {
-                await this.updatePartie(this.props.idPartie, this.props.sessionUsager);
+                await this.updatePartie(this.props.params.idPartie, this.props.location.state.sessionUsager);
             }
         }, 500);
 
@@ -468,16 +467,16 @@ class PageJeu extends React.Component {
         });
     }
 
-    async onBtnOuvrirListe(event, setPageCourante)
+    async onBtnOuvrirListe(event, navigate)
     {
-        setPageCourante(<PageListeJeux></PageListeJeux>);
+        navigate("/PageListeJeux");
     }
 
     render() {
         return ( this.state.connected &&
             // Rendre disponnible la service avec le contexte aux composantes sous-jacentes
             <AccueilServiceContext.Consumer>
-            {({pageCourante, setPageCourante, accueilService}) => (
+            {({navigate, accueilService}) => (
             <ComptesServiceContext.Consumer>
             {({sessionUsager, setSessionUsager, comptesService}) => (
                 <JeuServiceContext.Provider value={ { service: this.state.jeuService} }>
@@ -540,7 +539,7 @@ class PageJeu extends React.Component {
                             </div>
                         </div>
                         <div className="my-sidebar">
-                            <button className="btn-retourner" onClick={(event) => this.onBtnOuvrirListe(event, setPageCourante)}>X</button>
+                            <button className="btn-retourner" onClick={(event) => this.onBtnOuvrirListe(event, navigate)}>X</button>
                             <div id="move-info-panel" className="move-info-panel">
                                 {this.state.game?.history({ verbose: true }).map((entry, i) => 
                                     <div key={i} ref={(el) => { this.messagesEnd = el; }} className="move-entry"><label style={{color: (entry.color === 'w'? 'white' : "grey")}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} de: {entry.from} à: {entry.to} {entry.captured && " capturé: " + entry.captured}
@@ -569,4 +568,4 @@ class PageJeu extends React.Component {
 
 }
 
-export default PageJeu;
+export default withParams(withLocation(withNavigation(PageJeu)));

@@ -10,7 +10,7 @@ const Login = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleSubmit = async (event, {pageCourante, setPageCourante, accueilService}, {sessionUsager, setSessionUsager, comptesService}) => {
+    const handleSubmit = async (event, {navigate, accueilService}, {sessionUsager, setSessionUsager, comptesService}) => {
         event.preventDefault();
         const axiosResponse = await comptesService.postLogin(username, password);
         const success = axiosResponse?.data?.success;
@@ -21,21 +21,21 @@ const Login = () => {
             if(success)
             {
                 setSessionUsager(axiosResponse.data.usager);
-                setPageCourante(<PageAccueil></PageAccueil>);
+                navigate("/");
             }
         }
     };
 
     return (
         <AccueilServiceContext.Consumer>
-        {({pageCourante, setPageCourante, accueilService}) => (
+        {({navigate, accueilService}) => (
         <ComptesServiceContext.Consumer>
         {({sessionUsager, setSessionUsager, comptesService}) => (
         <div className="login-container">
             <h2>Login</h2>
             <form onSubmit={(event) => {
                     event.preventDefault();
-                    handleSubmit(event, {pageCourante, setPageCourante, accueilService}, {sessionUsager, setSessionUsager, comptesService});
+                    handleSubmit(event, {navigate, accueilService}, {sessionUsager, setSessionUsager, comptesService});
                 }}>
                 <div className="form-group">
                     <label htmlFor="username">Username:</label>
