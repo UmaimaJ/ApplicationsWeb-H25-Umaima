@@ -67,9 +67,6 @@ function PageListeJeux() {
     {
         if(idPartie)
             setToJeu({ idPartie: idPartie, sessionUsager: sessionUsager });
-        // navigate("/PageJeu/" + idPartie, { state: {
-        //     sessionUsager: sessionUsager
-        // } });
     }
 
     async function onBtnRefreshPartiesEncours()
@@ -107,7 +104,8 @@ function PageListeJeux() {
         if(partieId)
         {
             // navigate("/jeu/" + partieId);
-            this.setToJeu({ idPartie: partieId, sessionUsager: sessionUsager });
+            if(partieId)
+                setToJeu({ idPartie: partieId, sessionUsager: sessionUsager });
         }
     }
 
