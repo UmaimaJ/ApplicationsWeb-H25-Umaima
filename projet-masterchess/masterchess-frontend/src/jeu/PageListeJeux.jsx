@@ -17,13 +17,13 @@ function PageListeJeux() {
 
     const { sessionUsager, setSessionUsager, comptesService } = useContext(ComptesServiceContext);
 
-    const displayPartiesService = new DisplayPartiesService();
     const [ partiesEncours, setPartiesEncours ] = useState([]);
+    const displayPartiesService = new DisplayPartiesService();
 
-    const trouverPartieService = new TrouverPartieService(onConnection, onDisconnect, onTrouveresult);
     const [ partieEncours, setPartieEncours ] = useState(null);
-    const [ rechercheEncours, setRechercheEncours ] = useState(sessionUsager.rechercheencours);
+    const [ rechercheEncours, setRechercheEncours ] = useState();
     const [ disponnibleChercher, setDisponnibleChercher] = useState(false);
+    const trouverPartieService = new TrouverPartieService(onConnection, onDisconnect, onTrouveresult);
 
     useEffect(() => {
         refreshPartiesEncours();
@@ -45,6 +45,10 @@ function PageListeJeux() {
             partiesEndRef.current?.scrollIntoView( { behavior: "smooth" } );
         }
     }, [ partiesEncours ]);
+
+    useEffect(() => {
+        setRechercheEncours(sessionUsager?.rechercheencours ?? false);
+    }, [ sessionUsager ]);
 
     async function onBtnCreer()
     {
@@ -110,7 +114,7 @@ function PageListeJeux() {
     }
 
     if (toJeu) {
-        return <Navigate to={"/PageJeu/" + toJeu.idPartie} state={toJeu} replace={true} />;
+        return <Navigate to={"/PageJeu/" + toJeu.idPartie} replace={true} />;
     }
 
     return (

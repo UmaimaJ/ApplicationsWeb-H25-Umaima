@@ -1,6 +1,5 @@
-import { createContext, useContext } from 'react';
 import React, { Component } from "react";
-import { withParams, withLocation, withNavigation } from '../util/wrappers.js';
+import { withParams, withLocation, withNavigation, withSessionUsager } from '../util/wrappers.js';
 
 import { toDests, pieceMap } from './utilJeu.js';
 import { Chessboard } from "react-chessboard";
@@ -73,9 +72,10 @@ class PageJeu extends React.Component {
     async componentDidMount()
     {
         setTimeout(async () => {
+            console.log(this.props);
             if(this.props.params.idPartie)
             {
-                await this.updatePartie(this.props.params.idPartie, this.props.location.state.sessionUsager);
+                await this.updatePartie(this.props.params.idPartie, this.props.sessionUsager);
             }
         }, 500);
 
@@ -568,4 +568,4 @@ class PageJeu extends React.Component {
 
 }
 
-export default withParams(withLocation(withNavigation(PageJeu)));
+export default withParams(withSessionUsager(PageJeu));
