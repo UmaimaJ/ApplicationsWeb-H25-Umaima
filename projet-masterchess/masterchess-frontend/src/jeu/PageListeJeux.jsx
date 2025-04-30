@@ -161,20 +161,21 @@ function PageListeJeux() {
                             <tbody>
                                 {Object.values(partiesEncours ?? []).map((entry, i) =>
                                     {
-                                        // <DisplayPartieComponent ref={partiesEndRef} key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager) }></DisplayPartieComponent>)}
-                                        const trcomp = <tr id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager)} key={entry.id}>
-                                            <th scope="row">{ entry?.id }</th>
-                                            <td>{ entry?.compte_joueur1 }</td>
-                                            <td>{ entry?.compte_joueur2 }</td>
-                                        </tr>
-                                        if(i == partiesEncours.length - 1)
-                                        {
-                                            partiesEnded();
+                                            // <DisplayPartieComponent ref={partiesEndRef} key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager) }></DisplayPartieComponent>)}
+                                            const trcomp = (<tr id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager)} key={entry.id}>
+                                                    <th scope="row">{ entry?.id }</th>
+                                                    <td>{ entry?.compte_joueur1 }</td>
+                                                    <td>{ entry?.compte_joueur2 }</td>
+                                                </tr>);
+                                            if(i == partiesEncours.length - 1)
+                                            {
+                                                partiesEnded();
+                                            }
+                                            return trcomp;
                                         }
-                                        return trcomp;
-                                    }
-                                )}
-                                <tr id="bottom-parties" className="liste-parties-soak" ref={partiesEndRef}>test</tr>
+                                    )}
+                                    <tr id="bottom-parties" className="liste-parties-soak" ref={partiesEndRef}></tr>
+                                </>
                             </tbody>
                         </table>
                         </DisplayPartiesServiceContext.Provider>
