@@ -83,7 +83,8 @@ export class DisplayPartiesService {
             nomprofiljeu1: nomprofiljeu1,
             nomprofiljeu2: nomprofiljeu2,
         },{
-            withCredentials: true
+            withCredentials: true,
+            validateStatus: (status) => { return status < 300; }
         })
         .then(function (response) {
             //handle success
@@ -92,6 +93,7 @@ export class DisplayPartiesService {
         .catch(function (error) {
             //handle error
             console.log(error);
+            throw new Error(error.response?.data?.message);
         })
         .finally(function () {
             //always executed

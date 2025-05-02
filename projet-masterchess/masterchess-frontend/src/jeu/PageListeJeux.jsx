@@ -55,11 +55,75 @@ function PageListeJeux() {
         const inputProfiljeu1 = document.querySelector("#nomprofiljeu1Creer");
         const inputProfiljeu2 = document.querySelector("#nomprofiljeu2Creer");
 
-        const partie = await displayPartiesService.createPartie(inputProfiljeu1.value, inputProfiljeu2.value);
-        if(partie)
+        const inputProfiljeu1Invalid = document.querySelector("#nomprofiljeu1Creer-invalid");
+        const inputProfiljeu2Invalid = document.querySelector("#nomprofiljeu2Creer-invalid");
+
+        const compteProfiljeu1 = inputProfiljeu1.value.trim();
+        const compteProfiljeu2 = inputProfiljeu2.value.trim();
+
+        await setInvalidTooltip(inputProfiljeu1Invalid, null);
+        await setInvalidTooltip(inputProfiljeu2Invalid, null);
+
+        var erroredOnFields = [];
+
+        if(!compteProfiljeu1 || compteProfiljeu1 === "")
         {
-            await refreshPartiesEncours();
+            await setInvalidTooltip(inputProfiljeu1Invalid, 'Le nom de compte ne peut pas être vide.');
+            erroredOnFields.push(true);
         }
+            
+        if(!compteProfiljeu2 || compteProfiljeu2 === "")
+        {
+            await setInvalidTooltip(inputProfiljeu2Invalid, 'Le nom de compte ne peut pas être vide.');
+            erroredOnFields.push(true);
+        }
+
+        if(erroredOnFields.length > 0)
+            return;
+
+        var erroredOnCreate = [];
+        try{
+            const partie = await displayPartiesService.createPartie(compteProfiljeu1, compteProfiljeu2);
+
+            if(partie)
+            {
+                await refreshPartiesEncours();
+            }
+        }
+        catch(error)
+        {
+            if(error.message === "createPartie: profiljeu 1 invalid")
+            {
+                await setInvalidTooltip(inputProfiljeu1Invalid, 'Entrez un nom de compte valide.');
+                erroredOnCreate.push(true);
+            }
+
+            if(error.message === "createPartie: profiljeu 2 invalid")
+            {
+                await setInvalidTooltip(inputProfiljeu2Invalid, 'Entrez un nom de compte valide.');
+                erroredOnCreate.push(true);
+            }
+
+            if(error.message === "createPartie: insert failed")
+            {
+                await setInvalidTooltip(inputProfiljeu1Invalid, 'Erreur interne du serveur.');
+                erroredOnCreate.push(true);
+                await setInvalidTooltip(inputProfiljeu2Invalid, 'Erreur interne du serveur.');
+                erroredOnCreate.push(true);
+            }
+        }
+                
+    }
+
+    async function setInvalidTooltip(tooltip, message)
+    {
+        console.log(tooltip);
+        if(!message || message === "")
+            tooltip.style.display = "none";
+        if(message)
+            tooltip.style.display = "block";
+
+        tooltip.innerText = message;
     }
 
     async function refreshPartiesEncours()
@@ -128,12 +192,14 @@ function PageListeJeux() {
                             <span className="input-group-text" id="basic-addon1">Joueur 1</span>
                         </div>
                         <input id="nomprofiljeu1Creer" type="text" className="form-control w-50" placeholder="Nom d'utilsateur du joueur 1" aria-label="Nom d'utilsateur du joueur des pièces blanches" aria-describedby="basic-addon1"></input>
+                        <div id="nomprofiljeu1Creer-invalid" className="invalid-tooltip"></div>
                     </div>
                     <div className="input-group mw-100 p-2">
                         <div className="input-group-prepend w-25">
                             <span className="input-group-text" id="basic-addon2">Joueur 2</span>
                         </div>
                         <input id="nomprofiljeu2Creer" type="text" class="form-control w-50" placeholder="Nom d'utilsateur du joueur 2" aria-label="Nom d'utilsateur du joueur des pièces noires" aria-describedby="basic-addon2"></input>
+                        <div id="nomprofiljeu2Creer-invalid" className="invalid-tooltip"></div>
                     </div>
                     <div className="input-group mw-100 p-2">
                         <button id="btnCreer" className="buttonCreate" onClick={onBtnCreer}>Créer match</button>
@@ -159,7 +225,8 @@ function PageListeJeux() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {Object.values(partiesEncours ?? []).map((entry, i) =>
+                                <>
+                                    {Object.values(partiesEncours ?? []).map((entry, i) =>
                                     {
                                             // <DisplayPartieComponent ref={partiesEndRef} key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager) }></DisplayPartieComponent>)}
                                             const trcomp = (<tr id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager)} key={entry.id}>

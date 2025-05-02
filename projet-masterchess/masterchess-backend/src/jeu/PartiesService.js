@@ -5,20 +5,20 @@ class PartiesService
         this.mysql = mysqlConnection;
     }
 
-    async createPartie(compte1, compte2)
+    async createPartie(profiljeu1Id, profiljeu2Id)
     {
-        const profiljeu1 = await this.selectProfiljeuByCompte(compte1);
-        const profiljeu2 = await this.selectProfiljeuByCompte(compte2);
-
         const [results, fields] = await this.mysql.query(`
                 INSERT INTO partie(id_joueur1, id_joueur2, statut, id_joueurcourant)
                 VALUES(?, ?, 0, ?);
                 SELECT * from partie WHERE id = LAST_INSERT_ID();
             `
-        , [profiljeu1.id, profiljeu2.id, profiljeu1.id]);
+        , [profiljeu1Id, profiljeu2Id, profiljeu1Id]);
 
         if(results.length > 0)
             return results[0];
+
+        if(results.length === 0)
+            throw new Error("createPartie: insert failed");
 
         return null;
     }

@@ -184,13 +184,37 @@ router.get("/getPartie", isAuthenticated, async function (req, res, err) {
 });
 
 router.get("/getProfiljeu", isAuthenticated, async function (req, res, err) {
+    if(!req.query.id)
+        throw new Error("route: query.id not received");
     const resultat = await jeuService.selectProfiljeu(req.query.id);
     res.send({ success: true, message: 'Data requested', result: resultat});
 });
 
 router.post("/createPartie", isAuthenticated, async function (req, res, err) {
-    const resultat = await partiesService.createPartie(req.body.nomprofiljeu1, req.body.nomprofiljeu2);
-    res.send({ success: true, message: 'Data requested', result: resultat});
+    try{
+        if(!req.body.nomprofiljeu1)
+            throw new Error("route: body.nomprofiljeu1 not received");
+
+        if(!req.body.nomprofiljeu2)
+            throw new Error("route: body.nomprofiljeu2 not received");
+
+        const profiljeu1 = await partiesService.selectProfiljeuByCompte(req.body.nomprofiljeu1);
+
+        if(!profiljeu1)
+            throw new Error("createPartie: profiljeu 1 invalid");
+
+        const profiljeu2 = await partiesService.selectProfiljeuByCompte(req.body.nomprofiljeu2);
+        
+        if(!profiljeu2)
+            throw new Error("createPartie: profiljeu 2 invalid");
+
+        const resultat = await partiesService.createPartie(profiljeu1.id, profiljeu2.id);
+        res.send({ success: true, message: 'Data requested', result: resultat});
+    }
+    catch(err)
+    {
+        res.status(400).send({ success: false, message: err.message, result: null });
+    }
 });
 
 
