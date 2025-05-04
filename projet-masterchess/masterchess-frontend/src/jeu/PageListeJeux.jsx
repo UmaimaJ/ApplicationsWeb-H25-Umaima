@@ -230,7 +230,7 @@ function PageListeJeux() {
                                     {Object.values(partiesEncours ?? []).map((entry, i) =>
                                     {
                                         // <DisplayPartieComponent ref={partiesEndRef} key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager) }></DisplayPartieComponent>)}
-                                        const trcomp = (<tr id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager)} key={entry.id}>
+                                        const trcomp = (<tr id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager)} key={entry.id} ref={partiesEndRef}>
                                                 <th scope="row">{ entry?.id }</th>
                                                 <td>{ entry?.compte_joueur1 }</td>
                                                 <td>{ entry?.compte_joueur2 }</td>
@@ -242,7 +242,7 @@ function PageListeJeux() {
                                         return trcomp;
                                     }
                                     )}
-                                    <tr id="bottom-parties" className="liste-parties-soak" ref={partiesEndRef}></tr>
+                                    {/* <tr id="bottom-parties" className="liste-parties-soak" ref={partiesEndRef}></tr> */}
                                 </>
                             </tbody>
                         </table>
