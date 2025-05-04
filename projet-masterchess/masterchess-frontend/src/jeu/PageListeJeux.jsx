@@ -117,7 +117,6 @@ function PageListeJeux() {
 
     async function setInvalidTooltip(tooltip, message)
     {
-        console.log(tooltip);
         if(!message || message === "")
             tooltip.style.display = "none";
         if(message)
@@ -187,21 +186,23 @@ function PageListeJeux() {
             <div className="panneau-parties-header card">
                 <div className="card-body">
                     <h5 class="card-title">Trouver une partie</h5>
-                    <div className="input-group mw-100 p-2">
+                    <div className="input-group mw-100 p-1">
                         <div className="input-group-prepend w-25">
                             <span className="input-group-text" id="basic-addon1">Joueur 1</span>
                         </div>
-                        <input id="nomprofiljeu1Creer" type="text" className="form-control w-50" placeholder="Nom d'utilsateur du joueur 1" aria-label="Nom d'utilsateur du joueur des pièces blanches" aria-describedby="basic-addon1"></input>
+                        <input id="nomprofiljeu1Creer" type="text" className="form-control w-50" placeholder="Nom d'utilsateur du joueur 1" aria-label="Nom d'utilsateur du joueur 1" aria-describedby="basic-addon1"></input>
                         <div id="nomprofiljeu1Creer-invalid" className="invalid-tooltip"></div>
                     </div>
-                    <div className="input-group mw-100 p-2">
+                    <br></br>
+                    <div className="input-group mw-100 p-1">
                         <div className="input-group-prepend w-25">
                             <span className="input-group-text" id="basic-addon2">Joueur 2</span>
                         </div>
-                        <input id="nomprofiljeu2Creer" type="text" class="form-control w-50" placeholder="Nom d'utilsateur du joueur 2" aria-label="Nom d'utilsateur du joueur des pièces noires" aria-describedby="basic-addon2"></input>
+                        <input id="nomprofiljeu2Creer" type="text" className="form-control w-50" placeholder="Nom d'utilsateur du joueur 2" aria-label="Nom d'utilsateur du joueur 2" aria-describedby="basic-addon2"></input>
                         <div id="nomprofiljeu2Creer-invalid" className="invalid-tooltip"></div>
                     </div>
-                    <div className="input-group mw-100 p-2">
+                    <br></br>
+                    <div className="input-group mw-100 p-1">
                         <button id="btnCreer" className="buttonCreate" onClick={onBtnCreer}>Créer match</button>
                         <button id="btnRafraichirParties" className="buttonRefresh" onClick={onBtnRefreshPartiesEncours}>Rafraichir</button>
                         <button id="btnChercherPartie" className="buttonChercher" onClick={onBtnChercherPartie}>Trouver</button>
@@ -228,18 +229,18 @@ function PageListeJeux() {
                                 <>
                                     {Object.values(partiesEncours ?? []).map((entry, i) =>
                                     {
-                                            // <DisplayPartieComponent ref={partiesEndRef} key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager) }></DisplayPartieComponent>)}
-                                            const trcomp = (<tr id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager)} key={entry.id}>
-                                                    <th scope="row">{ entry?.id }</th>
-                                                    <td>{ entry?.compte_joueur1 }</td>
-                                                    <td>{ entry?.compte_joueur2 }</td>
-                                                </tr>);
-                                            if(i == partiesEncours.length - 1)
-                                            {
-                                                partiesEnded();
-                                            }
-                                            return trcomp;
+                                        // <DisplayPartieComponent ref={partiesEndRef} key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager) }></DisplayPartieComponent>)}
+                                        const trcomp = (<tr id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager)} key={entry.id}>
+                                                <th scope="row">{ entry?.id }</th>
+                                                <td>{ entry?.compte_joueur1 }</td>
+                                                <td>{ entry?.compte_joueur2 }</td>
+                                            </tr>);
+                                        if(i == partiesEncours.length - 1)
+                                        {
+                                            partiesEnded();
                                         }
+                                        return trcomp;
+                                    }
                                     )}
                                     <tr id="bottom-parties" className="liste-parties-soak" ref={partiesEndRef}></tr>
                                 </>
