@@ -484,14 +484,21 @@ class JeuService{
         if(partiefinietimer)
             gagnant = autrejoueur;
 
+        const datedebut = partie.statut == 0 ? new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ') : partie.datedebut;
+        const datefin = gagnant ? new Date(Date.now()).toISOString().slice(0, 19).replace('T', ' ') : null;
+
         var checkresult = {
             statut: partiefiniemats || partiefinietimer ? 2 : 1,
-            id_gagnant: gagnant
+            id_gagnant: gagnant,
+            datedebut: datedebut,
+            datefin: datefin
         };
 
         const partieCheckDelta = {
             statut: partiefiniemats || partiefinietimer ? 2 : 1,
-            id_gagnant: gagnant
+            id_gagnant: gagnant,
+            datedebut: datedebut,
+            datefin: datefin
         };
         
         partie = {
