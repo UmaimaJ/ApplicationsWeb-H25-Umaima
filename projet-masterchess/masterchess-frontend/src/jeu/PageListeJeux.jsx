@@ -203,7 +203,7 @@ function PageListeJeux() {
                     </div>
                     <br></br>
                     <div className="input-group mw-100 p-1">
-                        <button id="btnCreer" className="buttonCreate" onClick={onBtnCreer}>Créer match</button>
+                        <button id="btnCreer" className="buttonCreate" onClick={onBtnCreer}>Créer partie</button>
                         <button id="btnRafraichirParties" className="buttonRefresh" onClick={onBtnRefreshPartiesEncours}>Rafraichir</button>
                         <button id="btnChercherPartie" className="buttonChercher" onClick={onBtnChercherPartie}>Trouver</button>
                         { rechercheEncours == 1 && <label id="lblChercherPartie">recherche en cours</label> }
