@@ -518,6 +518,8 @@ class JeuService{
             ...partieCheckDelta
         }
         this.partiesCache[partie.id] = { ...this.partiesCache[partie.id], ...partie };
+        if(partie.statut == 2)
+            delete this.partiesCache[partie.id];
 
         return checkresult;
     }
@@ -651,6 +653,8 @@ class JeuService{
 
     async savePartie(partie)
     {
+        if(!partie)
+            return;
         try {
             const [results, fields] = await this.mysql.query(`
                 UPDATE partie
