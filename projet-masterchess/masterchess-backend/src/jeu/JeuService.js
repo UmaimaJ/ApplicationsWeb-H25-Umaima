@@ -294,6 +294,10 @@ class JeuService{
     async doBotMove(partieId)
     {
         const partie = this.partiesCache[partieId];
+
+        if(!partie)
+            return null;
+
         const game = partie?.historiquetables ? new Chess(partie.historiquetables) : new Chess();
 
         const moves = game.moves();
@@ -308,6 +312,9 @@ class JeuService{
     async doMove(partieId, move)
     {
         var partie = this.partiesCache[partieId];
+
+        if(!partie)
+            return null;
 
         if(partie.statut == 2)
             return null;
@@ -345,6 +352,9 @@ class JeuService{
     async doEndround(partieId, endTheRound = true)
     {
         var partie = this.partiesCache[partieId];
+
+        if(!partie)
+            return null;
 
         if(partie.statut == 2)
             return null;
@@ -433,6 +443,9 @@ class JeuService{
     async doTimeoutCheck(partieId, joueurcourant)
     {
         var partie = this.partiesCache[partieId];
+
+        if(!partie)
+            return null;
         
         if(partie.statut == 2)
             return null;
@@ -458,6 +471,9 @@ class JeuService{
     async doCheck(partieId)
     {
         var partie = this.partiesCache[partieId];
+
+        if(!partie)
+            return null;
         
         if(partie.statut == 2)
             return null;
@@ -518,8 +534,6 @@ class JeuService{
             ...partieCheckDelta
         }
         this.partiesCache[partie.id] = { ...this.partiesCache[partie.id], ...partie };
-        if(partie.statut == 2)
-            delete this.partiesCache[partie.id];
 
         return checkresult;
     }
@@ -655,6 +669,7 @@ class JeuService{
     {
         if(!partie)
             return;
+
         try {
             const [results, fields] = await this.mysql.query(`
                 UPDATE partie
@@ -691,6 +706,9 @@ class JeuService{
         {
             console.log(error);
         }
+
+        if(partie.statut == 2)
+            delete this.partiesCache[partie.id];
 
         return true;
     }
