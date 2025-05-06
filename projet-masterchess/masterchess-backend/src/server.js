@@ -116,6 +116,7 @@ router.post('/login', async function (req, res) {
                 req.session.user = { id: user.id, username: user.compte, usager: user };
                 delete req.session.user.usager.motdepasse;
                 comptesService.updateSessionUsager(username, req.session.id);
+                req.session.user.usager.rechercheencours = 0;
                 req.session.save();
                 res.json({ success: true, message: 'Login successful', session_id: req.sessionID, cookie: req.session.cookie });
                 console.log('Logged in:', req.session.user.usager.compte); // Log the stored password
