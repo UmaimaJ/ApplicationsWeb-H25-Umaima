@@ -468,7 +468,7 @@ class JeuService{
         else
             gameCopy = new Chess();
 
-        const joueurcourant = partie.id_joueurcourant;
+        const joueurcourant = partie.id_joueurcourant ?? partie.id_joueur1;
         const autrejoueur = joueurcourant == partie.id_joueur2 ? partie.id_joueur1 : partie.id_joueur2;
         const numjoueur = joueurcourant == partie.id_joueur2 ? 2 : 1;
 
@@ -500,6 +500,18 @@ class JeuService{
             datedebut: datedebut,
             datefin: datefin
         };
+        
+        // Update gagnant et perdant avec elo
+        if(gagnant && partieCheckDelta.statut == 2)
+        {
+            const profiljeuGagnantId = autrejoueur;
+            const profiljeuPerdantId = joueurcourant;
+            const eloGagnant = await this.getEloProfiljeuById(profiljeuGagnantId);
+            const eloPerdant = await this.getEloProfiljeuById(profiljeuPerdantId);
+            const eloDiff = Math.round(Math.abs(eloGagnant - eloPerdant) / 10);
+            partieCheckDelta.elo = eloDiff;
+            await this.updateEloProfiljeuById(profiljeuGagnantId, profiljeuPerdantId, eloDiff);
+        }
         
         partie = {
             ...partie,
@@ -578,6 +590,33 @@ class JeuService{
         
         if(results.length > 0)
             return results[0];
+
+        return null;
+    }
+
+    async updateEloProfiljeuById(profiljeuGagnantId, profiljeuPerdantId, eloDiff)
+    {
+        await this.mysql.beginTransaction();
+        await this.mysql.query(`
+            UPDATE profiljeu SET profiljeu.elo = profiljeu.elo + ? WHERE profiljeu.id = ?;
+            `, [eloDiff, profiljeuGagnantId]);
+
+        await this.mysql.query(`
+            UPDATE profiljeu SET profiljeu.elo = profiljeu.elo - ? WHERE profiljeu.id = ?;
+            `, [eloDiff, profiljeuPerdantId]);
+        await this.mysql.commit();
+    }
+
+    async getEloProfiljeuById(profiljeuId)
+    {
+        const [ results ] = await this.mysql.query(`
+            SELECT elo FROM profiljeu WHERE id = ?;
+            `, [profiljeuId]);
+
+        if(results.length > 0)
+        {
+            return results[0].elo;
+        }
 
         return null;
     }
