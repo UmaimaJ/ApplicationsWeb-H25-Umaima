@@ -72,6 +72,10 @@ function Layout() {
         navigate("/PageCours");
     };
 
+    const handleProfilClick = async (event) => {
+        navigate("/PageProfil/" + (sessionUsager?.id_profiljeu ?? -1));
+    }
+
     return (
         <AccueilServiceContext.Provider value={ {navigate, accueilService} }>
         <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, comptesService} }>
@@ -127,19 +131,19 @@ function Layout() {
                 <div class="my-sidebar-footer">
                 <div class="my-gemcounter">
                     <div class="my-gemindicator">
-                    <img class="my-gemicon" src={gemicon} />
-                    <label class="my-gemcountlabel">{sessionUsager?.points ?? 0}</label>
+                        <img class="my-gemicon" src={gemicon} />
+                        <label class="my-gemcountlabel">{sessionUsager?.points ?? 0}</label>
                     </div>
                     <img class="my-gemaddbutton" src={gemaddicon} />
                 </div>
-                <div class="my-sidebar-footer-userparent">
+                <div class="my-sidebar-footer-userparent" onClick={handleProfilClick}>
                     <div class="my-sidebar-footer-user">
-                    <div class="my-sidebar-footer-userpfp">
-                        <img class="my-gemicon" src={rectangle} />
-                    </div>
+                        <div class="my-sidebar-footer-userpfp">
+                            <img class="my-gemicon" src={rectangle} />
+                        </div>
                         <div class="my-sidebar-footer-userdata">
-                        <label class="my-sidebar-footer-username">{sessionUsager?.compte ?? "<blank>"}</label>
-                        <label class="my-sidebar-footer-informations">Informations</label>
+                            <label class="my-sidebar-footer-username">{sessionUsager?.compte ?? "<blank>"}</label>
+                            <label class="my-sidebar-footer-informations">Informations</label>
                         </div>
                     </div>
                 </div>

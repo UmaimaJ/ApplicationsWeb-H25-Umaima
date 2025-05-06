@@ -10,6 +10,7 @@ import PageAccueil from "./accueil/PageAccueil.jsx";
 import PageCours from "./cours/PageCours.jsx";
 
 import axios from 'axios';
+import PageProfil from "./jeu/PageProfil.js";
 // Set a default base URL for all requests
 axios.defaults.baseURL = '/data/';
 
@@ -25,6 +26,7 @@ function App() {
           <Route path="/PageListeJeux" element={<PageListeJeux />} />
           <Route path="/PageJeu/:idPartie" element={<PageJeu />} />
           <Route path="/PageCours" element={<PageCours />} />
+          <Route path="/PageProfil/:idProfiljeu" element={<PageProfil />} />
           <Route path="*" element={<></>} />
         </Route>
       </Routes>

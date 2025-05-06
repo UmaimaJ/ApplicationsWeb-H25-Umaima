@@ -1,0 +1,75 @@
+.profil-container {
+    width: 100%; 
+    height: 100%;
+}
+
+.panneau-profil {
+    margin: 25px;
+    width: 600px;
+}
+
+.panneau-liste-parties-historique {
+    height: 500px;
+}
+
+.panneau-liste-parties-historique .entry {
+    height: 75px;
+    width: calc(100% - 10px);
+    margin: 5px;
+    align-content: center;
+    background-color: lightgray;
+}
+
+.panneau-liste-parties-historique .entry .joueur-box {
+    width: 120px;
+    height: calc(100% - 30px);
+    border-radius: 5px;
+    margin: 15px;
+    float: left;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.panneau-liste-parties-historique .entry .joueur-box.gagnant {
+    /* border: 5px solid darkgreen; */
+    background-color: darkgreen;
+}
+
+.panneau-liste-parties-historique .entry .joueur-box.perdant {
+    /* border: 5px solid darkred; */
+    background-color: darkred;
+}
+
+.panneau-liste-parties-historique .entry .info-box {
+    width: 200px;
+    height: calc(100% - 10px);
+    border-radius: 5px;
+    margin: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    float: left;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #262626;
+    color: white;
+}
+
+.panneau-liste-parties-historique .entry .info-box .datefin {
+    font-size: small;
+}
+
+.panneau-liste-parties-historique .entry .info-box .elo {
+    font-size: large;
+}
+
+.panneau-liste-parties-historique .entry .open-partie {
+    width: 20px;
+    height: 20px;
+    background-color: #5D7C36;
+    border-radius: 5px;
+    border: 1px;
+}

@@ -3,6 +3,7 @@
   background-color: blue;
 }
 
+/* SIL Open Font License, Version 1.1 https://fonts.google.com/share?selection.family=Outfit:wght@100..900 */
 @font-face {
   font-family: myOutfit;
   src: url(./style/Outfit-Medium.ttf);
@@ -194,6 +195,18 @@ html, body, .App, #root{
 
   border-radius: 20.882px;
   background: #4D4D4D;
+}
+
+.my-sidebar-footer .my-sidebar-footer-userparent:hover{
+  display: flex;
+  padding: 13.922px 51.51px 13.922px 13.922px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 13.922px;
+  align-self: stretch;
+
+  border-radius: 20.882px;
+  background: #A9B994;
 }
 
 .my-sidebar-footer-userparent .my-sidebar-footer-user{

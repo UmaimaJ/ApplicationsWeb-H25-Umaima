@@ -16,6 +16,7 @@ import PartiesService from "./jeu/PartiesService.js"
 import JeuService from "./jeu/JeuService.js";
 import TrouverPartiesService from "./jeu/TrouverPartiesService.js";
 import ServiceCours from "./cours/ServiceCours.js";
+import ProfiljeuService from "./jeu/ProfiljeuService.js";
 
 const __filename = fileURLToPath(import.meta.url); 
 const __dirname = path.dirname(__filename);
@@ -67,6 +68,7 @@ const partiesService = new PartiesService(mymysql);
 const trouverPartiesService = new TrouverPartiesService(myio, mymysql, partiesService);
 const comptesService = new ComptesService(mymysql);
 const serviceCours = new ServiceCours(mymysql);
+const profiljeuService = new ProfiljeuService(mymysql);
 server.listen(4000, function() {
     console.log("masterchess-backend en service sur https://localhost:4000");
 });
@@ -170,9 +172,15 @@ router.get("/getSession", async function (req, res) {
 
 // affichage liste de jeux
 
-// Add isAuthenticated middleware to the route if you want to only be accessed to user that logged in
 router.get("/getAllPartiesEncours", isAuthenticated, async function (req, res, err) {
     const resultat = await partiesService.selectAllPartiesEncours();
+    res.send({ success: true, message: 'Data requested', result: resultat});
+});
+
+// affichage profil
+
+router.get("/getProfiljeuProfil", isAuthenticated, async function (req, res, err) {
+    const resultat = await profiljeuService.selectProfiljeuProfil(req.query.id);
     res.send({ success: true, message: 'Data requested', result: resultat});
 });
 
