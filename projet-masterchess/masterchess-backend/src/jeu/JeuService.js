@@ -664,7 +664,8 @@ class JeuService{
                 datefin = ?,
                 id_joueurcourant = ?,
                 timer1roundsum = ?,
-                timer2roundsum = ?
+                timer2roundsum = ?,
+                elo = ?
                 WHERE id = ?
                 `,
                 [
@@ -678,6 +679,7 @@ class JeuService{
                     partie.id_joueurcourant,
                     partie.timer1,
                     partie.timer2,
+                    partie.elo,
                     partie.id
                 ]);
         }

@@ -27,7 +27,7 @@ class ProfiljeuService {
             profiljeuProfil.parties = [];
 
             const [ resultsParties ] = await this.mysql.query(`
-                SELECT partie.id AS id, partie.id_joueur1 AS id_joueur1, partie.id_joueur2 AS id_joueur2, partie.historiquetables AS historiquetables, partie.statut AS statut, partie.id_gagnant AS id_gagnant, partie.datedebut AS datedebut, partie.datefin AS datefin, partie.id_joueurcourant AS id_joueurcourant,
+                SELECT partie.id AS id, partie.id_joueur1 AS id_joueur1, partie.id_joueur2 AS id_joueur2, partie.historiquetables AS historiquetables, partie.statut AS statut, partie.id_gagnant AS id_gagnant, partie.datedebut AS datedebut, partie.datefin AS datefin, partie.elo AS elo, partie.id_joueurcourant AS id_joueurcourant,
                 u1.compte AS compte_joueur1, u2.compte AS compte_joueur2,
                 ug.compte AS compte_gagnant,
                 uc.compte AS compte_courant
