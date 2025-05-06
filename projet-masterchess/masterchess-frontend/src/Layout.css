@@ -219,8 +219,15 @@ html, body, .App, #root{
 .my-sidebar-footer-user .my-sidebar-footer-userpfp{
   display: flex;
   width: 43.157px;
+  height: 43.157px;
   align-items: center;
   gap: 5.395px;
+  border-width: 2px;
+}
+
+.my-sidebar-footer-user .my-sidebar-footer-userpfp .my-usericon{
+  width: 43.157px;
+  height: 43.157px;
 }
 
 .my-sidebar-footer-user .my-sidebar-footer-userdata{

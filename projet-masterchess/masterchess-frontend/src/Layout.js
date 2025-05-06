@@ -1,18 +1,15 @@
 import logo from './style/logo.svg';
-import loginicon from "./style/login-icon.svg";
-import learnicon from "./style/learn-icon.svg";
-import buyicon from "./style/buy-icon.svg";
-import gemicon from "./style/gem-icon.svg";
-import gemaddicon from "./style/gem-add-icon.svg";
-import rectangle from "./style/rectangle.svg";
+import homeicon from "./style/home-icon2.svg";
+import loginicon from "./style/login-icon2.svg";
+import logouticon from "./style/logout-icon2.svg";
+import playicon from "./style/play-icon2.svg";
+import learnicon from "./style/learn-icon2.svg";
+import buyicon from "./style/buy-icon2.svg";
+import gemicon from "./style/gem-icon2.svg";
+import gemaddicon from "./style/gem-add-icon2.svg";
+import person from "./style/person2.svg";
 
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import Login from "./login/login.jsx";
-import SignUp from "./login/signUp.jsx";
-import PageListeJeux from "./jeu/PageListeJeux.jsx"
-import PageJeu from "./jeu/PageJeu.js";
-import PageAccueil from "./accueil/PageAccueil.jsx";
-import PageCours from "./cours/PageCours.jsx";
 
 import { useState, useEffect } from 'react';
 import { AccueilServiceContext, AccueilService } from "./accueil/service/AccueilService.js";
@@ -83,12 +80,14 @@ function Layout() {
             <div class="my-sidebar">
                 <div class="my-sidebar-header">
                 <div class="my-logo">
-                    <img src={logo} />
+                    <a href="/">
+                        <img src={logo} />
+                    </a>
                 </div>
                 <div class="my-navbar">
                     <div class="my-navbaroptions">
                     <div class="my-navoption" onClick={handleAccueilClick}>
-                        <img class="my-icon" src={loginicon} />
+                        <img class="my-icon" src={homeicon} />
                         <label class="my-optionlabel">Accueil</label>                
                     </div>
                     {(!sessionUsager) &&
@@ -106,11 +105,11 @@ function Layout() {
                     {(sessionUsager) &&
                         <>
                         <div class="my-navoption" onClick={handleLogoutClick}>
-                        <img class="my-icon" src={loginicon} />
+                        <img class="my-icon" src={logouticon} />
                         <label class="my-optionlabel">Logout</label>                
                         </div>
                         <div class="my-navoption" onClick={handleJeuClick}>
-                        <img class="my-icon" src={loginicon} />
+                        <img class="my-icon" src={playicon} />
                         <label class="my-optionlabel">Jouer</label>                 
                         </div>
                         </>
@@ -139,7 +138,7 @@ function Layout() {
                 <div class="my-sidebar-footer-userparent" onClick={handleProfilClick}>
                     <div class="my-sidebar-footer-user">
                         <div class="my-sidebar-footer-userpfp">
-                            <img class="my-gemicon" src={rectangle} />
+                            <img class="my-usericon" src={person} />
                         </div>
                         <div class="my-sidebar-footer-userdata">
                             <label class="my-sidebar-footer-username">{sessionUsager?.compte ?? "<blank>"}</label>

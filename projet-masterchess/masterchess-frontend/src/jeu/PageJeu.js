@@ -7,9 +7,8 @@ import { Chess, Move, SQUARES } from "chess.js";
 
 import { findFlagUrlByIso2Code } from "country-flags-svg";
 
-import rectangle from "../style/rectangle.svg";
+import person from "../style/person2.svg";
 import timericon from "../style/timer-icon.svg";
-import board from "../style/board.svg";
 
 import 'bootstrap/dist/css/bootstrap.css';
 import './PageJeu.css';
@@ -485,7 +484,7 @@ class PageJeu extends React.Component {
                             <div class="playpage-infobar">
                                 <div class="playpage-profile left clear" style={ !this.state.gagnantId ? {backgroundColor: this.state.joueurcourantId != sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
-                                        <img class="playpage-profile-pfp-icon" src={rectangle} />
+                                        <img class="playpage-profile-pfp-icon" src={person} />
                                     </div>
                                     <div class="playpage-profile-userdata">
                                         <label class="playpage-profile-username">{this.state.profiljeuUp?.compte ?? "<blank>"}</label>
@@ -514,7 +513,7 @@ class PageJeu extends React.Component {
                             <div class="playpage-infobar">
                                 <div class="playpage-profile left clear" style={ !this.state.gagnantId ? {backgroundColor: this.state.joueurcourantId == sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
-                                        <img class="playpage-profile-pfp-icon" src={rectangle} />
+                                        <img class="playpage-profile-pfp-icon" src={person} />
                                     </div>
                                     <div class="playpage-profile-userdata">
                                         <label class="playpage-profile-username">{this.state.profiljeuDown?.compte ?? "<blank>"}</label>
