@@ -1,0 +1,169 @@
+.page-cours-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: "Urbanist", sans-serif;
+    background: linear-gradient(to right, #1e211a 0%, #22321e 50%, #1e211a 100%);
+    padding: 40px 10px 60px;
+    min-height: 100vh;
+    color: white;
+    font-size: 10px;
+    text-shadow: 0 0 0.5px rgb(37, 51, 36);
+  }
+  
+  .page-cours-title {
+    font-size: 26px;
+    font-weight: 800;
+    margin-bottom: 30px;
+    color: #699d29;
+    text-shadow: 0 0 1px #222;
+    width: 90%;
+    max-width: 900px;
+    text-align: left;
+  }
+  
+  /* Search bar */
+  .search-bar {
+    width: 90%;
+    max-width: 500px;
+    padding: 8px 14px;
+    margin-bottom: 30px;
+    border-radius: 5px;
+    border: 1px solid #4D4D4D;
+    background-color: #1A1A1A;
+    color: white;
+    font-size: 10px;
+    align-self: flex-start;
+    margin-left: 5%;
+  }
+  
+  /* Filter buttons section */
+  .filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 40px;
+    justify-content: center;
+  }
+  
+  .filter-btn {
+    background-color: #699d29;
+    border: 1px solid #547F1D;
+    padding: 6px 12px;
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+  
+  .filter-btn.active,
+  .filter-btn:hover {
+    background-color: #547F1D;
+  }
+  
+  .cours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 950px;
+    justify-content: center;
+  }
+  
+  /* Course card design */
+  .cours-card {
+    background-color: #1b1d1b;
+    border: 1px solid #4D4D4D;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+  }
+  
+  .cours-card:hover {
+    transform: scale(1.01);
+  }
+  
+  .cours-image {
+    width: 90px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: #333;
+  }
+  
+  .cours-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .cours-nom {
+    font-size: 11px;
+    font-weight: 700;
+    color: #547F1D;
+    margin-bottom: 4px;
+  }
+  
+  .cours-description {
+    font-family: "Urbanist",sans-serif;
+    font-size: 12px;
+    color: #ddd;
+    line-height: 1.2;
+    margin-top: 8px;
+  }
+  
+  .cours-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    font-size: 9px;
+    color: #888;
+    margin-top: 6px;
+  }
+  
+  .cours-btn {
+    background: #73AC2B;
+    border: 1px solid #547F1D;
+    padding: 4px 10px;
+    font-size: 9px;
+    font-weight: 600;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s ease;
+  }
+  
+  .cours-btn:hover {
+    background: #547F1D;
+  }
+  
+  .cours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+    width: 100%;
+    max-width: 950px;
+    justify-content: center;
+    align-items: stretch; /* important */
+  }
+  
+  .cours-card {
+    display: flex;
+    flex-direction: column; /* <-- pour empiler verticalement */
+    justify-content: space-between;
+    height: 100%;
+    background-color: #1b1d1b;
+    border: 1px solid #4D4D4D;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+  }
+  
