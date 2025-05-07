@@ -524,7 +524,10 @@ class JeuService{
             const profiljeuPerdantId = joueurcourant;
             const eloGagnant = await this.getEloProfiljeuById(profiljeuGagnantId);
             const eloPerdant = await this.getEloProfiljeuById(profiljeuPerdantId);
-            const eloDiff = Math.round(((eloGagnant + eloPerdant) / 2 * 0.05) - ((eloGagnant - eloPerdant) * 0.05));
+            var eloDiff = Math.round(((eloGagnant + eloPerdant) / 2 * 0.05) - ((eloGagnant - eloPerdant) * 0.05));
+            if(profiljeuGagnantId == -1 || profiljeuPerdantId == -1)
+                eloDiff = 0;
+            
             partieCheckDelta.elo = eloDiff;
             await this.updateEloProfiljeuById(profiljeuGagnantId, profiljeuPerdantId, eloDiff);
         }
