@@ -1,0 +1,84 @@
+/* src/admin/Admin.css */
+.admin-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background: #f9f9f9;
+}
+.admin-container h2 {
+    margin-bottom: 16px;
+}
+.admin-selector {
+    margin-bottom: 24px;
+}
+.admin-selector label {
+    margin-right: 8px;
+    font-weight: bold;
+}
+.admin-selector select {
+    padding: 4px 8px;
+}
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+}
+.admin-table th,
+.admin-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+.admin-table th {
+    background: #eaeaea;
+}
+.admin-table tr:nth-child(even) {
+    background: #fff;
+}
+.admin-table tr:nth-child(odd) {
+    background: #fefefe;
+}
+.admin-table button {
+    padding: 4px 8px;
+    background: #d9534f;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.admin-table button:hover {
+    background: #c9302c;
+}
+.admin-add-form {
+    padding: 16px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.admin-add-form h4 {
+    margin-bottom: 12px;
+}
+.admin-form-field {
+    margin-bottom: 12px;
+}
+.admin-form-field label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+.admin-form-field input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+.admin-add-form button {
+    padding: 8px 16px;
+    background: #5cb85c;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.admin-add-form button:hover {
+    background: #4cae4c;
+}
