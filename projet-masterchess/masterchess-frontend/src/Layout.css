@@ -81,6 +81,7 @@ html, body, .App, #root{
 }
 
 .my-navbaroptions .my-navoption{
+  cursor: pointer;
   display: flex;
   padding: 10px;
   align-items: center;
@@ -190,6 +191,7 @@ html, body, .App, #root{
 }
 
 .my-sidebar-footer .my-sidebar-footer-userparent{
+  cursor: pointer;
   display: flex;
   padding: 13.922px 51.51px 13.922px 13.922px;
   flex-direction: column;
