@@ -90,6 +90,10 @@ html, body, .App, #root{
   border-radius: 20px;
 }
 
+.my-navbaroptions .my-navoption *{
+  cursor: pointer;
+}
+
 .my-navoption .selected{
   display: flex;
   padding: 10px;
@@ -207,6 +211,10 @@ html, body, .App, #root{
 
   border-radius: 20.882px;
   background: #A9B994;
+}
+
+.my-sidebar-footer .my-sidebar-footer-userparent *{
+  cursor: pointer;
 }
 
 .my-sidebar-footer-userparent .my-sidebar-footer-user{
