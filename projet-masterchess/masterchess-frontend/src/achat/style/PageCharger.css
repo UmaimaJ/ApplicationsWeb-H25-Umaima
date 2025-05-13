@@ -1,0 +1,10 @@
+/*Liste de parties en cours*/
+.charger-container {
+    width: 100%; 
+    height: 100%;
+}
+
+.panneau-charger-header {
+    margin: 25px;
+    width: 600px;
+}

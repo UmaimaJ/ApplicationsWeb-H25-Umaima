@@ -9,7 +9,8 @@
   "scripts": {
     "start": "npm-run-all --parallel watch:server watch:build",
     "watch:build": "cd ./masterchess-frontend && nodemon \"./scripts/builddev.js\" --watch \"./src/\" -e js,jsx,css",
-    "watch:server": "cd ./masterchess-backend && nodemon \"./masterchess-backend/src/server.js\" --watch \"./src\""
+    "watch:server": "cd ./masterchess-backend && nodemon \"./masterchess-backend/src/server.js\" --watch \"./src\"",
+    "transfertdb": "node ./masterchess-backend/export-cours.js"
   },
   "keywords": [],
   "author": "",

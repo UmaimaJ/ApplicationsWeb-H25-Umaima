@@ -183,11 +183,25 @@ html, body, .App, #root{
 }
 
 .my-gemcounter .my-gemaddbutton{
+  cursor: pointer;
   display: flex;
   padding: 6.912px;
   flex-direction: column;
   align-items: flex-start;
   gap: 6.912px;
+  border-radius: 13.452px;
+}
+
+.my-gemcounter .my-gemaddbutton:hover{
+  cursor: pointer;
+  display: flex;
+  padding: 6.912px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6.912px;
+  border-radius: 13.452px;
+  background-color: #A9B994;
+  
 }
 
 .my-sidebar-footer .my-sidebar-footer-userparent{

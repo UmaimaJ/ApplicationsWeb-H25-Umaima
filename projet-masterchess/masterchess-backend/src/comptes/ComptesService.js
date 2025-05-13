@@ -85,6 +85,17 @@ class ComptesService {
         return true;
     }
 
+    async updatePoints(usagerId, nouveauxPoints)
+    {
+        const [ results ] = await this.mysql.query(`
+            UPDATE profiljeu
+            SET profiljeu.points = ?
+            WHERE profiljeu.id_usager = ?;
+            `, [ nouveauxPoints, usagerId ]);
+
+        return true;
+    }
+
     async getCountryCode(ip)
     {
         var country_code = null;

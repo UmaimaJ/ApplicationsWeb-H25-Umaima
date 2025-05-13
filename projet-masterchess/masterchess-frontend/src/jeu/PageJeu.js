@@ -11,7 +11,7 @@ import person from "../style/person2.svg";
 import timericon from "../style/timer-icon.svg";
 
 import 'bootstrap/dist/css/bootstrap.css';
-import './PageJeu.css';
+import './style/PageJeu.css';
 
 import { JeuServiceContext, JeuService } from "./service/JeuService";
 import { ComptesServiceContext } from "../login/service/ComptesService.js"

@@ -73,6 +73,10 @@ function Layout() {
         navigate("/PageProfil/" + (sessionUsager?.id_profiljeu ?? -1));
     }
 
+    const handleAcheterGems = async (event) => {
+        navigate("/PageCharger");
+    }
+
     return (
         <AccueilServiceContext.Provider value={ {navigate, accueilService} }>
         <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, comptesService} }>
@@ -133,7 +137,7 @@ function Layout() {
                         <img class="my-gemicon" src={gemicon} />
                         <label class="my-gemcountlabel">{sessionUsager?.points ?? 0}</label>
                     </div>
-                    <img class="my-gemaddbutton" src={gemaddicon} />
+                    <img class="my-gemaddbutton" src={gemaddicon} onClick={handleAcheterGems} />
                 </div>
                 <div class="my-sidebar-footer-userparent" onClick={handleProfilClick}>
                     <div class="my-sidebar-footer-user">

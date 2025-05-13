@@ -3,12 +3,14 @@ import https from "https";
 import { Server } from "socket.io";
 import fs from "fs";
 import mysql from "mysql2/promise";
+import { MongoClient } from "mongodb";
 import cors from "cors";
 import bodyParser from "body-parser";
 import bcrypt from 'bcrypt';
 import session from "express-session";
+import Stripe from 'stripe';
 
-import path from "path"; 
+import path from "path";
 import { fileURLToPath } from "url";
 
 import ComptesService from "./comptes/ComptesService.js";
@@ -18,10 +20,10 @@ import TrouverPartiesService from "./jeu/TrouverPartiesService.js";
 import ServiceCours from "./cours/ServiceCours.js";
 import ProfiljeuService from "./jeu/ProfiljeuService.js";
 
-const __filename = fileURLToPath(import.meta.url); 
+const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express(); 
+const app = express();
 
 const privateKey = fs.readFileSync(path.join(__dirname, 'localhost-key.pem'), 'utf8');
 const certificate = fs.readFileSync(path.join(__dirname, 'localhost.pem'), 'utf8');
@@ -38,7 +40,12 @@ const mymysql = await mysql.createConnection({
     multipleStatements: true
 });
 
-const corsOptions = { 
+const mymongo = new MongoClient("mongodb://localhost:27017/");
+await mymongo.connect();
+
+const mymongodb = mymongo.db("projet_chess");
+
+const corsOptions = {
     origin: ['https://10.186.5.123:4000', 'https://10.0.0.228:4000', 'https://localhost:4000'],//< Change domain to suit your needs
     methods: ["GET", "POST"],
     credentials: true
@@ -63,13 +70,17 @@ var myio = new Server(server, {
 });
 myio.engine.use(sessionMiddleware);
 
+const stripe = new Stripe("", {
+    apiVersion: '2025-03-31.basil',
+});
+
 const jeuService = new JeuService(myio, mymysql);
 const partiesService = new PartiesService(mymysql);
 const trouverPartiesService = new TrouverPartiesService(myio, mymysql, partiesService);
 const comptesService = new ComptesService(mymysql);
-const serviceCours = new ServiceCours(mymysql);
+const serviceCours = new ServiceCours(mymongodb);
 const profiljeuService = new ProfiljeuService(mymysql);
-server.listen(4000, function() {
+server.listen(4000, function () {
     console.log("masterchess-backend en service sur https://localhost:4000");
 });
 
@@ -77,7 +88,7 @@ server.listen(4000, function() {
 app.use(express.static(path.join(__dirname, '/../../masterchess-frontend/build'))); // this is where your built react js files are
 
 app.use(cors(corsOptions));
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     //res.header("Access-Control-Allow-Origin", "http://localhost:3000"); // update to match the domain you will make the request from
     //res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
@@ -98,9 +109,9 @@ function isAuthenticated(req, res, next) {
 const router = express.Router();
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/../../masterchess-frontend/build/index.html'), function(err) {
+    res.sendFile(path.join(__dirname, '/../../masterchess-frontend/build/index.html'), function (err) {
         if (err) {
-          res.status(500).send(err)
+            res.status(500).send(err)
         }
     });
 });
@@ -122,7 +133,7 @@ router.post('/login', async function (req, res) {
                 console.log('Logged in:', req.session.user.usager.compte); // Log the stored password
             } else {
                 console.log('Invalid password:', user.compte); // Log the invalid attempt
-                res.json({ success: false, message: 'Invalid password'});
+                res.json({ success: false, message: 'Invalid password' });
             }
         } else {
             res.json({ success: false, message: 'User not found' });
@@ -138,7 +149,7 @@ router.post("/signup", async function (req, res) {
     try {
         // Generate a session ID
         const sessionId = req.sessionID;
-    
+
         // Get country code by api
         var country_code = await comptesService.getCountryCode(req.ip.split("::ffff:")[1]);
 
@@ -168,82 +179,156 @@ router.post('/logout', async function (req, res) {
 });
 
 router.get("/getSession", async function (req, res) {
-    res.json({ success: true, message: 'Data requested', usager: req.session?.user?.usager});
+    res.json({ success: true, message: 'Data requested', usager: req.session?.user?.usager });
 });
 
 // affichage liste de jeux
 
 router.get("/getAllPartiesEncours", isAuthenticated, async function (req, res, err) {
     const resultat = await partiesService.selectAllPartiesEncours();
-    res.send({ success: true, message: 'Data requested', result: resultat});
+    res.send({ success: true, message: 'Data requested', result: resultat });
 });
 
 // affichage profil
 
 router.get("/getProfiljeuProfil", isAuthenticated, async function (req, res, err) {
     const resultat = await profiljeuService.selectProfiljeuProfil(req.query.id);
-    res.send({ success: true, message: 'Data requested', result: resultat});
+    res.send({ success: true, message: 'Data requested', result: resultat });
 });
 
 // page du jeu
 
 router.get("/getPartie", isAuthenticated, async function (req, res, err) {
     const resultat = await jeuService.selectPartie(req.query.id);
-    res.send({ success: true, message: 'Data requested', result: resultat});
+    res.send({ success: true, message: 'Data requested', result: resultat });
 });
 
 router.get("/getProfiljeu", isAuthenticated, async function (req, res, err) {
-    if(!req.query.id)
+    if (!req.query.id)
         throw new Error("route: query.id not received");
     const resultat = await jeuService.selectProfiljeu(req.query.id);
-    res.send({ success: true, message: 'Data requested', result: resultat});
+    res.send({ success: true, message: 'Data requested', result: resultat });
 });
 
 router.post("/createPartie", isAuthenticated, async function (req, res, err) {
-    try{
-        if(!req.body.nomprofiljeu1)
+    try {
+        if (!req.body.nomprofiljeu1)
             throw new Error("route: body.nomprofiljeu1 not received");
 
-        if(!req.body.nomprofiljeu2)
+        if (!req.body.nomprofiljeu2)
             throw new Error("route: body.nomprofiljeu2 not received");
 
         const profiljeu1 = await partiesService.selectProfiljeuByCompte(req.body.nomprofiljeu1);
 
-        if(!profiljeu1)
+        if (!profiljeu1)
             throw new Error("createPartie: profiljeu 1 invalid");
 
         const profiljeu2 = await partiesService.selectProfiljeuByCompte(req.body.nomprofiljeu2);
-        
-        if(!profiljeu2)
+
+        if (!profiljeu2)
             throw new Error("createPartie: profiljeu 2 invalid");
 
         const resultat = await partiesService.createPartie(profiljeu1.id, profiljeu2.id);
-        res.send({ success: true, message: 'Data requested', result: resultat});
+        res.send({ success: true, message: 'Data requested', result: resultat });
     }
-    catch(err)
-    {
+    catch (err) {
         res.status(400).send({ success: false, message: err.message, result: null });
     }
 });
 
+// Checkout achat gems
+
+router.post('/CreateCheckoutSession', async (req, res) => {
+    const session = await stripe.checkout.sessions.create({
+        line_items: [
+            {
+                price_data: {
+                    currency: 'cad',
+                    product_data: {
+                        name: '1000 gems',
+                    },
+                    unit_amount: 500,
+                },
+                quantity: 1,
+            },
+        ],
+        mode: 'payment',
+        ui_mode: 'custom',
+        return_url: 'https://localhost:4000/data/RetourCharger?session_id={CHECKOUT_SESSION_ID}'
+    });
+
+    res.json({ checkoutSessionClientSecret: session.client_secret });
+});
+
+router.get('/RetourCharger', async (req, res) => {
+    const session = await stripe.checkout.sessions.retrieve(req?.query?.session_id);
+    if(!session)
+        res.status(400).send({ success: false, message: "Le serveur n'a pas reussi à obtenir la session Stripe avec cet id.", result: null });
+
+    const pointsAjout = 1000;
+    const nouveauxPoints = req?.session?.user?.usager?.points + pointsAjout;
+    await comptesService.updatePoints(req?.session?.user?.usager.id, nouveauxPoints);
+    req.session.user.usager.points = nouveauxPoints;
+    await new Promise( (resolve) => {
+        req.session.save(() => { resolve(); });
+    });
+
+    res.redirect("/");
+});
 
 // Cours
+
 router.get("/getLessons", async (req, res) => {
     try {
-      const lessons = await serviceCours.getAllLessons();
-      res.json(lessons);
+        const lessons = await serviceCours.getAllLessons();
+        res.json(lessons);
     } catch (error) {
-      console.error("Erreur dans /getLessons:", error);
-      res.status(500).json({ error: "Erreur lors de la récupération des cours." });
+        console.error("Erreur dans /getLessons:", error);
+        res.status(500).json({ success: false, message: "Erreur lors de la récupération des cours.", result: null } );
+    }
+});
+
+router.get("/getCoursAchetes", async (req, res) => {
+    try {
+        const lessons = await serviceCours.getAllCoursAchetesByUserId(req.session?.user?.usager?.id);
+        res.json(lessons);
+    } catch (error) {
+        console.error("Erreur dans /getCoursAchetes:", error);
+        res.status(500).json({ success: false, message: "Erreur lors de la récupération des cours achetés.", result: null } );
+    }
+});
+
+router.post("/addTransactionCours", async (req, res) => {
+    try {
+        const prix = 100;
+        const nouveauxPoints = req.session?.user?.usager?.points - prix;
+        if(nouveauxPoints < 0)
+            return;
+
+        if(await serviceCours.insertTransaction(req.session?.user?.usager?.id, req.body?.coursId))
+            if(await comptesService.updatePoints(req.session?.user?.usager?.id, nouveauxPoints))
+            {
+                req.session.user.usager.points = nouveauxPoints;
+                res.sendStatus(100);
+            }
+            else
+            {
+                await serviceCours.deleteTransaction(req.session?.user?.usager?.id, req.body?.coursId)
+                res.sendStatus(400);
+            }
+
+    } catch (error) {
+        console.error("Transaction erronnée lors de l'achat d'un cours:", error);
+        res.status(500).json({ success: false, message: "Erreur lors de l'enregistrement d'une transaction de cours.", result: null } );
     }
 });
 
 app.use('/data', router);
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '/../../masterchess-frontend/build/index.html'), function(err) {
+    res.sendFile(path.join(__dirname, '/../../masterchess-frontend/build/index.html'), function (err) {
         if (err) {
-          res.status(500).send(err)
+            res.status(500).send(err)
         }
     });
 });
