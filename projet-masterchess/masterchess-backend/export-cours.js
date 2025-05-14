@@ -13,7 +13,7 @@ const run = async () => {
   });
 
   // Lecture des cours depuis MySQL
-  const [rows] = await mysqlConn.execute("SELECT id, id_nom, niveau, cout, pagecontenu, dateajout, id_image FROM cours");
+  const [rows] = await mysqlConn.execute("SELECT * FROM cours");
 
   // Connexion MongoDB
   await mongoClient.connect();

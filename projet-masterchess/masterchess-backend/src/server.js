@@ -299,9 +299,15 @@ router.get("/getCoursAchetes", async (req, res) => {
 });
 
 router.post("/addTransactionCours", async (req, res) => {
+    if(!req.session?.user)
+        return;
+    
+    if(!req.body?.coursId)
+        return;
+
     try {
-        const prix = 100;
-        const nouveauxPoints = req.session?.user?.usager?.points - prix;
+        const cours = await serviceCours.selectCoursById(req.body?.coursId);
+        const nouveauxPoints = req.session?.user?.usager?.points - cours.cout;
         if(nouveauxPoints < 0)
             return;
 

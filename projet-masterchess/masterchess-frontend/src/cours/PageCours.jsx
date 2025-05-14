@@ -10,7 +10,8 @@ const PageCours = () => {
   const [coursAchetesList, setCoursAchetesList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("Tous");
-  const [showDescription, setShowDescription] = useState({});
+  const [showDescriptionCours, setShowDescriptionCours] = useState({});
+  const [showDescriptionCoursAchete, setShowDescriptionCoursAchete] = useState({});
 
   const levelMap = {
     "Débutant": 1,
@@ -44,8 +45,15 @@ const PageCours = () => {
     setFilteredList(filtered);
   }, [searchQuery, selectedLevel, coursList]);
 
-  const toggleDescription = (index) => {
-    setShowDescription((prev) => ({
+  const toggleDescriptionCours = (index) => {
+    setShowDescriptionCours((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+
+  const toggleDescriptionCoursAchete = (index) => {
+    setShowDescriptionCoursAchete((prev) => ({
       ...prev,
       [index]: !prev[index],
     }));
@@ -103,9 +111,9 @@ const PageCours = () => {
               <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
                 <button
                   className="cours-btn"
-                  onClick={() => toggleDescription(index)}
+                  onClick={() => toggleDescriptionCours(index)}
                 >
-                  {showDescription[index] ? "Masquer" : "Voir"} description
+                  {showDescriptionCours[index] ? "Masquer" : "Voir"} description
                 </button>
 
                 <button className="cours-btn" onClick={() => { handleAcheterCours(cours.id); } }>
@@ -113,8 +121,8 @@ const PageCours = () => {
                 </button>
               </div>
 
-              {showDescription[index] && (
-                <p className="cours-description">{cours.pagecontenu}</p>
+              {showDescriptionCours[index] && (
+                <p className="cours-description">{cours.description}</p>
               )}
             </div>
           </div>
@@ -145,14 +153,14 @@ const PageCours = () => {
               <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
                 <button
                   className="cours-btn"
-                  onClick={() => toggleDescription(index)}
+                  onClick={() => toggleDescriptionCoursAchete(index)}
                 >
-                  {showDescription[index] ? "Masquer" : "Voir"} description
+                  {showDescriptionCoursAchete[index] ? "Masquer" : "Voir"} description
                 </button>
               </div>
 
-              {showDescription[index] && (
-                <p className="cours-description">{cours.pagecontenu}</p>
+              {showDescriptionCoursAchete[index] && (
+                <p className="cours-description">{cours.description}</p>
               )}
             </div>
           </div>

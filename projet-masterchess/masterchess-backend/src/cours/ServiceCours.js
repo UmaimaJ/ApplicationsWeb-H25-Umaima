@@ -5,6 +5,19 @@ export default class ServiceCours {
     this.collectionTransactionsCours = this.db.collection("transactionsCours");
   }
 
+  async selectCoursById(coursId)
+  {
+    const found = await this.collection.find({
+        id: coursId
+      }).toArray();
+
+    if(found.length > 0)
+      return found[0];
+
+    return null;
+
+  }
+
   async getAllLessons() {
     const cours = await this.collection.find({}).toArray();
     return cours;
