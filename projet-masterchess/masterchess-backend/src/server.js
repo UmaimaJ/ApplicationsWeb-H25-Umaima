@@ -298,6 +298,21 @@ router.get("/getCoursAchetes", async (req, res) => {
     }
 });
 
+router.get("/getCours", async (req, res) => {
+    try {
+        const cours = await serviceCours.selectCoursAcheteByIdAndUsager(parseInt(req?.query?.id ?? "0"), req.session?.user?.usager?.id);
+        if(!cours)
+        {
+            res.status(403).json({ success: false, message: "Erreur lors de la récupération du cours: accès restraint à ce cours.", result: null } );
+            return;
+        }
+        res.json({ success: true, message: "Cours en requête.", result: cours } );
+    } catch (error) {
+        console.error("Erreur dans /getCours:", error);
+        res.status(500).json({ success: false, message: "Erreur lors de la récupération du cours.", result: null } );
+    }
+});
+
 router.post("/addTransactionCours", async (req, res) => {
     if(!req.session?.user)
         return;
@@ -308,6 +323,7 @@ router.post("/addTransactionCours", async (req, res) => {
     try {
         const cours = await serviceCours.selectCoursById(req.body?.coursId);
         const nouveauxPoints = req.session?.user?.usager?.points - cours.cout;
+
         if(nouveauxPoints < 0)
             return;
 
@@ -315,17 +331,20 @@ router.post("/addTransactionCours", async (req, res) => {
             if(await comptesService.updatePoints(req.session?.user?.usager?.id, nouveauxPoints))
             {
                 req.session.user.usager.points = nouveauxPoints;
-                res.sendStatus(100);
+                res.status(100);
+                res.redirect("/PageCours");
+                return;
             }
             else
             {
                 await serviceCours.deleteTransaction(req.session?.user?.usager?.id, req.body?.coursId)
-                res.sendStatus(400);
+                res.status(400);
+                return;
             }
 
     } catch (error) {
         console.error("Transaction erronnée lors de l'achat d'un cours:", error);
-        res.status(500).json({ success: false, message: "Erreur lors de l'enregistrement d'une transaction de cours.", result: null } );
+        res.status(500).json({ success: false, message: "Erreur lors de l'enregistrement d'une transaction d'achat de cours.", result: null } );
     }
 });
 

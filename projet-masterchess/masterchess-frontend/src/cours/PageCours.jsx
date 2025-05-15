@@ -2,9 +2,13 @@
 import React, { useEffect, useState, useContext } from "react";
 import "./PageCours.css";
 import { ServiceCoursContext } from "./service/ServiceCours";
+import { AccueilService, AccueilServiceContext } from "../accueil/service/AccueilService";
+import { ComptesServiceContext } from "../login/service/ComptesService.js"
 
 const PageCours = () => {
   const { service } = useContext(ServiceCoursContext);
+  const { navigate, accueilService } = useContext(AccueilServiceContext)
+  const {sessionUsager, setSessionUsager, comptesService} = useContext(ComptesServiceContext)
   const [coursList, setCoursList] = useState([]);
   const [filteredList, setFilteredList] = useState([]);
   const [coursAchetesList, setCoursAchetesList] = useState([]);
@@ -63,6 +67,10 @@ const PageCours = () => {
     await service.addTransactionCours(coursId);
     fetchCours();
   };
+
+  const ouvrirCoursAchete = async (id) => {
+    await navigate("/PageDisplayCours/" + id);
+  }
 
   return (
     <div className="page-cours-container">
@@ -129,6 +137,7 @@ const PageCours = () => {
         ))}
       </div>
 
+      { sessionUsager && <>
       <h1 className="page-cours-title">Cours achetés</h1>
       <div className="cours-grid">
         { coursAchetesList.map((cours, index) => (
@@ -157,6 +166,12 @@ const PageCours = () => {
                 >
                   {showDescriptionCoursAchete[index] ? "Masquer" : "Voir"} description
                 </button>
+                <button
+                  className="cours-btn"
+                  onClick={() => ouvrirCoursAchete(cours.id)}
+                >
+                  Ouvrir
+                </button>
               </div>
 
               {showDescriptionCoursAchete[index] && (
@@ -166,6 +181,7 @@ const PageCours = () => {
           </div>
         ))}
       </div>
+      </> }
     </div>
   );
 };

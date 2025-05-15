@@ -18,6 +18,38 @@ export default class ServiceCours {
 
   }
 
+  async selectCoursAcheteByIdAndUsager(coursId, usagerId)
+  {
+    const found = await this.collectionTransactionsCours.aggregate([
+      {
+        $match: {
+          id_cours: coursId,
+          id_usager: usagerId
+        }
+      },
+      {
+        $lookup: {
+          from: "cours",
+          localField: "id_cours",
+          foreignField: "id",
+          as: "cours"
+        }
+      },
+      {
+        $set: {
+          "cours": { "$first": "$cours" }
+        }
+      }
+    ]);
+
+    const foundarr = await found.toArray();
+    if(foundarr.length > 0)
+      return foundarr[0].cours;
+
+    return null;
+
+  }
+
   async getAllLessons() {
     const cours = await this.collection.find({}).toArray();
     return cours;
@@ -63,6 +95,7 @@ export default class ServiceCours {
     }
     catch(error)
     {
+      console.log(error);
       return false;
     }
     return true;

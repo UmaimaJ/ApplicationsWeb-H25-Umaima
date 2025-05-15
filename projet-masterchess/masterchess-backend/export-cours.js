@@ -20,7 +20,7 @@ const run = async () => {
   const db = mongoClient.db("projet_chess");
   const collectionCours = db.collection("cours");
   const collectionTransactionsCours = db.collection("transactionsCours");
-  const indexTransactionsCours = collectionTransactionsCours.createIndex({ id_cours: 1, id_user: 1 }, { unique: true });
+  const indexTransactionsCours = collectionTransactionsCours.createIndex({ id_cours: 1, id_usager: 1 }, { unique: true });
 
   // Insertion dans MongoDB
   if (rows.length > 0) {

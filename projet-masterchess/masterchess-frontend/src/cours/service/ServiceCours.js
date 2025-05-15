@@ -28,6 +28,29 @@ export class ServiceCours {
     }
   }
 
+  async getCours(coursId)
+  {
+    const params = new URLSearchParams();
+    params.append("id", coursId);
+    var result = null;
+    await axios.get("getCours", {
+        params,
+        withCredentials: true
+    })
+    .then(function (response) {
+        //handle success
+        result = response.data.result;
+    })
+    .catch(function (error) {
+        //handle error
+        console.log(error);
+    })
+    .finally(function () {
+        //always executed
+    });
+    return result;
+  }
+
   async addTransactionCours(coursId)
   {
     try {

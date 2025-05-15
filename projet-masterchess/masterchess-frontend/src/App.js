@@ -8,6 +8,7 @@ import PageListeJeux from "./jeu/PageListeJeux.jsx"
 import PageJeu from "./jeu/PageJeu.js";
 import PageAccueil from "./accueil/PageAccueil.jsx";
 import PageCours from "./cours/PageCours.jsx";
+import PageDisplayCours from "./cours/PageDisplayCours.jsx";
 import PageCharger from "./achat/PageCharger.jsx";
 
 import axios from 'axios';
@@ -27,6 +28,7 @@ function App() {
           <Route path="/PageListeJeux" element={<PageListeJeux />} />
           <Route path="/PageJeu/:idPartie" element={<PageJeu />} />
           <Route path="/PageCours" element={<PageCours />} />
+          <Route path="/PageDisplayCours/:idCours" element={<PageDisplayCours />} />
           <Route path="/PageProfil/:idProfiljeu" element={<PageProfil />} />
           <Route path="/PageCharger" element={<PageCharger />} />
           <Route path="*" element={<></>} />
