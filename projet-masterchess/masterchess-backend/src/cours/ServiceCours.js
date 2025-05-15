@@ -95,7 +95,10 @@ export default class ServiceCours {
     }
     catch(error)
     {
-      console.log(error);
+      if(error.code === 11000)
+      {
+        throw new Error("insertTransaction: transaction existe deja");
+      }
       return false;
     }
     return true;

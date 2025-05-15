@@ -343,8 +343,8 @@ router.post("/addTransactionCours", async (req, res) => {
             }
 
     } catch (error) {
-        console.error("Transaction erronnée lors de l'achat d'un cours:", error);
-        res.status(500).json({ success: false, message: "Erreur lors de l'enregistrement d'une transaction d'achat de cours.", result: null } );
+        console.error(error);
+        res.status(500).json({ success: false, message: "Erreur lors de l'enregistrement d'une transaction d'achat de cours.", result: error } );
     }
 });
 

@@ -122,7 +122,7 @@ function Layout() {
                         <img class="my-icon" src={learnicon} />
                         <label class="my-optionlabel">Apprendre</label>
                     </div>
-                    <div class="my-navoption">
+                    <div class="my-navoption" onClick={handleAcheterGems}>
                         <img class="my-icon" src={buyicon} />
                         <label class="my-optionlabel">Acheter</label>
                     </div>
