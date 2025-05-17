@@ -19,6 +19,8 @@ const PageCours = () => {
   const [showDescriptionCours, setShowDescriptionCours] = useState({});
   const [showDescriptionCoursAchete, setShowDescriptionCoursAchete] = useState({});
 
+  var tooltipInvalidAcheter = null;
+
   const levelMap = {
     "Débutant": 1,
     "Intermédiaire": 2,
@@ -75,7 +77,14 @@ const PageCours = () => {
       if(error?.message === "insertTransaction: transaction existe deja")
       {
         const element = document.querySelector("#lblError");
-        await setInvalidTooltip(element, "Vous ne pouvez acheter que seulement des cours dont vous ne possèdez pas.");
+        await setInvalidTooltip(element, "Vous avez déjà acheté cet article.");
+        //timer undo tooltip
+        if(tooltipInvalidAcheter)
+        {
+          clearTimeout(tooltipInvalidAcheter);
+          tooltipInvalidAcheter = null;
+        }
+        tooltipInvalidAcheter = setTimeout(async () => { await setInvalidTooltip(element, null) } , 10000);
       }
     }
     fetchCours();
