@@ -28,21 +28,21 @@ function Layout() {
 
     useEffect(() => {
         const fetchData = async () => {
-        const sessionUsagerDB = (await comptesService.getSessionUsager())?.data?.usager ?? null;
-        return sessionUsagerDB;
+            const sessionUsagerDB = (await comptesService.getSessionUsager())?.data?.usager ?? null;
+            return sessionUsagerDB;
         }
 
         fetchData().then((usager) => {
-        const cacheStr = window.sessionStorage.getItem("sessionUsager");
-        const cacheParsed = JSON.parse(cacheStr !== "undefined" ? cacheStr : "null" );
-        setSessionUsager(cacheParsed ?? usager)
+            const cacheStr = window.sessionStorage.getItem("sessionUsager");
+            const cacheParsed = JSON.parse(cacheStr !== "undefined" ? cacheStr : "null");
+            setSessionUsager(cacheParsed ?? usager)
         });
     }, []);
 
     useEffect(() => {
         window.sessionStorage.setItem("sessionUsager", JSON.stringify(sessionUsager));
     }, [sessionUsager]);
-    
+
     const handleAccueilClick = async (event) => {
         navigate("/");
     };
@@ -73,92 +73,94 @@ function Layout() {
         navigate("/PageProfil/" + (sessionUsager?.id_profiljeu ?? -1));
     }
 
+
     const handleAcheterGems = async (event) => {
         navigate("/PageCharger");
     }
 
     return (
-        <AccueilServiceContext.Provider value={ {navigate, accueilService} }>
-        <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, comptesService} }>
-        <div id="container">
-            <div class="my-sidebar">
-                <div class="my-sidebar-header">
-                <div class="my-logo">
-                    <a href="/">
-                        <img src={logo} />
-                    </a>
-                </div>
-                <div class="my-navbar">
-                    <div class="my-navbaroptions">
-                    <div class="my-navoption" onClick={handleAccueilClick}>
-                        <img class="my-icon" src={homeicon} />
-                        <label class="my-optionlabel">Accueil</label>                
-                    </div>
-                    {(!sessionUsager) &&
-                        <>
-                        <div class="my-navoption" onClick={handleLoginClick}>
-                        <img class="my-icon" src={loginicon} />
-                        <label class="my-optionlabel">Login</label>                
+        <AccueilServiceContext.Provider value={{ navigate, accueilService }}>
+            <ComptesServiceContext.Provider value={{ sessionUsager, setSessionUsager, comptesService }}>
+                <div id="container">
+                    <div class="my-sidebar">
+                        <div class="my-sidebar-header">
+                            <div class="my-logo">
+                                <a href="/">
+                                    <img src={logo} />
+                                </a>
+                            </div>
+                            <div class="my-navbar">
+                                <div class="my-navbaroptions">
+                                    <div class="my-navoption" onClick={handleAccueilClick}>
+                                        <img class="my-icon" src={homeicon} />
+                                        <label class="my-optionlabel">Accueil</label>
+                                    </div>
+                                    {(!sessionUsager) &&
+                                        <>
+                                            <div class="my-navoption" onClick={handleLoginClick}>
+                                                <img class="my-icon" src={loginicon} />
+                                                <label class="my-optionlabel">Login</label>
+                                            </div>
+                                            <div class="my-navoption" onClick={handleSignUpClick}>
+                                                <img class="my-icon" src={loginicon} />
+                                                <label class="my-optionlabel">Enregistrement</label>
+                                            </div>
+                                        </>
+                                    }
+                                    {(sessionUsager) &&
+                                        <>
+                                            <div class="my-navoption" onClick={handleLogoutClick}>
+                                                <img class="my-icon" src={logouticon} />
+                                                <label class="my-optionlabel">Logout</label>
+                                            </div>
+                                            <div class="my-navoption" onClick={handleJeuClick}>
+                                                <img class="my-icon" src={playicon} />
+                                                <label class="my-optionlabel">Jouer</label>
+                                            </div>
+                                        </>
+                                    }
+                                    <div class="my-navoption" onClick={handleLearnClick}>
+                                        <img class="my-icon" src={learnicon} />
+                                        <label class="my-optionlabel">Apprendre</label>
+                                    </div>
+                                    <div class="my-navoption" onClick={() => navigate("/magasin")}>
+                                        <img class="my-icon" src={buyicon} />
+                                        <label class="my-optionlabel">Acheter</label>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
-                        <div class="my-navoption" onClick={handleSignUpClick}>
-                        <img class="my-icon" src={loginicon} />
-                        <label class="my-optionlabel">Enregistrement</label>                
-                        </div>
-                        </>
-                    }
-                    {(sessionUsager) &&
-                        <>
-                        <div class="my-navoption" onClick={handleLogoutClick}>
-                        <img class="my-icon" src={logouticon} />
-                        <label class="my-optionlabel">Logout</label>                
-                        </div>
-                        <div class="my-navoption" onClick={handleJeuClick}>
-                        <img class="my-icon" src={playicon} />
-                        <label class="my-optionlabel">Jouer</label>                 
-                        </div>
-                        </>
-                    }
-                    <div class="my-navoption" onClick={handleLearnClick}>
-                        <img class="my-icon" src={learnicon} />
-                        <label class="my-optionlabel">Apprendre</label>
+                        {sessionUsager &&
+                            <>
+                                <div class="my-sidebar-footer">
+                                    <div class="my-gemcounter">
+                                        <div class="my-gemindicator">
+                                            <img class="my-gemicon" src={gemicon} />
+                                            <label class="my-gemcountlabel">{sessionUsager?.points ?? 0}</label>
+                                        </div>
+                                        <img class="my-gemaddbutton" src={gemaddicon} onClick={handleAcheterGems} />
+                                    </div>
+                                    <div class="my-sidebar-footer-userparent" onClick={handleProfilClick}>
+                                        <div class="my-sidebar-footer-user">
+                                            <div class="my-sidebar-footer-userpfp">
+                                                <img class="my-usericon" src={person} />
+                                            </div>
+                                            <div class="my-sidebar-footer-userdata">
+                                                <label class="my-sidebar-footer-username">{sessionUsager?.compte ?? "<blank>"}</label>
+                                                <label class="my-sidebar-footer-informations">Informations</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </>
+                        }
                     </div>
-                    <div class="my-navoption">
-                        <img class="my-icon" src={buyicon} />
-                        <label class="my-optionlabel">Acheter</label>
-                    </div>
-                    </div>
-                </div>
-                </div>
-                {sessionUsager &&
-                <>
-                <div class="my-sidebar-footer">
-                <div class="my-gemcounter">
-                    <div class="my-gemindicator">
-                        <img class="my-gemicon" src={gemicon} />
-                        <label class="my-gemcountlabel">{sessionUsager?.points ?? 0}</label>
-                    </div>
-                    <img class="my-gemaddbutton" src={gemaddicon} onClick={handleAcheterGems} />
-                </div>
-                <div class="my-sidebar-footer-userparent" onClick={handleProfilClick}>
-                    <div class="my-sidebar-footer-user">
-                        <div class="my-sidebar-footer-userpfp">
-                            <img class="my-usericon" src={person} />
-                        </div>
-                        <div class="my-sidebar-footer-userdata">
-                            <label class="my-sidebar-footer-username">{sessionUsager?.compte ?? "<blank>"}</label>
-                            <label class="my-sidebar-footer-informations">Informations</label>
-                        </div>
+                    <div class="content">
+                        <Outlet />
                     </div>
                 </div>
-                </div>
-                </>
-                }
-            </div>
-            <div class="content">
-                <Outlet/>
-            </div>
-        </div>
-        </ComptesServiceContext.Provider>
+            </ComptesServiceContext.Provider>
         </AccueilServiceContext.Provider>
     );
 }
