@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Navigate } from "react-router-dom";
 
-import 'bootstrap/dist/css/bootstrap.css';
 import './style/PageListeJeux.css';
 import DisplayPartieComponent from "./components/DisplayPartieComponent";
 import PageJeu from "./PageJeu";
@@ -24,6 +23,7 @@ function PageListeJeux() {
     const [ rechercheEncours, setRechercheEncours ] = useState();
     const [ disponnibleChercher, setDisponnibleChercher] = useState(false);
     const trouverPartieService = new TrouverPartieService(onConnection, onDisconnect, onTrouveresult);
+    const [ mesParties, setMesParties ] = useState(true);
 
     useEffect(() => {
         refreshPartiesEncours();
@@ -155,6 +155,11 @@ function PageListeJeux() {
         }
     }
 
+    async function onMesPartiesClicked(event)
+    {
+        setMesParties(event.target.checked);
+    }
+
     async function onConnection()
     {
         setDisponnibleChercher(true);
@@ -187,7 +192,7 @@ function PageListeJeux() {
                 <div className="card-body">
                     <h5 class="card-title">Trouver une partie</h5>
                     <div className="input-group mw-100 p-1">
-                        <div className="input-group-prepend w-25">
+                        <div className="input-group-prepend w-15">
                             <span className="input-group-text" id="basic-addon1">Joueur 1</span>
                         </div>
                         <input id="nomprofiljeu1Creer" type="text" className="form-control w-50" placeholder="Nom d'utilsateur du joueur 1" aria-label="Nom d'utilsateur du joueur 1" aria-describedby="basic-addon1"></input>
@@ -195,7 +200,7 @@ function PageListeJeux() {
                     </div>
                     <br></br>
                     <div className="input-group mw-100 p-1">
-                        <div className="input-group-prepend w-25">
+                        <div className="input-group-prepend w-15">
                             <span className="input-group-text" id="basic-addon2">Joueur 2</span>
                         </div>
                         <input id="nomprofiljeu2Creer" type="text" className="form-control w-50" placeholder="Nom d'utilsateur du joueur 2" aria-label="Nom d'utilsateur du joueur 2" aria-describedby="basic-addon2"></input>
@@ -211,6 +216,17 @@ function PageListeJeux() {
                 </div>
                 <div id="browser-parties" className="browser-parties card-body overflow-scroll">
                     <div className="input-group mw-100 p-2">
+                        {/* <label>
+                            <input id="cbMesParties"
+                                label="Mes parties"
+                                onChange={onMesPartiesClicked}
+                                key="mesPartiesKey"
+                                type="checkbox"
+                                checked={mesParties}
+                            />
+                            Mes parties
+                        </label> */}
+                        {/* <br></br> */}
                         <DisplayPartiesServiceContext.Provider value={ { partiesEncours, setPartiesEncours, displayPartiesService } }>
                         <table className="table-parties table table-hover table-dark mw-100">
                             <colgroup>
@@ -229,6 +245,9 @@ function PageListeJeux() {
                                 <>
                                     {Object.values(partiesEncours ?? []).map((entry, i) =>
                                     {
+                                        // if(mesParties)
+                                            if(!(entry.id_joueur1 === sessionUsager?.id_profiljeu || entry.id_joueur2 === sessionUsager?.id_profiljeu))
+                                                return <></>;
                                         // <DisplayPartieComponent ref={partiesEndRef} key={entry.id} partie={entry} id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager) }></DisplayPartieComponent>)}
                                         const trcomp = (<tr id={"display-partie" + entry.id} onClick={() => onBtnOuvrirPartie(entry.id, sessionUsager)} key={entry.id} ref={partiesEndRef}>
                                                 <th scope="row">{ entry?.id }</th>

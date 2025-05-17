@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router";
 
 import { DisplayProfiljeuService } from './service/DisplayProfiljeuService';
 
-import 'bootstrap/dist/css/bootstrap.css';
 import './style/PageProfil.css';
 
 import magnifyingIcon from "./style/magnifying-glass.png"

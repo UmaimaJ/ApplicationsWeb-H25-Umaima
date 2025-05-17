@@ -58,9 +58,15 @@ export class ServiceCours {
         coursId: coursId
       }, {
         withCredentials: true,
+        validateStatus: (status) => { return status < 300; }
       });
       return true;
     } catch (error) {
+
+      console.log(error);
+      if(error.response?.data?.message === "insertTransaction: transaction existe deja")
+        throw new Error("insertTransaction: transaction existe deja");
+
       console.error("Erreur dans addTransactionCours:", error);
       return false;
     }

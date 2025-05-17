@@ -2,7 +2,6 @@ import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Navigate, useParams } from "react-router-dom";
 import { ServiceCoursContext } from './service/ServiceCours.js';
 
-import 'bootstrap/dist/css/bootstrap.css';
 import './PageDisplayCours.css';
 
 function PageDisplayCours() {
@@ -20,7 +19,9 @@ function PageDisplayCours() {
 
     return (
         <div className="page-displaycours-container">
-            <p>{cours?.pagecontenu ?? ""}</p>
+            <div className="card page-displaycours-card">
+                <p>{cours?.pagecontenu ?? ""}</p>
+            </div>
         </div>
     );
    

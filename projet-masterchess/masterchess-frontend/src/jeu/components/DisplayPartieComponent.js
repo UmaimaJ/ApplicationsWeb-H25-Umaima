@@ -2,7 +2,6 @@ import React from 'react';
 import { DisplayPartiesServiceContext } from '../service/DisplayPartiesService';
 
 import './DisplayPartieComponent.css';
-import 'bootstrap/dist/css/bootstrap.css';
 
 // Composante qui décrit en HTML la partie dans le but de les lister dans PageJeu.js
 class DisplayPartieComponent extends React.Component {

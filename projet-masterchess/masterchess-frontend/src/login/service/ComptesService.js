@@ -59,7 +59,8 @@ export class ComptesService {
             password: password,
             email: email
         }, {
-            withCredentials: true
+            withCredentials: true,
+            validateStatus: (status) => { return status < 300; }
         })
         .then(function (response) {
             //handle success
@@ -68,6 +69,7 @@ export class ComptesService {
         .catch(function (error) {
             //handle error
             console.log(error);
+            throw new Error(error.response?.data?.message);
         })
         .finally(function () {
             //always executed

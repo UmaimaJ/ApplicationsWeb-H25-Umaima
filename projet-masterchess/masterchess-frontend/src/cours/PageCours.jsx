@@ -1,6 +1,8 @@
 
 import React, { useEffect, useState, useContext } from "react";
+
 import "./PageCours.css";
+
 import { ServiceCoursContext } from "./service/ServiceCours";
 import { AccueilService, AccueilServiceContext } from "../accueil/service/AccueilService";
 import { ComptesServiceContext } from "../login/service/ComptesService.js"
@@ -42,7 +44,7 @@ const PageCours = () => {
       const matchLevel =
         selectedLevel === "Tous" || cours.niveau === levelMap[selectedLevel];
       const matchSearch =
-        cours.pagecontenu.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cours.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
         cours.id_nom.toLowerCase().includes(searchQuery.toLowerCase());
       return matchLevel && matchSearch;
     });
@@ -64,8 +66,29 @@ const PageCours = () => {
   };
 
   const handleAcheterCours = async (coursId) => {
-    await service.addTransactionCours(coursId);
+    try
+    {
+      await service.addTransactionCours(coursId);
+    }
+    catch(error)
+    {
+      if(error?.message === "insertTransaction: transaction existe deja")
+      {
+        const element = document.querySelector("#lblError");
+        await setInvalidTooltip(element, "Vous ne pouvez acheter que seulement des cours dont vous ne possèdez pas.");
+      }
+    }
     fetchCours();
+  };
+
+  const setInvalidTooltip = async (tooltip, message) => {
+    if(!message || message === "")
+        tooltip.style.display = "none";
+    if(message)
+        tooltip.style.display = "block";
+
+    tooltip.innerText = message;
+    tooltip.hidden = false;
   };
 
   const ouvrirCoursAchete = async (id) => {
@@ -97,6 +120,10 @@ const PageCours = () => {
       </div>
 
       <div className="cours-grid">
+      <div className="cours-grid-header">
+        <div id="lblError" class="alert alert-warning" role="alert" hidden="true">
+        </div>
+      </div>
         {filteredList.map((cours, index) => (
           <div key={index} className="cours-card">
             <img
@@ -124,9 +151,11 @@ const PageCours = () => {
                   {showDescriptionCours[index] ? "Masquer" : "Voir"} description
                 </button>
 
+                {sessionUsager &&
                 <button className="cours-btn" onClick={() => { handleAcheterCours(cours.id); } }>
                   Acheter
                 </button>
+                }
               </div>
 
               {showDescriptionCours[index] && (
@@ -140,6 +169,10 @@ const PageCours = () => {
       { sessionUsager && <>
       <h1 className="page-cours-title">Cours achetés</h1>
       <div className="cours-grid">
+      <div className="cours-grid-header">
+        <div id="lblErrorAchetes" class="alert alert-warning" role="alert" hidden="true">
+        </div>
+      </div>
         { coursAchetesList.map((cours, index) => (
           <div key={index} className="cours-card">
             <img

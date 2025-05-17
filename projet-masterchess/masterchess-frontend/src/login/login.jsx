@@ -32,13 +32,13 @@ const Login = () => {
         <ComptesServiceContext.Consumer>
         {({sessionUsager, setSessionUsager, comptesService}) => (
         <div className="login-container">
-            <h2>Login</h2>
+            <h2>Connexion</h2>
             <form onSubmit={(event) => {
                     event.preventDefault();
                     handleSubmit(event, {navigate, accueilService}, {sessionUsager, setSessionUsager, comptesService});
                 }}>
                 <div className="form-group">
-                    <label htmlFor="username">Username:</label>
+                    <label htmlFor="username">Nom d'utilisateur:</label>
                     <input class="inputYasser"
                         type="text"
                         id="username"
@@ -48,7 +48,7 @@ const Login = () => {
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="password">Password:</label>
+                    <label htmlFor="password">Mot de passe:</label>
                     <input class="inputYasser"
                         type="password"
                         id="password"
@@ -57,7 +57,7 @@ const Login = () => {
                         required
                     />
                 </div>
-                <button class="buttonYasser" type="submit">Login</button>
+                <button class="buttonYasser" type="submit">Connexion</button>
             </form>
         </div>
         )}

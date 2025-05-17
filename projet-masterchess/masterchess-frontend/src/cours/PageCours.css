@@ -24,8 +24,16 @@
     width: 90%;
     max-width: 600px;
     margin: 25px;
-    height: 400px;
+    height: 351px;
     overflow: scroll;
+}
+
+.cours-grid-header {
+    position: sticky;
+    top: 0;
+    display: inline-block;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .cours-card {

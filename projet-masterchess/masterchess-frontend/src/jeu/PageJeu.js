@@ -10,7 +10,9 @@ import { findFlagUrlByIso2Code } from "country-flags-svg";
 import person from "../style/person2.svg";
 import timericon from "../style/timer-icon.svg";
 
-import 'bootstrap/dist/css/bootstrap.css';
+import $ from "jquery";
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './style/PageJeu.css';
 
 import { JeuServiceContext, JeuService } from "./service/JeuService";
@@ -537,8 +539,8 @@ class PageJeu extends React.Component {
                                 )}
                             </div>
                         </div>
-                        <div className="my-sidebar">
-                            <button className="btn-retourner" onClick={(event) => this.onBtnOuvrirListe(event, navigate)}>X</button>
+                        <div className="d-none d-sm-block d-sm-none d-md-block d-md-none d-lg-block my-sidebar-pagejeu">
+                            {/* <button className="btn-retourner" onClick={(event) => this.onBtnOuvrirListe(event, navigate)}>X</button> */}
                             <div id="move-info-panel" className="move-info-panel">
                                 {this.state.game?.history({ verbose: true }).map((entry, i) => 
                                     <div key={i} ref={(el) => { this.messagesEnd = el; }} className="move-entry"><label style={{color: (entry.color === 'w'? 'white' : "grey")}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} de: {entry.from} à: {entry.to} {entry.captured && " capturé: " + entry.captured}

@@ -6,7 +6,7 @@ import mysql from "mysql2/promise";
 import { MongoClient } from "mongodb";
 import cors from "cors";
 import bodyParser from "body-parser";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcryptjs";
 import session from "express-session";
 import Stripe from 'stripe';
 
@@ -28,6 +28,8 @@ const app = express();
 const privateKey = fs.readFileSync(path.join(__dirname, 'localhost-key.pem'), 'utf8');
 const certificate = fs.readFileSync(path.join(__dirname, 'localhost.pem'), 'utf8');
 var options = { key: privateKey, cert: certificate };
+
+const bcryptsaltrounds = 10;
 
 const server = https.createServer(options, app);
 
@@ -123,7 +125,7 @@ router.post('/login', async function (req, res) {
     try {
         const user = await comptesService.selectUsager(username);
         if (user) {
-            if (password.trim() === user.motdepasse.trim()) {
+            if (await bcrypt.compare(password, user.motdepasse)) {
                 req.session.user = { id: user.id, username: user.compte, usager: user };
                 delete req.session.user.usager.motdepasse;
                 comptesService.updateSessionUsager(username, req.session.id);
@@ -146,15 +148,32 @@ router.post('/login', async function (req, res) {
 
 router.post("/signup", async function (req, res) {
     const { username, password, email } = req.body;
+
+    //regex verification https://stackoverflow.com/questions/2370015/regular-expression-for-password-validation
+    //^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d).*$
+
     try {
+        const usernameRegex = /^.*(?=.{3,})(?=.*[a-zA-Z\d]).*$/;
+        if(!usernameRegex.test(username))
+            throw new Error("Invalid username format attempted");
+
+        const passwordRegex = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d).*$/;
+        if(!passwordRegex.test(password))
+            throw new Error("Invalid password format attempted");
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email))
+            throw new Error("Invalid email format attempted");
+
         // Generate a session ID
         const sessionId = req.sessionID;
 
         // Get country code by api
         var country_code = await comptesService.getCountryCode(req.ip.split("::ffff:")[1]);
 
-        // Insert into the database the user
-        const results = await comptesService.insertUsager(username, password, email, country_code, sessionId);
+        // Insert the user in mysql
+        const password_hashed = await bcrypt.hash(password, bcryptsaltrounds);
+        const results = await comptesService.insertUsager(username, password_hashed, email, country_code, sessionId);
 
         // Retrieve the newly created user
         const user = await comptesService.selectUsager(username);
@@ -164,6 +183,20 @@ router.post("/signup", async function (req, res) {
 
         res.json({ success: true, message: 'User registered successfully' });
     } catch (error) {
+        if(error.code === "ER_DUP_ENTRY")
+        {
+            if(error.sqlMessage.includes("for key 'usager.courriel_UNIQUE'"))
+            {
+                res.status(400).json({ success: false, message: 'insertUsager: courriel non-unique', result: error });
+                return;
+            }
+            if(error.sqlMessage.includes("for key 'usager.compte_UNIQUE'"))
+            {
+                res.status(400).json({ success: false, message: 'insertUsager: compte non-unique', result: error });
+                return;
+            }
+
+        }
         res.status(500).json({ success: false, message: 'Server error', error });
     }
 });
@@ -343,8 +376,14 @@ router.post("/addTransactionCours", async (req, res) => {
             }
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: "Erreur lors de l'enregistrement d'une transaction d'achat de cours.", result: error } );
+        if(error?.code === 11000)
+        {
+            res.status(500).json({ success: false, message: "insertTransaction: transaction existe deja", result: error } );
+        }
+        else
+        {
+            res.status(500).json({ success: false, message: "Erreur lors de l'enregistrement d'une transaction d'achat de cours.", result: error } );
+        }
     }
 });
 

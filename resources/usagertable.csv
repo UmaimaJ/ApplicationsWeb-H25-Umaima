@@ -1,0 +1,5 @@
+id,compte,motdepasse,id_groupeprivileges,datecreation,courriel,pays,sessionid
+-1,Robot,robot,NULL,NULL,robot@test.test,NULL,NULL
+1,Gabriel,'$2b$10$nc.ljXTZ6JKr8VAR4sePwegW/b0R2i.Mv/qGBDwCumWkAe3d30t4K',NULL,NULL,gabriel@test.test,CA,NULL
+2,Pro,$2b$10$MkibKggrF7nK4nvYaBl4EuCfoZtOgcAqmVxkugWrAs/Dr3N.o2IJG,NULL,NULL,pro@test.test,CA,NULL
+3,Noob,$2b$10$YBjs2XRe.9MBlohIClx32ukAhUHCW/H/qmIVhUjHDpFTXXJHozKEi,NULL,NULL,noob@test.test,CA,NULL

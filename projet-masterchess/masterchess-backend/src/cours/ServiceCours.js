@@ -52,7 +52,11 @@ export default class ServiceCours {
 
   async getAllLessons() {
     const cours = await this.collection.find({}).toArray();
-    return cours;
+    const coursSansContenu = cours.map((value) => {
+      value.pagecontenu = undefined;
+      return value;
+    })
+    return coursSansContenu;
   }
 
   async getAllCoursAchetesByUserId(userId) {
@@ -91,15 +95,13 @@ export default class ServiceCours {
     try
     {
       await this.collectionTransactionsCours.insertOne(transactionCours);
-      return true;
     }
     catch(error)
     {
-      if(error.code === 11000)
+      if(error.code == 11000)
       {
-        throw new Error("insertTransaction: transaction existe deja");
+        throw error;
       }
-      return false;
     }
     return true;
   }

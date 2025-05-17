@@ -25,39 +25,49 @@ class ComptesService {
 
     async insertUsager(username, password, email, country_code, sessionId)
     {
-        // Insert the new user along with the session ID into the database
-        await this.mysql.beginTransaction();
-        await this.mysql.query(
-            `INSERT INTO usager
-                (compte,
-                motdepasse,
-                courriel,
-                pays,
-                datecreation,
-                sessionid)
-                VALUES
-                (?,
-                ?,
-                ?,
-                ?,
-                NOW(),
-                ?);`,
-            [username, password, email, country_code, sessionId]
-        );
+        try{
+            // Insert the new user along with the session ID into the database
+            await this.mysql.beginTransaction();
+            await this.mysql.query(
+                `INSERT INTO usager
+                    (compte,
+                    motdepasse,
+                    courriel,
+                    pays,
+                    datecreation,
+                    sessionid)
+                    VALUES
+                    (?,
+                    ?,
+                    ?,
+                    ?,
+                    NOW(),
+                    ?);`,
+                [username, password, email, country_code, sessionId]
+            );
 
-        await this.mysql.query(
-            `INSERT INTO profiljeu
-                (id_usager,
-                points,
-                elo,
-                datedernierjeu)
-                VALUES
-                (LAST_INSERT_ID(),
-                0,
-                1200,
-                NOW());`
-        );
-        await this.mysql.commit();
+            await this.mysql.query(
+                `INSERT INTO profiljeu
+                    (id_usager,
+                    points,
+                    elo,
+                    datedernierjeu)
+                    VALUES
+                    (LAST_INSERT_ID(),
+                    0,
+                    1200,
+                    NOW());`
+            );
+            await this.mysql.commit();           
+        }
+        catch(error)
+        {
+            if(error.code === "ER_DUP_ENTRY")
+            {
+                throw error;
+            }
+            console.log(error);
+        }
 
         return await this.selectUsager(username);
     }

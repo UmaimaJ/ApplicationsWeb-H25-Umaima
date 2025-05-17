@@ -6,7 +6,7 @@
 
 .panneau-parties-header {
     margin: 25px;
-    width: 600px;
+    max-width: 600px;
 }
 
 .browser-parties{
