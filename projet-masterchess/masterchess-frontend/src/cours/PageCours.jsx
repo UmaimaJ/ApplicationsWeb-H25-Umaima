@@ -106,124 +106,129 @@ const PageCours = () => {
 
   return (
     <div className="page-cours-container">
-      <h1 className="page-cours-title">Cours</h1>
+      <div className="cours-card card">
+        <div className="cours-card-body card-body">
+          <h1 className="page-cours-title card-title">Cours</h1>
 
-      <input
-        type="text"
-        placeholder="Rechercher un cours..."
-        className="search-bar"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
+          <input
+            type="text"
+            placeholder="Rechercher un cours..."
+            className="search-bar"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
 
-      <div className="filter-buttons">
-        {["Tous", "Débutant", "Intermédiaire", "Avancé"].map((level) => (
-          <button
-            key={level}
-            className={`filter-btn ${selectedLevel === level ? "active" : ""}`}
-            onClick={() => setSelectedLevel(level)}
-          >
-            {level}
-          </button>
-        ))}
-      </div>
+          <div className="filter-buttons">
+            {["Tous", "Débutant", "Intermédiaire", "Avancé"].map((level) => (
+              <button
+                key={level}
+                className={`filter-btn ${selectedLevel === level ? "active" : ""}`}
+                onClick={() => setSelectedLevel(level)}
+              >
+                {level}
+              </button>
+            ))}
+          </div>
 
-      <div className="cours-grid">
-      <div className="cours-grid-header">
-        <div id="lblError" class="alert alert-warning" role="alert" hidden="true">
-        </div>
-      </div>
-        {filteredList.map((cours, index) => (
-          <div key={index} className="cours-card">
-            <img
-              src={
-                cours.id_image ||
-                "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
-              }
-              alt={`Cours ${cours.id}`}
-              className="cours-image"
-            />
-            <div className="cours-info">
-              <span className="cours-nom">{cours.id_nom}</span>
-
-              <div className="cours-footer">
-                <span>Niveau: {cours.niveau}</span>
-                <span>Coût: {cours.cout} pts</span>
-                <span>Ajouté: {new Date(cours.dateajout).toLocaleDateString()}</span>
-              </div>
-
-              <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
-                <button
-                  className="cours-btn"
-                  onClick={() => toggleDescriptionCours(index)}
-                >
-                  {showDescriptionCours[index] ? "Masquer" : "Voir"} description
-                </button>
-
-                {sessionUsager &&
-                <button className="cours-btn" onClick={() => { handleAcheterCours(cours.id); } }>
-                  Acheter
-                </button>
-                }
-              </div>
-
-              {showDescriptionCours[index] && (
-                <p className="cours-description">{cours.description}</p>
-              )}
+          <div className="cours-grid">
+          <div className="cours-grid-header">
+            <div id="lblError" class="alert alert-warning" role="alert" hidden="true">
             </div>
           </div>
-        ))}
-      </div>
+            {filteredList.map((cours, index) => (
+              <div key={index} className="cours-element">
+                <img
+                  src={
+                    cours.id_image ||
+                    "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
+                  }
+                  alt={`Cours ${cours.id}`}
+                  className="cours-image"
+                />
+                <div className="cours-info">
+                  <span className="cours-nom">{cours.id_nom}</span>
 
-      { sessionUsager && <>
-      <h1 className="page-cours-title">Cours achetés</h1>
-      <div className="cours-grid">
-      <div className="cours-grid-header">
-        <div id="lblErrorAchetes" class="alert alert-warning" role="alert" hidden="true">
+                  <div className="cours-footer">
+                    <span>Niveau: {cours.niveau}</span>
+                    <span>Coût: {cours.cout} pts</span>
+                    <span>Ajouté: {new Date(cours.dateajout).toLocaleDateString()}</span>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
+                    <button
+                      className="cours-btn"
+                      onClick={() => toggleDescriptionCours(index)}
+                    >
+                      {showDescriptionCours[index] ? "Masquer" : "Voir"} description
+                    </button>
+
+                    {sessionUsager &&
+                    <button className="cours-btn" onClick={() => { handleAcheterCours(cours.id); } }>
+                      Acheter
+                    </button>
+                    }
+                  </div>
+
+                  {showDescriptionCours[index] && (
+                    <p className="cours-description">{cours.description}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
-        { coursAchetesList.map((cours, index) => (
-          <div key={index} className="cours-card">
-            <img
-              src={
-                cours.id_image ||
-                "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
-              }
-              alt={`Cours ${cours.id}`}
-              className="cours-image"
-            />
-            <div className="cours-info">
-              <span className="cours-nom">{cours.id_nom}</span>
-
-              <div className="cours-footer">
-                <span>Niveau: {cours.niveau}</span>
-                <span>Coût: {cours.cout} pts</span>
-                <span>Ajouté: {new Date(cours.dateajout).toLocaleDateString()}</span>
-              </div>
-
-              <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
-                <button
-                  className="cours-btn"
-                  onClick={() => toggleDescriptionCoursAchete(index)}
-                >
-                  {showDescriptionCoursAchete[index] ? "Masquer" : "Voir"} description
-                </button>
-                <button
-                  className="cours-btn"
-                  onClick={() => ouvrirCoursAchete(cours.id)}
-                >
-                  Ouvrir
-                </button>
-              </div>
-
-              {showDescriptionCoursAchete[index] && (
-                <p className="cours-description">{cours.description}</p>
-              )}
+        { sessionUsager && <>
+        <div className="cours-card-body card-body">
+          <h1 className="page-cours-title">Cours achetés</h1>
+          <div className="cours-grid">
+          <div className="cours-grid-header">
+            <div id="lblErrorAchetes" class="alert alert-warning" role="alert" hidden="true">
             </div>
           </div>
-        ))}
+            { coursAchetesList.map((cours, index) => (
+              <div key={index} className="cours-element">
+                <img
+                  src={
+                    cours.id_image ||
+                    "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"
+                  }
+                  alt={`Cours ${cours.id}`}
+                  className="cours-image"
+                />
+                <div className="cours-info">
+                  <span className="cours-nom">{cours.id_nom}</span>
+
+                  <div className="cours-footer">
+                    <span>Niveau: {cours.niveau}</span>
+                    <span>Coût: {cours.cout} pts</span>
+                    <span>Ajouté: {new Date(cours.dateajout).toLocaleDateString()}</span>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "10px", marginTop: "8px" }}>
+                    <button
+                      className="cours-btn"
+                      onClick={() => toggleDescriptionCoursAchete(index)}
+                    >
+                      {showDescriptionCoursAchete[index] ? "Masquer" : "Voir"} description
+                    </button>
+                    <button
+                      className="cours-btn"
+                      onClick={() => ouvrirCoursAchete(cours.id)}
+                    >
+                      Ouvrir
+                    </button>
+                  </div>
+
+                  {showDescriptionCoursAchete[index] && (
+                    <p className="cours-description">{cours.description}</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        </> }
       </div>
-      </> }
     </div>
   );
 };
