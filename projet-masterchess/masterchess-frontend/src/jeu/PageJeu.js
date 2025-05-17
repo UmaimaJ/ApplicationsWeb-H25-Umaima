@@ -484,7 +484,7 @@ class PageJeu extends React.Component {
                     <div class="jeu-container">
                         <div class="playpage-game">
                             <div class="playpage-infobar">
-                                <div class="playpage-profile left clear" style={ !this.state.gagnantId ? {backgroundColor: this.state.joueurcourantId != sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                <div class="playpage-profile" style={ !this.state.gagnantId ? {backgroundColor: this.state.joueurcourantId != sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
                                         <img class="playpage-profile-pfp-icon" src={person} />
                                     </div>
@@ -495,7 +495,7 @@ class PageJeu extends React.Component {
                                     </div>
                                 </div>
                                 { (this.state.gagnantId != null) &&
-                                    (<div class="playpage-timer right">
+                                    (<div class="playpage-timer">
                                         <>
                                             <label class="playpage-timer-label">{this.state.gagnantId != sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
                                         </>
@@ -513,7 +513,7 @@ class PageJeu extends React.Component {
                                 <Chessboard id="BasicBoard" position={this.state.game?.fen() ?? "start"} onPieceDrop={this.onJeuPieceDrop} boardOrientation={sessionUsager.id_profiljeu == this.state.profiljeu1?.id ? "white" : "black"}/>
                             </div>
                             <div class="playpage-infobar">
-                                <div class="playpage-profile left clear" style={ !this.state.gagnantId ? {backgroundColor: this.state.joueurcourantId == sessionUsager.id_profiljeu ? "green": ""} : {}}>
+                                <div class="playpage-profile" style={ !this.state.gagnantId ? {backgroundColor: this.state.joueurcourantId == sessionUsager.id_profiljeu ? "green": ""} : {}}>
                                     <div class="playpage-profile-pfp">
                                         <img class="playpage-profile-pfp-icon" src={person} />
                                     </div>
@@ -524,7 +524,7 @@ class PageJeu extends React.Component {
                                     </div>
                                 </div>
                                 { (this.state.gagnantId != null) &&
-                                    (<div class="playpage-timer right">
+                                    (<div class="playpage-timer">
                                         <>
                                             <label class="playpage-timer-label">{this.state.gagnantId == sessionUsager.id_profiljeu ? "Gagnant" : "Perdant" }</label>
                                         </>
