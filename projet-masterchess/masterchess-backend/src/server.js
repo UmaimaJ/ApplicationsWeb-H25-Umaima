@@ -72,7 +72,7 @@ var myio = new Server(server, {
 });
 myio.engine.use(sessionMiddleware);
 
-const stripe = new Stripe("", {
+const stripe = new Stripe(process.env.STRIPE_SECRETKEY, {
     apiVersion: '2025-03-31.basil',
 });
 

@@ -6,7 +6,9 @@ import { CheckoutProvider } from '@stripe/react-stripe-js';
 import PaiementComponent from './components/PaiementComponent.jsx';
 import { ChargerService } from './service/ChargerService.js';
 
-const stripePromise = loadStripe("");
+const stripePublishabkeKey = process.env.REACT_APP_STRIPE_PUBLISHABLEKEY;
+
+const stripePromise = loadStripe(stripePublishabkeKey);
 
 const PageCharger = () => {
 
