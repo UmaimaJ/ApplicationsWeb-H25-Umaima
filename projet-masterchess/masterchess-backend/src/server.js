@@ -8,7 +8,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import bcrypt from 'bcrypt';
 import session from "express-session";
-import Stripe from 'stripe';
+//import Stripe from 'stripe';
 
 import path from "path";
 import { fileURLToPath } from "url";
@@ -70,9 +70,9 @@ var myio = new Server(server, {
 });
 myio.engine.use(sessionMiddleware);
 
-const stripe = new Stripe("", {
+/*const stripe = new Stripe("", {
     apiVersion: '2025-03-31.basil',
-});
+});*/
 
 const jeuService = new JeuService(myio, mymysql);
 const partiesService = new PartiesService(mymysql);
@@ -238,7 +238,7 @@ router.post("/createPartie", isAuthenticated, async function (req, res, err) {
 
 // Checkout achat gems
 
-router.post('/CreateCheckoutSession', async (req, res) => {
+/*router.post('/CreateCheckoutSession', async (req, res) => {
     const session = await stripe.checkout.sessions.create({
         line_items: [
             {
@@ -260,6 +260,8 @@ router.post('/CreateCheckoutSession', async (req, res) => {
     res.json({ checkoutSessionClientSecret: session.client_secret });
 });
 
+
+
 router.get('/RetourCharger', async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(req?.query?.session_id);
     if(!session)
@@ -275,6 +277,7 @@ router.get('/RetourCharger', async (req, res) => {
 
     res.redirect("/");
 });
+*/
 
 // Cours
 

@@ -1,4 +1,5 @@
 .accueil-container {
+    background: linear-gradient(to right, #1e211a 0%, #1f311b 50%, #1e211a 100%);
     background-size: cover;
     color: white;
     text-align: center;
@@ -11,32 +12,46 @@
 }
 
 .hero-section {
-    margin-bottom: 20px;
+    margin-bottom: 35px;
+    padding: 30px 10px 40px 10px;
     text-align: center;
-    padding-left: 0;
 }
 
 .hero-section h1 {
-    color: #9CE83D;
-    font-size: 12px;
-    font-weight: 800;
-    margin-bottom: 5px;
-    text-shadow: 0 0 0.5px #1a1a1a;
+    color: #699d29;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-shadow: 0 0 1px #000;
 }
 
 .hero-section p {
-    font-size: 8px;
+    font-size: 18px;
     color: #ccc;
-    margin-bottom: 5px;
+    margin-bottom: 15px;
+    text-shadow: 0 0 1px black;
+}
+
+.start-button {
+    background: #699d29;
+    border: 1px solid #547F1D;
+    padding: 6px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-shadow: 0 0 0.5px #000;
 }
 
 .start-button,
 .lessons-btn,
 .play-button {
-    background: #73AC2B;
+    background: #699d29;
     border: 1px solid #547F1D;
-    padding: 4px 8px;
-    font-size: 9px;
+    padding: 8px 16px;
+    font-size: 11px;
     font-weight: 600;
     color: white;
     cursor: pointer;
@@ -44,6 +59,15 @@
     border-radius: 5px;
     transition: 0.3s;
     text-shadow: 0 0 0.5px #000;
+    width: fit-content;
+}
+
+.lessons-btn {
+    align-self: flex-start;
+}
+
+.play-button {
+    align-self: flex-end;
 }
 
 .lesson-container,
@@ -51,14 +75,16 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #1B1D1B;
-    padding: 8px 10px;
-    margin: 10px auto;
+    background-color: #202020; 
+    padding: 20px;
+    margin: 40px auto; 
     width: 55%;
-    border-radius: 10px;
+    max-width: 600px;
+    min-height: 130px; 
+    border-radius: 12px;
     border: 1px solid #4D4D4D;
     font-size: 9px;
-    max-height: 120px;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.4);
 }
 
 .play-container {
@@ -67,9 +93,9 @@
 
 .lesson-image,
 .play-image {
-    width: 60px;
+    width: 80px;
     height: auto;
-    margin: 0 10px;
+    margin: 0 12px;
 }
 
 .lesson-content,
@@ -85,56 +111,68 @@
 }
 
 .lesson-title {
-    font-size: 10px;
+    font-size: 18px; 
     font-weight: 700;
-    color: #9CE83D;
-    margin-bottom: 3px;
+    color: #699d29;
+    margin-bottom: 6px;
     text-shadow: 0 0 0.5px #000;
 }
 
 .lesson-description {
-    font-size: 8px;
+    font-size: 12px; 
     color: #eee;
     text-shadow: 0 0 0.5px #000;
 }
-
-.play-button {
-    align-self: center;
-}
-
 .video-section {
-    margin: 20px auto;
+    margin: 50px auto; 
     width: 90%;
     max-width: 800px;
 }
 
 .video-section h2 {
-    font-size: 12px;
+    font-size: 16px !important; 
     font-weight: 700;
     text-align: center;
-    margin-bottom: 10px;
+    margin-bottom: 18px;
     color: #9CE83D;
+    font-family: "Urbanist", sans-serif;
+    text-shadow: 0 0 0.5px #000;
 }
+
 
 .video-thumbnails {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 14px;
     justify-content: center;
 }
 
 .video-thumbnails img {
-    width: 100%;
+    width: 200%;
     max-width: 300px;
     border-radius: 5px;
 }
 
+.video-description {
+    font-size: 11px; 
+    color: #f0f0f0;
+    font-family: "Segoe UI", "Roboto", "Urbanist", sans-serif;
+    text-align: center;
+    margin-top: 5px;
+    line-height: 1.4;
+    
+    text-shadow: 0 0 0.5px #000;
+    max-width: 300px;
+    word-wrap: break-word;
+    white-space: normal; 
+}
 footer {
     margin-top: 20px;
     padding: 10px;
     border-top: 1px solid #151515;
     text-align: center;
 }
+
 
 footer p {
     color: #757373;
