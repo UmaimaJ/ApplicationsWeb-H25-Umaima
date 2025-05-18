@@ -83,6 +83,12 @@ function PageListeJeux() {
             erroredOnFields.push(true);
         }
 
+        if(compteProfiljeu1 !== sessionUsager?.compte && compteProfiljeu2 !== sessionUsager?.compte)
+        {
+            await setInvalidTooltip(inputProfiljeu1Invalid, 'Vous devez être un des joueurs.');
+            erroredOnFields.push(true);
+        }
+
         if(erroredOnFields.length > 0)
             return;
 
