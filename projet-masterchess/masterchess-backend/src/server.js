@@ -248,6 +248,22 @@ router.get("/getLessons", async (req, res) => {
     }
 });
 
+// Contact
+app.post('/data/contactrequests', async (req, res) => {
+    const { nom, email, sujet, message } = req.body;
+    try {
+        await mymysql.query(
+            'INSERT INTO contactrequests (nom,email,sujet,message) VALUES (?,?,?,?)',
+            [nom, email, sujet, message]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error('INSERT contactrequests ERROR', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 app.use('/data', router);
 
 // ADMIN PART

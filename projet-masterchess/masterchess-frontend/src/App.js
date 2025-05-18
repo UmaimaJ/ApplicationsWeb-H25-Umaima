@@ -13,17 +13,18 @@ import Admin from "./admin/PageAdmin";
 import axios from 'axios';
 import PageProfil from "./jeu/PageProfil.js";
 import PageAdmin from "./admin/PageAdmin.jsx";
+import PageContact from "./contact/PageContact";
 // Set a default base URL for all requests
 axios.defaults.baseURL = '/data/';
 
 function App() {
 
   return (
-      <PageAdmin/>
-    /*<BrowserRouter>
+
+    <BrowserRouter>
       <Routes>
         <Route path="/" element={<Layout />}>
-          <Route index element={/!*<PageAccueil/>*!/} />
+          <Route index element={<PageContact/>/*<PageAccueil/>*/} />
           <Route path="/Login" element={<Login />} />
           <Route path="/SignUp" element={<SignUp />} />
           <Route path="/PageListeJeux" element={<PageListeJeux />} />
@@ -33,7 +34,7 @@ function App() {
           <Route path="*" element={<></>} />
         </Route>
       </Routes>
-    </BrowserRouter>*/
+    </BrowserRouter>
   );
 }
 
