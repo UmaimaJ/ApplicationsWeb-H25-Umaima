@@ -9,6 +9,7 @@ import { findFlagUrlByIso2Code } from "country-flags-svg";
 
 import person from "../style/person2.svg";
 import timericon from "../style/timer-icon.svg";
+import "./style/PageJeu.css";
 
 import { JeuServiceContext, JeuService } from "./service/JeuService";
 import { ComptesServiceContext } from "../login/service/ComptesService.js"

@@ -20,7 +20,7 @@ function PageDisplayCours() {
     return (
         <div className="page-displaycours-container">
             <div className="card page-displaycours-card">
-                <p>{cours?.pagecontenu ?? ""}</p>
+                <p className='page-displaycours-text'>{cours?.pagecontenu ?? ""}</p>
             </div>
         </div>
     );

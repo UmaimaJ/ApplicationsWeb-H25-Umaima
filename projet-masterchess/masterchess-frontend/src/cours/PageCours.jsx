@@ -139,6 +139,9 @@ const PageCours = () => {
               {!coursAchetesList.some(c => c.id === cours.id) && (
                 <button onClick={() => handleAcheterCours(cours.id)}>Acheter</button>
               )}
+              {coursAchetesList.some(c => c.id === cours.id) && (
+                <button onClick={() => ouvrirCoursAchete(cours.id)}>Ouvrir</button>
+              )}
             </div>
           </div>
         </div>
