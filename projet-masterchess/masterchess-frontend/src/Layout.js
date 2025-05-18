@@ -9,6 +9,7 @@ import gemicon from "./style/gem-icon2.svg";
 import gemaddicon from "./style/gem-add-icon2.svg";
 import person from "./style/person2.svg";
 import registericon from "./style/register-icon2.png";
+import admin2 from "./style/admin2.png";
 
 import { Outlet, Link, useNavigate } from "react-router-dom";
 import $ from 'jquery';
@@ -147,7 +148,7 @@ function Layout() {
                                 {(sessionUsager?.id_groupeprivileges === 2) &&
                                     <>
                                     <div class="nav-item my-navoption" onClick={handleAdminMenu}>
-                                        <img class="my-icon" src={buyicon} />
+                                        <img class="my-icon" src={admin2} />
                                         <label class="my-optionlabel">Administration</label>
                                     </div>
                                     </>
@@ -157,7 +158,7 @@ function Layout() {
                     </div>
                     {sessionUsager &&
                     <>
-                    <div class="collapse navbar-collapse my-sidebar-footer">
+                    <div class="my-sidebar-footer">
                         <div class="my-gemcounter">
                             <div class="my-gemindicator">
                                 <img class="my-gemicon" src={gemicon} />
@@ -172,7 +173,7 @@ function Layout() {
                                 </div>
                                 <div class="my-sidebar-footer-userdata">
                                     <label class="my-sidebar-footer-username">{sessionUsager?.compte ?? "<blank>"}</label>
-                                    <label class="my-sidebar-footer-informations">Informations</label>
+                                    <label class="my-sidebar-footer-informations">Profin</label>
                                 </div>
                             </div>
                         </div>

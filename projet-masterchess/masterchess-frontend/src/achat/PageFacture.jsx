@@ -32,7 +32,7 @@ const PageFacture = () => {
         <div className="charger-container">
             <div className="panneau-charger-header card">
                 <div className='card-body'>
-                    <h5 className='card-title'>Chargement de 1000 gemmes pour 5 CAD</h5>
+                    <h2 className='card-title'>Chargement de 1000 gemmes pour 5 CAD</h2>
                     <div className='facture'>
                         <div className='facture-row'>
                             <label>Produit:</label>

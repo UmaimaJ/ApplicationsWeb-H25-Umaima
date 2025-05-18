@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Navigate } from "react-router-dom";
 
+import searching from "./style/searching.svg";
 import './style/PageListeJeux.css';
 import DisplayPartieComponent from "./components/DisplayPartieComponent";
 import PageJeu from "./PageJeu";
@@ -195,7 +196,8 @@ function PageListeJeux() {
             { disponnibleChercher && 
             <div className="panneau-parties-header card">
                 <div className="card-body card-body-obtenir-partie">
-                    <h5 class="card-title">Jouer</h5>
+                    <h2 class="card-title">Jouer</h2>
+                    <br></br>
                     <ul class="nav nav-tabs" id="tabJouer" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="creer-tab" data-bs-toggle="tab" data-bs-target="#creer" type="button" role="tab" aria-controls="creer" aria-selected="true">Créer</button>
@@ -209,6 +211,9 @@ function PageListeJeux() {
                     </ul>
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="creer" role="tabpanel" aria-labelledby="home-tab">
+                            <br></br>
+                            <h5>Créez votre propre partie.</h5>
+                            <br></br>
                             <div className="input-group mw-100 p-1">
                                 <div className="input-group-prepend w-15">
                                     <span className="input-group-text" id="basic-addon1">Joueur 1</span>
@@ -228,6 +233,9 @@ function PageListeJeux() {
                             <button id="btnCreer" className="buttonCreate" onClick={onBtnCreer}>Créer partie</button>
                         </div>
                         <div class="tab-pane fade" id="liste" role="tabpanel" aria-labelledby="liste-tab">
+                            <br></br>
+                            <h5>Ouvrez une partie de la liste de toutes vos parties en cours.</h5>
+                            <br></br>
                             <div id="browser-parties" className="browser-parties card-body overflow-scroll">
                                 <div className="input-group mw-100 p-2">
                                     {/* <label>
@@ -284,9 +292,17 @@ function PageListeJeux() {
                             <button id="btnRafraichirParties" className="buttonRefresh" onClick={onBtnRefreshPartiesEncours}>Rafraichir</button>
                         </div>
                         <div class="tab-pane fade" id="trouver" role="tabpanel" aria-labelledby="trouver-tab">
+                            <br></br>
+                            <h5>Trouvez une partie contre un adversaire aléatoire.</h5>
+                            <br></br>
                             <div className="input-group mw-100 p-1">
                                 <button id="btnChercherPartie" className="buttonChercher" onClick={onBtnChercherPartie}>Trouver</button>
-                                { rechercheEncours == 1 && <label id="lblChercherPartie">recherche en cours</label> }
+                                { rechercheEncours == 1 &&
+                                    <div className="searching-indicator">
+                                        <img className="searching-icon filter-green" src={searching} />
+                                        <span id="lblChercherPartie">recherche en cours</span>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>

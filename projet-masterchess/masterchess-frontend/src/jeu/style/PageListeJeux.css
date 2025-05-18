@@ -46,13 +46,37 @@
     color: white;
 }
 
+.liste-parties table thead tr th {
+    width: 1px;
+}
+
 .buttonChercher {
+    width: 65px;
+    height: 30px;
     border-radius: 10px;
-    max-width: 125px;
     background-color: #5D7C36;
     color: white;
 }
 
-.liste-parties table thead tr th {
-    width: 1px;
+#lblChercherPartie {
+    margin-left: 10px;
+    color: darkgreen;
+}
+
+.searching-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.filter-green {
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(50%) contrast(119%);
+}
+
+.searching-indicator {
+    display: flex;
+    width: 450px;
+    height: 40px;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
 }

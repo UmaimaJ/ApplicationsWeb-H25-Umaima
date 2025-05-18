@@ -43,13 +43,14 @@ function PageProfil() {
         <div className="profil-container">
             <div className="panneau-profil card">
                 <div className="card-body">
-                    <h5 className="card-title">{profiljeuData?.compte ?? "<empty>"}</h5>
+                    <h2 className="card-title">{profiljeuData?.compte ?? "<empty>"}</h2>
                     <div className="info-block">
                         <label>ELO:</label><label>{profiljeuData?.elo ?? "0"}</label>
                         <br></br>
                         <label>Date de création:</label><label>{profiljeuData?.datecreation ?? "N/A"}</label>
                     </div>
-
+                    <br></br>
+                    <h5>Historique:</h5>
                     <div className="panneau-liste-parties-historique overflow-scroll container-fluid mw-100">
                         <div className="col">
                             {(profiljeuData?.parties ?? []).toReversed().map((entry, i) => {

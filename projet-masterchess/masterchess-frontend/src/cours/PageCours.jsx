@@ -177,7 +177,7 @@ const PageCours = () => {
                 className={`category-item ${activeCategory === cat ? "active" : ""}`}
                 onClick={() => setActiveCategory(cat)}
               >
-                <img src={`/icons/${cat.toLowerCase().replace(/ /g, "")}.png`} alt={cat} />
+                {/* <img src={`/icons/${cat.toLowerCase().replace(/ /g, "")}.png`} alt={cat} /> */}
                 <span>{cat}</span>
               </div>
             ))}

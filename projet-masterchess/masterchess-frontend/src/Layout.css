@@ -292,6 +292,7 @@ html, body, .App, #root{
 }
 
 .navbar-toggler {
+  left: 20px;
   top: 90px;
   position: absolute;
   z-index: 6;
