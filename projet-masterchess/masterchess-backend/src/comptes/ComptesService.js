@@ -23,6 +23,23 @@ class ComptesService {
         return null;
     }
 
+    async findUser(username, email)
+    {
+        const [results] = await this.mysql.query(`
+            SELECT * FROM usager 
+            WHERE compte = ?
+            && courriel = ?;`, [username, email])
+
+        if(results.length > 0)
+        {
+            return true;
+        } else if (results.length === 0) {
+            return false
+        } 
+
+        return null;
+    }
+
     async insertUsager(username, password, email, country_code, sessionId)
     {
         try{

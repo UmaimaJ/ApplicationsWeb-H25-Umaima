@@ -389,7 +389,93 @@ router.post("/addTransactionCours", async (req, res) => {
     }
 });
 
+// Contact
+app.post('/data/contactrequests', async (req, res) => {
+    const { nom, email, sujet, message } = req.body;
+    try {
+        await mymysql.query(
+            'INSERT INTO contactrequests (nom,email,sujet,message) VALUES (?,?,?,?)',
+            [nom, email, sujet, message]
+        );
+        res.json({ success: true });
+    } catch (err) {
+        console.error('INSERT contactrequests ERROR', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 app.use('/data', router);
+
+// ADMIN PART
+import AdminService from './admin/AdminService.js';
+const adminService = new AdminService(mymysql);
+
+// enable JSON body parsing and session middleware
+app.use(bodyParser.json());
+
+// Juste pour pouvoir differencier
+const adminRouter = express.Router();
+
+// GET Tables
+adminRouter.get('/tables', async (req, res) => {
+    const tables = await adminService.getTables();
+    res.json(tables);
+});
+
+// CRUD
+// GET VALUES
+adminRouter.get('/:table', async (req, res) => {
+    try {
+        const data = await adminService.getAll(req.params.table);
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// INSERT VALUE
+adminRouter.post('/:table', async (req, res) => {
+    try {
+        const id = await adminService.insert(req.params.table, req.body);
+        res.json({ insertId: id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// UPDATE VALUE
+adminRouter.put('/:table/:id', async (req, res) => {
+    try {
+        await adminService.update(req.params.table, req.params.id, req.body);
+        res.json({ updated: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// DELETE VALUE
+adminRouter.delete('/:table/:id', async (req, res) => {
+    try {
+        await adminService.delete(req.params.table, req.params.id);
+        return res.json({ deleted: true });
+    } catch (err) {
+        console.error('DELETE ERROR', {
+            table: req.params.table,
+            id: req.params.id,
+            sqlMessage: err.sqlMessage,
+            stack: err.stack
+        });
+        return res.status(500).json({ error: err.sqlMessage || err.message });
+    }
+});
+
+// GET COLUMNS
+adminRouter.get('/:table/columns', async (req, res) => {
+    const cols = await adminService.getColumns(req.params.table);
+    res.json(cols);
+});
+app.use('/data/admin', adminRouter);
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/../../masterchess-frontend/build/index.html'), function (err) {

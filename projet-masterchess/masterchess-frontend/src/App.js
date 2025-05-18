@@ -14,6 +14,7 @@ import PageDisplayCours from "./cours/PageDisplayCours.jsx";
 import PageMagasin from './Magasin/PageMagasin';
 import PageCharger from "./achat/PageCharger.jsx";
 import PageProfil from "./jeu/PageProfil.js";
+import PageAdmin from "./admin/PageAdmin.jsx";
 
 // Set a default base URL for all requests
 axios.defaults.baseURL = '/data/';
@@ -32,9 +33,9 @@ function App() {
           <Route path="/PageCours" element={<PageCours />} />
           <Route path="/PageDisplayCours/:idCours" element={<PageDisplayCours />} />
           <Route path="/magasin" element={<PageMagasin />} />
-
           <Route path="/PageProfil/:idProfiljeu" element={<PageProfil />} />
           <Route path="/PageCharger" element={<PageCharger />} />
+          <Route path="/PageAdmin" element={<PageAdmin />} />
           <Route path="*" element={<></>} />
         </Route>
       </Routes>

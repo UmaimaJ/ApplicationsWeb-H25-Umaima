@@ -83,6 +83,10 @@ function Layout() {
         navigate("/PageCharger");
     }
 
+    const handleAdminMenu = async (event) => {
+        navigate("/PageAdmin")
+    }
+
     return (
         <AccueilServiceContext.Provider value={ {navigate, accueilService} }>
         <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, comptesService} }>
@@ -137,6 +141,14 @@ function Layout() {
                                     <div class="nav-item my-navoption" onClick={handleAcheterGems}>
                                         <img class="my-icon" src={buyicon} />
                                         <label class="my-optionlabel">Acheter</label>
+                                    </div>
+                                    </>
+                                }
+                                {(sessionUsager?.id_groupeprivileges === 2) &&
+                                    <>
+                                    <div class="nav-item my-navoption" onClick={handleAdminMenu}>
+                                        <img class="my-icon" src={buyicon} />
+                                        <label class="my-optionlabel">Administration</label>
                                     </div>
                                     </>
                                 }
