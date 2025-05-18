@@ -538,9 +538,11 @@ class PageJeu extends React.Component {
                         <div className="d-none d-sm-block d-sm-none d-md-block d-md-none d-lg-block my-sidebar-pagejeu">
                             {/* <button className="btn-retourner" onClick={(event) => this.onBtnOuvrirListe(event, navigate)}>X</button> */}
                             <div id="move-info-panel" className="move-info-panel">
-                                {this.state.game?.history({ verbose: true }).map((entry, i) => 
-                                    <div key={i} ref={(el) => { this.messagesEnd = el; }} className="move-entry"><label style={{color: (entry.color === 'w'? 'white' : "grey")}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} de: {entry.from} à: {entry.to} {entry.captured && " capturé: " + entry.captured}
-                                    </label></div>)}
+                                <div class="movei-info-panel-content">
+                                    {this.state.game?.history({ verbose: true }).map((entry, i) => 
+                                        <div key={i} ref={(el) => { this.messagesEnd = el; }} className="move-entry"><label style={{color: (entry.color === 'w'? 'white' : "grey")}} key={i}>joueur: {entry.color === 'w' ? this.state.profiljeu1.compte : this.state.profiljeu2.compte} de: {entry.from} à: {entry.to} {entry.captured && " capturé: " + entry.captured}
+                                        </label></div>)}
+                                </div>
                             </div>
                         </div>
                     </div>
