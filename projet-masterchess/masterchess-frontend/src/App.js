@@ -13,6 +13,7 @@ import PageCours from "./cours/PageCours.jsx";
 import PageDisplayCours from "./cours/PageDisplayCours.jsx";
 import PageMagasin from './Magasin/PageMagasin';
 import PageCharger from "./achat/PageCharger.jsx";
+import PageFacture from "./achat/PageFacture.jsx"
 import PageProfil from "./jeu/PageProfil.js";
 import PageAdmin from "./admin/PageAdmin.jsx";
 
@@ -32,10 +33,11 @@ function App() {
           <Route path="/PageJeu/:idPartie" element={<PageJeu />} />
           <Route path="/PageCours" element={<PageCours />} />
           <Route path="/PageDisplayCours/:idCours" element={<PageDisplayCours />} />
-          <Route path="/magasin" element={<PageMagasin />} />
+          <Route path="/PageMagasin" element={<PageMagasin />} />
           <Route path="/PageProfil/:idProfiljeu" element={<PageProfil />} />
           <Route path="/PageCharger" element={<PageCharger />} />
           <Route path="/PageAdmin" element={<PageAdmin />} />
+          <Route path="/PageFacture/:idFacture" element={<PageFacture />} />
           <Route path="*" element={<></>} />
         </Route>
       </Routes>

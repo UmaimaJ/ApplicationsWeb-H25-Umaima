@@ -19,6 +19,7 @@ import JeuService from "./jeu/JeuService.js";
 import TrouverPartiesService from "./jeu/TrouverPartiesService.js";
 import ServiceCours from "./cours/ServiceCours.js";
 import ProfiljeuService from "./jeu/ProfiljeuService.js";
+import FactureService from "./facture/FactureService.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -82,6 +83,8 @@ const trouverPartiesService = new TrouverPartiesService(myio, mymysql, partiesSe
 const comptesService = new ComptesService(mymysql);
 const serviceCours = new ServiceCours(mymongodb);
 const profiljeuService = new ProfiljeuService(mymysql);
+const factureService = new FactureService(mymongodb);
+
 server.listen(4000, function () {
     console.log("masterchess-backend en service sur https://localhost:4000");
 });
@@ -299,16 +302,36 @@ router.get('/RetourCharger', async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(req?.query?.session_id);
     if(!session)
         res.status(400).send({ success: false, message: "Le serveur n'a pas reussi à obtenir la session Stripe avec cet id.", result: null });
+    
+    const quantite = 1000;
+    const prixunite = 0.005;
+    const tps = 0.05;
+    const tvq = 0.09975;
+    const taxes = (tps * quantite * prixunite) + ( tvq * quantite * prixunite);
+    const total = (quantite * prixunite) + taxes;
 
-    const pointsAjout = 1000;
+    const pointsAjout = quantite;
     const nouveauxPoints = req?.session?.user?.usager?.points + pointsAjout;
     await comptesService.updatePoints(req?.session?.user?.usager.id, nouveauxPoints);
+    const facture = await factureService.insertFacture(req?.session?.user?.usager.id, pointsAjout, total);
     req.session.user.usager.points = nouveauxPoints;
     await new Promise( (resolve) => {
         req.session.save(() => { resolve(); });
     });
 
-    res.redirect("/");
+    res.redirect("/PageFacture/" + facture._id);
+});
+
+router.get("/getFacture", async (req, res) => {
+    try
+    {
+        const facture = await factureService.selectFacture(req.query.id);
+        res.send({ success: true, message: 'Data requested', result: facture });
+    } catch (error) {
+        console.error("Erreur dans /getFacture:", error);
+        res.status(500).json({ success: false, message: "Erreur lors de la récupération de la facture.", result: null } );
+    }
+
 });
 
 // Cours

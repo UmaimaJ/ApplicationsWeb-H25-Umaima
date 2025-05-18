@@ -12,3 +12,30 @@
     width: 100%;
     max-width: 600px;
 }
+
+.facture {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+    border: dotted 2px;
+    border-color: darkgreen;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+
+.facture-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.facture-row-total {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    border: dotted 2px;
+    border-color: darkgreen;
+}

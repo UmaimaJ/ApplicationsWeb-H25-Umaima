@@ -22,7 +22,7 @@ const PaiementComponent = () => {
 
     return (
         <div className='card-body'>
-            <h5 className='card-title'>Chargement de 1000 gemmes</h5>
+            <h5 className='card-title'>Chargement de 1000 gemmes pour 5 CAD</h5>
             <label>Le mode de paiement:</label>
             <form onSubmit={handleSubmit}>
                 <PaymentElement />
