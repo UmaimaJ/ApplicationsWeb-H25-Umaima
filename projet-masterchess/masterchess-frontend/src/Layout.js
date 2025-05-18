@@ -17,9 +17,6 @@ import { AccueilServiceContext, AccueilService } from "./accueil/service/Accueil
 import { ComptesServiceContext, ComptesService } from "./login/service/ComptesService.js";
 import { ServiceCoursContext } from "./cours/service/ServiceCours";
 
-import $ from "jquery";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min';
 import './Layout.css';
 
 function Layout() {

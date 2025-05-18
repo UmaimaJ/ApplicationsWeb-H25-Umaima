@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Navigate } from "react-router-dom";
+import * as bootstrap from 'bootstrap';
+
 
 import './style/PageListeJeux.css';
 import DisplayPartieComponent from "./components/DisplayPartieComponent";
@@ -24,6 +26,8 @@ function PageListeJeux() {
     const [ disponnibleChercher, setDisponnibleChercher] = useState(false);
     const trouverPartieService = new TrouverPartieService(onConnection, onDisconnect, onTrouveresult);
     const [ mesParties, setMesParties ] = useState(true);
+
+    const buttonListe = useRef(null);
 
     useEffect(() => {
         refreshPartiesEncours();
@@ -90,6 +94,7 @@ function PageListeJeux() {
             if(partie)
             {
                 await refreshPartiesEncours();
+                buttonListe.current.click();
             }
         }
         catch(error)
@@ -193,12 +198,12 @@ function PageListeJeux() {
             <div className="panneau-parties-header card">
                 <div className="card-body card-body-obtenir-partie">
                     <h5 class="card-title">Jouer</h5>
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <ul class="nav nav-tabs" id="tabJouer" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active" id="creer-tab" data-bs-toggle="tab" data-bs-target="#creer" type="button" role="tab" aria-controls="creer" aria-selected="true">Créer</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="liste-tab" data-bs-toggle="tab" data-bs-target="#liste" type="button" role="tab" aria-controls="liste" aria-selected="false">Liste</button>
+                            <button class="nav-link" id="liste-tab" data-bs-toggle="tab" data-bs-target="#liste" type="button" role="tab" aria-controls="liste" aria-selected="false" ref={buttonListe}>Liste</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="trouver-tab" data-bs-toggle="tab" data-bs-target="#trouver" type="button" role="tab" aria-controls="trouver" aria-selected="false">Trouver</button>
