@@ -8,7 +8,7 @@ import bodyParser from "body-parser";
 import bcrypt from 'bcrypt';
 import session from "express-session";
 
-import path from "path"; 
+import path from "path";
 import { fileURLToPath } from "url";
 
 import ComptesService from "./comptes/ComptesService.js";
@@ -18,10 +18,10 @@ import TrouverPartiesService from "./jeu/TrouverPartiesService.js";
 import ServiceCours from "./cours/ServiceCours.js";
 import ProfiljeuService from "./jeu/ProfiljeuService.js";
 
-const __filename = fileURLToPath(import.meta.url); 
+const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const app = express(); 
+const app = express();
 
 const privateKey = fs.readFileSync(path.join(__dirname, 'localhost-key.pem'), 'utf8');
 const certificate = fs.readFileSync(path.join(__dirname, 'localhost.pem'), 'utf8');
@@ -34,11 +34,11 @@ const mymysql = await mysql.createConnection({
     port: "3306",
     user: "root",
     database: "projet_chess",
-    password: "",
+    password: "root1234",
     multipleStatements: true
 });
 
-const corsOptions = { 
+const corsOptions = {
     origin: ['https://10.186.5.123:4000', 'https://10.0.0.228:4000', 'https://localhost:4000'],//< Change domain to suit your needs
     methods: ["GET", "POST"],
     credentials: true
@@ -135,23 +135,33 @@ router.post('/login', async function (req, res) {
 
 router.post("/signup", async function (req, res) {
     const { username, password, email } = req.body;
+
     try {
-        // Generate a session ID
-        const sessionId = req.sessionID;
-    
-        // Get country code by api
-        var country_code = await comptesService.getCountryCode(req.ip.split("::ffff:")[1]);
+        const userAlreadyExists = await comptesService.findUser(username, email);
+        if (userAlreadyExists) {
+            res.json({ success: false, message: 'User already exists' });
+        } else if (!userAlreadyExists) {
+            try {
+                // Generate a session ID
+                const sessionId = req.sessionID;
 
-        // Insert into the database the user
-        const results = await comptesService.insertUsager(username, password, email, country_code, sessionId);
+                // Get country code by api
+                var country_code = await comptesService.getCountryCode(req.ip.split("::ffff:")[1]);
 
-        // Retrieve the newly created user
-        const user = await comptesService.selectUsager(username);
+                // Insert into the database the user
+                const results = await comptesService.insertUsager(username, password, email, country_code, sessionId);
 
-        // Set session data
-        req.session.user = { id: user.id, username: user.compte, usager: user };
+                // Retrieve the newly created user
+                const user = await comptesService.selectUsager(username);
 
-        res.json({ success: true, message: 'User registered successfully' });
+                // Set session data
+                req.session.user = { id: user.id, username: user.compte, usager: user };
+
+                res.json({ success: true, message: 'User registered successfully' });
+            } catch (error) {
+                res.status(500).json({ success: false, message: 'Server error', error });
+            }
+        }
     } catch (error) {
         res.status(500).json({ success: false, message: 'Server error', error });
     }
@@ -213,7 +223,7 @@ router.post("/createPartie", isAuthenticated, async function (req, res, err) {
             throw new Error("createPartie: profiljeu 1 invalid");
 
         const profiljeu2 = await partiesService.selectProfiljeuByCompte(req.body.nomprofiljeu2);
-        
+
         if(!profiljeu2)
             throw new Error("createPartie: profiljeu 2 invalid");
 
@@ -239,6 +249,76 @@ router.get("/getLessons", async (req, res) => {
 });
 
 app.use('/data', router);
+
+// ADMIN PART
+import AdminService from './admin/AdminService.js';
+const adminService = new AdminService(mymysql);
+
+// enable JSON body parsing and session middleware
+app.use(bodyParser.json());
+
+// Juste pour pouvoir differencier
+const adminRouter = express.Router();
+
+// GET Tables
+adminRouter.get('/tables', async (req, res) => {
+    const tables = await adminService.getTables();
+    res.json(tables);
+});
+
+// CRUD
+// GET VALUES
+adminRouter.get('/:table', async (req, res) => {
+    try {
+        const data = await adminService.getAll(req.params.table);
+        res.json(data);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// INSERT VALUE
+adminRouter.post('/:table', async (req, res) => {
+    try {
+        const id = await adminService.insert(req.params.table, req.body);
+        res.json({ insertId: id });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// UPDATE VALUE
+adminRouter.put('/:table/:id', async (req, res) => {
+    try {
+        await adminService.update(req.params.table, req.params.id, req.body);
+        res.json({ updated: true });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// DELETE VALUE
+adminRouter.delete('/:table/:id', async (req, res) => {
+    try {
+        await adminService.delete(req.params.table, req.params.id);
+        return res.json({ deleted: true });
+    } catch (err) {
+        console.error('DELETE ERROR', {
+            table: req.params.table,
+            id: req.params.id,
+            sqlMessage: err.sqlMessage,
+            stack: err.stack
+        });
+        return res.status(500).json({ error: err.sqlMessage || err.message });
+    }
+});
+
+// GET COLUMNS
+adminRouter.get('/:table/columns', async (req, res) => {
+    const cols = await adminService.getColumns(req.params.table);
+    res.json(cols);
+});
+app.use('/data/admin', adminRouter);
 
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '/../../masterchess-frontend/build/index.html'), function(err) {

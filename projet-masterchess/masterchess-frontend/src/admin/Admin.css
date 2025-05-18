@@ -3,6 +3,8 @@
     padding: 20px;
     font-family: Arial, sans-serif;
     background: #f9f9f9;
+    height: 100vh;
+    overflow-y: auto;
 }
 .admin-container h2 {
     margin-bottom: 16px;

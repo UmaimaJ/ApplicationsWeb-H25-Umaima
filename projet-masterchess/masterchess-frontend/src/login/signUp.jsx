@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './login.css';
+import 'bootstrap/dist/css/bootstrap.css';
 
 import PageAccueil from "../accueil/PageAccueil"
 import { AccueilServiceContext, AccueilService } from '../accueil/service/AccueilService';
@@ -23,6 +24,12 @@ const SignUp = () => {
                 setSessionUsager(axiosResponse.data.usager);
                 navigate("/");
             }
+        } else if (!success) {
+            console.log(`ERROR:` + axiosResponse?.data?.message)
+            const alert = document.getElementById("signup_alert")
+            console.log(alert)
+            alert.style.display = "block"
+            alert.innerHTML = "Erreur: L'utilisateur existe déjà"
         }
     };
 
@@ -67,9 +74,11 @@ const SignUp = () => {
                         required
                     />
                 </div>
-                <button class="buttonYasser" type="submit">Sign Up</button>
+                <button id="boutonSubmit" className="buttonYasser" type="submit">Sign Up</button>
             </form>
+            <div id="signup_alert" style={{display: "none"}} className="alert alert-danger">aaaaaaa</div>
         </div>
+
         )}
         </ComptesServiceContext.Consumer>
         )}
