@@ -105,7 +105,7 @@ const PageAccueil = () => {
 
       <footer>
         <p>Copyright © ChessMaster</p>
-        <p>Politique de confidentialité & contact</p>
+        <p>Politique de confidentialité & <a href="/PageContact">contact</a></p>
       </footer>
     </div>
   );

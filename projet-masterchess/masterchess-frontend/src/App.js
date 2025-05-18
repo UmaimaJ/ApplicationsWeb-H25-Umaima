@@ -16,6 +16,7 @@ import PageCharger from "./achat/PageCharger.jsx";
 import PageFacture from "./achat/PageFacture.jsx"
 import PageProfil from "./jeu/PageProfil.js";
 import PageAdmin from "./admin/PageAdmin.jsx";
+import PageContact from "./contact/PageContact.jsx";
 
 // Set a default base URL for all requests
 axios.defaults.baseURL = '/data/';
@@ -38,6 +39,7 @@ function App() {
           <Route path="/PageCharger" element={<PageCharger />} />
           <Route path="/PageAdmin" element={<PageAdmin />} />
           <Route path="/PageFacture/:idFacture" element={<PageFacture />} />
+          <Route path="/PageContact" element={<PageContact /> } />
           <Route path="*" element={<></>} />
         </Route>
       </Routes>

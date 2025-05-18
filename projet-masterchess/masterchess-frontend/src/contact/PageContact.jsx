@@ -44,7 +44,7 @@ const PageContact = () => {
         <div className="contact-container">
             <h2>Contactez-nous</h2>
             <p className="contact-intro">
-                Une question sur MasterChess? N'hésitez pas à nous contacter!
+                Une question sur ChessMaster? N'hésitez pas à nous contacter!
             </p>
 
             {envoyeMessage && (
@@ -67,7 +67,7 @@ const PageContact = () => {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="email">Email</label>
+                    <label htmlFor="email">Couriel</label>
                     <input
                         type="email"
                         id="email"
