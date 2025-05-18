@@ -17,7 +17,7 @@
 
 .panneau-liste-parties-historique {
     height: 500px;
-    border: 2px solid;
+    outline: 2px solid;
 }
 
 .panneau-liste-parties-historique .entry {
