@@ -271,7 +271,7 @@ router.post("/createPartie", isAuthenticated, async function (req, res, err) {
 
 // Checkout achat gems
 
-router.post('/CreateCheckoutSession', async (req, res) => {
+/*router.post('/CreateCheckoutSession', async (req, res) => {
     const session = await stripe.checkout.sessions.create({
         line_items: [
             {
@@ -293,6 +293,8 @@ router.post('/CreateCheckoutSession', async (req, res) => {
     res.json({ checkoutSessionClientSecret: session.client_secret });
 });
 
+
+
 router.get('/RetourCharger', async (req, res) => {
     const session = await stripe.checkout.sessions.retrieve(req?.query?.session_id);
     if(!session)
@@ -308,6 +310,7 @@ router.get('/RetourCharger', async (req, res) => {
 
     res.redirect("/");
 });
+*/
 
 // Cours
 

@@ -16,19 +16,6 @@
 }
 
 .hero-section {
-    margin-bottom: 300px;
-    text-align: center;
-    padding-left: 150px;
-}
-
-.hero-section h1 {
-    color: #9CE83D;
-    font-size: 72px;
-}
-
-.hero-section p {
-    font-size: 40px;
-    color: #ddd;
     margin-bottom: 35px;
     padding: 30px 10px 40px 10px;
     text-align: center;
@@ -62,64 +49,41 @@
     text-shadow: 0 0 0.5px #000;
 }
 
+.hero-section h1 {
+    color: #699d29;
+    font-size: 20px;
+    font-weight: 900;
+    margin-bottom: 10px;
+    text-shadow: 0 0 1px #000;
+}
+
+.hero-section p {
+    font-size: 18px;
+    color: #ccc;
+    margin-bottom: 15px;
+    text-shadow: 0 0 1px black;
+}
+
+.start-button {
+    background: #699d29;
+    border: 1px solid #547F1D;
+    padding: 6px 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.3s;
+    text-shadow: 0 0 0.5px #000;
+}
+
 .start-button, 
 .lessons-btn,
 .play-button {
-    background: #73AC2B;
-    border: 5px solid #547F1D;
-    padding: 15px 40px;
-    font-size: 26px;
-    font-weight: 600;
-    color: white;
-    cursor: pointer;
-    margin-top: 40px;
-    border-radius: 15px;
-    transition: 0.3s ease-in-out;
-}
-
-.start-button:hover, 
-.lessons-btn:hover, 
-.play-button:hover {
-    background: #547F1D;
-}
-
-.lesson-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    background-color: #1B1D1B;
-    padding: 120px;
-    margin: 120px auto;
-    width: 90%;
-    border-radius: 15px;
-    border: 6px solid #4D4D4D;
-    max-width: 1300px;
-    text-align: left;
-}
-
-.lesson-image {
-    width: 400px;
-    height: auto;
-    margin-right: 100px;
-}
-
-.lesson-content {
-    flex: 1;
-    color: white;
-}
-
-.lesson-title {
-    font-size: 36px;
-    font-weight: bold;
-}
-
-.lesson-description {
-    font-size: 40px;
-    margin-top: 40px;
     background: #699d29;
     border: 1px solid #547F1D;
-    padding: 4px 10px;
-    font-size: 9px;
+    padding: 8px 16px;
+    font-size: 11px;
     font-weight: 600;
     color: white;
     cursor: pointer;
@@ -142,13 +106,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    background-color: #1B1D1B;
-    padding: 120px;
-    margin: 120px auto;
-    width: 90%;
-    border-radius: 15px;
-    border: 6px solid #4D4D4D;
-    max-width: 1300px;
     background-color: #202020; 
     padding: 20px;
     margin: 40px auto; 
@@ -167,9 +124,9 @@
 }
 
 .play-image {
-    width: 400px;
+    width: 80px;
     height: auto;
-    margin-left: 100px;
+    margin: 0 12px;
 }
 
 .play-content {
@@ -193,19 +150,18 @@
 }
 
 .lesson-title {
-    font-size: 15px;
+    font-size: 18px; 
     font-weight: 700;
     color: #699d29;
-    margin-bottom: 3px;
+    margin-bottom: 6px;
     text-shadow: 0 0 0.5px #000;
 }
 
 .lesson-description {
-    font-size: 10px;
+    font-size: 12px; 
     color: #eee;
     text-shadow: 0 0 0.5px #000;
 }
-
 .video-section {
     margin: 50px auto; 
     width: 90%;
@@ -213,42 +169,50 @@
 }
 
 .video-section h2 {
-    font-size: 36px;
-    text-align: center;
-    font-size: 13px;
+    font-size: 16px !important; 
     font-weight: 700;
     text-align: center;
     margin-bottom: 18px;
     color: #9CE83D;
+    font-family: "Urbanist", sans-serif;
+    text-shadow: 0 0 0.5px #000;
 }
+
 
 .video-thumbnails {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 80px;
     gap: 14px;
     justify-content: center;
     margin-top: 50px;
 }
 
 .video-thumbnails img {
-    width: 100%;
-    max-width: 700px; /* Augmenté pour rendre les vidéos plus grandes */
-    height: auto;
-    border-radius: 12px;
-    transition: 0.3s;
+    width: 200%;
+    max-width: 300px;
+    border-radius: 5px;
 }
 
-.video-thumbnails img:hover {
-    transform: scale(1.05);
+.video-description {
+    font-size: 11px; 
+    color: #f0f0f0;
+    font-family: "Segoe UI", "Roboto", "Urbanist", sans-serif;
+    text-align: center;
+    margin-top: 5px;
+    line-height: 1.4;
+    
+    text-shadow: 0 0 0.5px #000;
+    max-width: 300px;
+    word-wrap: break-word;
+    white-space: normal; 
 }
-
 footer {
     margin-top: 200px;
     padding: 40px;
     border-top: 4px solid #151515;
     text-align: center;
 }
+
 
 footer p {
     color: #757373;

@@ -1,26 +1,27 @@
-import React from "react";
-import { Outlet, Link, useNavigate } from "react-router-dom";
-import "./PageAccueil.css"; // Import the styles
+import React, { useContext } from "react";
+import "./PageAccueil.css"; // CSS
+import { AccueilServiceContext } from "../accueil/service/AccueilService";
+import PageCours from "../cours/PageCours";
+import PageJeu from "../jeu/PageJeu";
 
 const PageAccueil = () => {
-
-  const navigate = useNavigate();
+  const { setPageCourante } = useContext(AccueilServiceContext);
 
   const handlePlayClick = () => {
-    navigate("/PageListeJeux");
+    setPageCourante(<PageJeu />);
   };
 
   const handleLearnClick = () => {
-    navigate("/PageCours");
+    setPageCourante(<PageCours />);
   };
 
   return (
     <div className="accueil-container">
       <div className="hero-section">
-        <h1>APPRENEZ LES ÉCHECS</h1>
-        <p>Maîtrisez l'ultime.</p>
+        <h1>APPRENEZ LES ÉCHECS DE ZÉRO</h1>
+        <p>Maîtrisez chaque coup, dominez l’échiquier.</p>
         <button className="start-button" onClick={handleLearnClick}>
-          Débutez votre cheminement
+          Commencer à apprendre
         </button>
       </div>
 
@@ -32,12 +33,13 @@ const PageAccueil = () => {
           className="lesson-image"
         />
         <div className="lesson-content">
-          <h3 className="lesson-title">Prenez des cours d'échecs édifiants.</h3>
+          <h3 className="lesson-title">Suivez des cours d’échecs</h3>
           <p className="lesson-description">
-            Avec un arsenal de plus de 10 cours disponnibes, vous pouvez devenir un champion de la pensée et du procéssus tactique.
+            Avec plus de 10 cours disponibles, développez vos compétences et maîtrisez chaque aspect du jeu.
+            Améliorez votre stratégie et entraînez-vous comme un joueur d’échecs professionnel.
           </p>
           <button className="lessons-btn" onClick={handleLearnClick}>
-            Leçons
+            Cours
           </button>
         </div>
       </div>
@@ -51,7 +53,7 @@ const PageAccueil = () => {
         <div className="play-content">
           <h3 className="lesson-title">Jouez en ligne</h3>
           <p className="lesson-description">
-            Mettez vos connaissances au test.
+            Mettez vos connaissances en pratique et affrontez d'autres joueurs dans des parties compétitives en ligne.
           </p>
           <button className="play-button" onClick={handlePlayClick}>
             Jouer
@@ -60,7 +62,7 @@ const PageAccueil = () => {
       </div>
 
       <div className="video-section">
-        <h2>Découvrez les meilleurs</h2>
+        <h2>Découvrez les meilleurs joueurs d’échecs du monde en action</h2>
         <div className="video-thumbnails">
           <div className="video-block">
             <img
@@ -68,7 +70,7 @@ const PageAccueil = () => {
               alt="Chess video 1"
             />
             <p className="video-description">
-              Magnus Carlsen vs. Hikaru Nakamura — Intense blitz battle at the world championship!
+              Magnus Carlsen vs. Hikaru Nakamura — Une bataille de blitz intense lors du championnat du monde !
             </p>
           </div>
           <div className="video-block">
@@ -77,7 +79,7 @@ const PageAccueil = () => {
               alt="Chess video 2"
             />
             <p className="video-description">
-              How a young prodigy surprised Kasparov in a masterclass display of tactics.
+              Comment un jeune prodige a surpris Kasparov dans une démonstration magistrale de tactiques.
             </p>
           </div>
           <div className="video-block">
@@ -86,7 +88,7 @@ const PageAccueil = () => {
               alt="Chess video 3"
             />
             <p className="video-description">
-              This brilliant endgame from 1994 is still one of the greatest escapes in chess history.
+              Cette finale brillante de 1994 reste l’une des plus grandes échappées de l’histoire des échecs.
             </p>
           </div>
           <div className="video-block">
@@ -95,7 +97,7 @@ const PageAccueil = () => {
               alt="Chess video 4"
             />
             <p className="video-description">
-              Deep dive into the style of Bobby Fischer — strategy, aggression and control.
+              Plongée dans le style de Bobby Fischer — stratégie, agressivité et contrôle.
             </p>
           </div>
         </div>
@@ -103,7 +105,7 @@ const PageAccueil = () => {
 
       <footer>
         <p>Copyright © ChessMaster</p>
-        <p>Privacy policy & contact</p>
+        <p>Politique de confidentialité & contact</p>
       </footer>
     </div>
   );

@@ -46,7 +46,7 @@ function Layout() {
     useEffect(() => {
         window.sessionStorage.setItem("sessionUsager", JSON.stringify(sessionUsager));
     }, [sessionUsager]);
-    
+
     const handleAccueilClick = async (event) => {
         navigate("/");
     };
@@ -76,6 +76,7 @@ function Layout() {
     const handleProfilClick = async (event) => {
         navigate("/PageProfil/" + (sessionUsager?.id_profiljeu ?? -1));
     }
+
 
     const handleAcheterGems = async (event) => {
         navigate("/PageCharger");
