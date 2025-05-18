@@ -33,7 +33,9 @@ function PageListeJeux() {
         trouverPartieService.connect();
 
         return () => {
-            trouverPartieService.disconnect();
+            trouverPartieService.endTrouver().then(() => {
+                trouverPartieService.disconnect();
+            });
         }
     }, []);
 
