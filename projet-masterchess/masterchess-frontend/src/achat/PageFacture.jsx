@@ -39,6 +39,10 @@ const PageFacture = () => {
                             <label>Gemmes ChessMaster</label>
                         </div>
                         <div className='facture-row'>
+                            <label>No. facture:</label>
+                            <label>{facture?._id}</label>
+                        </div>
+                        <div className='facture-row'>
                             <label>Quantité:</label>
                             <label>{facture?.quantite}</label>
                         </div>
@@ -48,7 +52,7 @@ const PageFacture = () => {
                         </div>
                         <div className='facture-row'>
                             <label>Taxes:</label>
-                            <label>{prixunite.toFixed(4)}$</label>
+                            <label>{taxes.toFixed(4)}$</label>
                         </div>
                         <div className='facture-row'>
                             <label>Date transaction:</label>
@@ -61,7 +65,7 @@ const PageFacture = () => {
                     </div>
                     <br></br>
                     <p>Merci pour avoir choisi ChessMaster.</p>
-                    <input className='btn btn-primary' type="button" value="Imprimmer" onClick="window.print()"></input>
+                    <input className='btn btn-primary' type="button" value="Imprimmer" onClick={ () => { window.print() } }></input>
                 </div>
             </div>
         </div>
