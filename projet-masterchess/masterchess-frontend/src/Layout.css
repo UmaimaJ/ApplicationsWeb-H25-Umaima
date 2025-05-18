@@ -27,11 +27,12 @@ html, body, .App, #root{
   overflow: auto;
 }
 
-.my-sidebar{
+.my-sidebar {
   height: 100%;
   width: 300px;
 
-  position: relative;
+  z-index: 5;
+  position: absolute;
   top: 0px;
   left: 0px;
   display: flex;
@@ -285,9 +286,17 @@ html, body, .App, #root{
   line-height: normal;
 }
 
-@media (min-width: 992px) {
-  .navbar-expand-lg .navbar-nav {
-    flex-direction: column !important;
-  }
+.navbar {
+  display: block;
+  z-index: 6;
+}
 
+.navbar-toggler {
+  top: 90px;
+  position: absolute;
+  z-index: 6;
+}
+
+.nav-links {
+  flex-direction: column;
 }

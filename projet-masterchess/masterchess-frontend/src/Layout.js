@@ -86,7 +86,7 @@ function Layout() {
         <AccueilServiceContext.Provider value={ {navigate, accueilService} }>
         <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, comptesService} }>
         <div id="container">
-            <nav class="nav nav-pills nav-flush">
+            <nav class="navbar navbar-light">
                 <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
