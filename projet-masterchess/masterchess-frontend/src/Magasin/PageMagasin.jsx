@@ -1,54 +1,81 @@
-import React from "react";
+import React, { useRef } from "react";
 import "./PageMagasin.css";
-import { ChargerService } from "../achat/service/ChargerService";
 
-const chargerService = new ChargerService();
+const featuredItems = [
+  {
+    id: 1,
+    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Green_chess_pawn_keychain.jpg/120px-Green_chess_pawn_keychain.jpg",
+    alt: "Green Pawn Keychain",
+  },
+  {
+    id: 2,
+    src: "https://m.media-amazon.com/images/I/71GHUplxjCL._AC_SL1500_.jpg",
+    alt: "Electronic Chess Set",
+  },
+  {
+    id: 3,
+    src: "https://m.media-amazon.com/images/I/71U3YzrLMZL._AC_SL1500_.jpg",
+    alt: "Green Chess Board",
+  },
+  {
+    id: 4,
+    src: "https://m.media-amazon.com/images/I/91Aa74ZqUuL._AC_SL1500_.jpg",
+    alt: "Foldable Chess Set",
+  },
+];
 
 const PageMagasin = () => {
-  const handleAddToCart = async (itemId) => {
-    try {
-      await chargerService.acheterItem(itemId);
-      alert("Item added successfully!");
-    } catch (error) {
-      alert("Error adding item");
+  const carouselRef = useRef(null);
+
+  const scroll = (direction) => {
+    const container = carouselRef.current;
+    const scrollAmount = 300;
+    if (direction === "left") {
+      container.scrollLeft -= scrollAmount;
+    } else {
+      container.scrollLeft += scrollAmount;
     }
   };
 
   return (
-    <div className="magasin-wrapper">
-      <div className="magasin-header">
+    <div className="magasin-container">
+      <section className="featured-section">
         <h1 className="magasin-title">Unlock the latest items with gems !</h1>
-      </div>
+        <h2 className="section-title featured">Featured Items</h2>
 
-      <div className="featured-title">Featured Items</div>
-      <div className="featured-row">
-        <div className="featured-card"></div>
-        <div className="featured-card"></div>
-        <div className="featured-card"></div>
-        <div className="featured-card"></div>
-      </div>
-
-      <div className="section-title">Minecraft Edition Chess Pieces</div>
-
-      <div className="items-grid">
-        {[1, 2, 3, 4].map((id) => (
-          <div className="store-item" key={id}>
-            <img
-              src={`https://placehold.co/200x200?text=Item+${id}`}
-              alt={`Item ${id}`}
-              className="item-image"
-            />
-            <div className="item-name">Chessboard Illusion</div>
-            <button className="buy-btn" onClick={() => handleAddToCart(id)}>
-              Add to cart
-            </button>
+        <div className="carousel-wrapper">
+          <button className="carousel-nav" onClick={() => scroll("left")}>◀</button>
+          <div className="carousel" ref={carouselRef}>
+            {featuredItems.map((item) => (
+              <img
+                key={item.id}
+                className="carousel-item"
+                src={item.src}
+                alt={item.alt}
+              />
+            ))}
           </div>
-        ))}
-      </div>
+          <button className="carousel-nav" onClick={() => scroll("right")}>▶</button>
+        </div>
+      </section>
 
-      <div className="see-more">
-        <button>See more</button>
-      </div>
+      <section className="minecraft-section">
+        <h2 className="section-title minecraft">Minecraft Edition Chess Pieces</h2>
+        <div className="item-grid">
+          {[1, 2, 3, 4].map((id) => (
+            <div className="item-card" key={id}>
+              <img
+                className="item-image"
+                src={`https://placehold.co/200x200?text=Item+${id}`}
+                alt={`Item ${id}`}
+              />
+              <div className="item-name">Chessboard Illusion</div>
+              <button className="btn-buy">Add to cart</button>
+            </div>
+          ))}
+        </div>
+        <button className="btn-see-more">See more</button>
+      </section>
     </div>
   );
 };
