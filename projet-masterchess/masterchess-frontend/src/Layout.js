@@ -85,11 +85,11 @@ function Layout() {
         <AccueilServiceContext.Provider value={ {navigate, accueilService} }>
         <ComptesServiceContext.Provider value={ {sessionUsager, setSessionUsager, comptesService} }>
         <div id="container">
-            <nav class="navbar navbar-expand-lg navbar-light my-sidebar">
+            <nav class="nav nav-pills nav-flush my-sidebar">
                 <button class="navbar-toggler navbar-dark" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse my-sidebar" id="navbarSupportedContent">
+                <div class="collapse navbar-collapse my-sidebar show" id="navbarSupportedContent">
                     <div class="my-sidebar-header">
                         <div class="my-logo">
                             <a href="/">
