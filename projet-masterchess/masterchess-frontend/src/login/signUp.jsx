@@ -86,8 +86,8 @@ const SignUp = () => {
         {({navigate, accueilService}) => (
         <ComptesServiceContext.Consumer>
         {({sessionUsager, setSessionUsager, comptesService}) => (
-        <div className="card login-container">
-            <h2>Enregistrement</h2>
+        <div className="login-container">
+            <h2>Inscription</h2>
             <form onSubmit={(event) => {
                     event.preventDefault();
                     handleSubmit(event, {navigate, accueilService}, {sessionUsager, setSessionUsager, comptesService});
@@ -125,7 +125,7 @@ const SignUp = () => {
                     />
                     <div id="password-invalid" className="invalid-tooltip"></div>
                 </div>
-                <button class="buttonYasser" type="submit">Enregistrer</button>
+                <button class="buttonYasser" type="submit">S'inscrire</button>
             </form>
         </div>
         )}

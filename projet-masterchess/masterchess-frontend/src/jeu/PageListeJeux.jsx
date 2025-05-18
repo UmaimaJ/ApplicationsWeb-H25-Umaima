@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import { Navigate } from "react-router-dom";
-import * as bootstrap from 'bootstrap';
-
 
 import './style/PageListeJeux.css';
 import DisplayPartieComponent from "./components/DisplayPartieComponent";

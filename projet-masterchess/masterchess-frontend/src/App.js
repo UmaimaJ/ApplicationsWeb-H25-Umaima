@@ -3,10 +3,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import axios from 'axios';
 
-import $ from 'jquery';
-import Popper from 'popper.js';
-import 'bootstrap/dist/js/bootstrap.bundle.min';
-
 import Layout from "./Layout.js";
 import Login from "./login/login.jsx";
 import SignUp from "./login/signUp.jsx";

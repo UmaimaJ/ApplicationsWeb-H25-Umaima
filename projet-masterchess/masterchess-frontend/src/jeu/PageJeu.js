@@ -10,11 +10,6 @@ import { findFlagUrlByIso2Code } from "country-flags-svg";
 import person from "../style/person2.svg";
 import timericon from "../style/timer-icon.svg";
 
-import $ from "jquery";
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min';
-import './style/PageJeu.css';
-
 import { JeuServiceContext, JeuService } from "./service/JeuService";
 import { ComptesServiceContext } from "../login/service/ComptesService.js"
 import { DisplayPartiesServiceContext, DisplayPartiesService } from './service/DisplayPartiesService';

@@ -11,6 +11,10 @@ import person from "./style/person2.svg";
 import registericon from "./style/register-icon2.png";
 
 import { Outlet, Link, useNavigate } from "react-router-dom";
+import $ from 'jquery';
+import Popper from 'popper.js';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 import { useState, useEffect } from 'react';
 import { AccueilServiceContext, AccueilService } from "./accueil/service/AccueilService.js";
