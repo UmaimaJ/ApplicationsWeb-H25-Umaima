@@ -271,7 +271,7 @@ router.post("/createPartie", isAuthenticated, async function (req, res, err) {
 
 // Checkout achat gems
 
-/*router.post('/CreateCheckoutSession', async (req, res) => {
+router.post('/CreateCheckoutSession', async (req, res) => {
     const session = await stripe.checkout.sessions.create({
         line_items: [
             {
@@ -310,7 +310,6 @@ router.get('/RetourCharger', async (req, res) => {
 
     res.redirect("/");
 });
-*/
 
 // Cours
 
