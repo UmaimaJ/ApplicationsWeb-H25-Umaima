@@ -29,6 +29,7 @@ html, body, .App, #root{
 
 .my-sidebar{
   height: 100%;
+  width: 300px;
 
   position: relative;
   top: 0px;
