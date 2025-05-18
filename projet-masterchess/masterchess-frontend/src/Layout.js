@@ -111,7 +111,7 @@ function Layout() {
                                     </div>
                                     <div class="nav-item my-navoption" onClick={handleSignUpClick}>
                                     <img class="my-icon" src={registericon} />
-                                    <label class="my-optionlabel">Enregistrement</label>                
+                                    <label class="my-optionlabel">Inscription</label>                
                                     </div>
                                     </>
                                 }
