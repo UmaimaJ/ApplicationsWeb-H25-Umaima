@@ -56,37 +56,33 @@ const PageCours = () => {
 
   return (
     <div className="cours-container">
-      <h1>📘 Lessons</h1>
+      <h1>📘 Cours</h1>
 
       <div className="tabs">
         <span className="active-tab">Bibliothèque</span>
-        <span>Guide</span>
-      </div>
-      <div className="tab-header">
-        <div className="active">Bibliothèque</div>
-        <div>Guide</div>
+        <span>Vidéos</span>
       </div>
 
       <div className="category-bar">
         <div className="category-item">
-          <img src="/icons/book.png" alt="Openings" />
-          <span>Openings</span>
+          <img src="/icons/book.png" alt="Ouvertures" />
+          <span>Ouvertures</span>
         </div>
         <div className="category-item">
-          <img src="/icons/strategy.png" alt="Strategy" />
-          <span>Strategy</span>
+          <img src="/icons/strategy.png" alt="Stratégie" />
+          <span>Stratégie</span>
         </div>
         <div className="category-item">
-          <img src="/icons/tactics.png" alt="Tactics" />
-          <span>Tactics</span>
+          <img src="/icons/tactics.png" alt="Tactiques" />
+          <span>Tactiques</span>
         </div>
         <div className="category-item">
-          <img src="/icons/endgames.png" alt="Endgames" />
-          <span>Endgames</span>
+          <img src="/icons/endgames.png" alt="Fins de partie" />
+          <span>Fins de partie</span>
         </div>
         <div className="category-item">
-          <img src="/icons/masters.png" alt="Masters" />
-          <span>Master Games</span>
+          <img src="/icons/masters.png" alt="Maîtres" />
+          <span>Parties de maîtres</span>
         </div>
       </div>
 
@@ -110,7 +106,7 @@ const PageCours = () => {
         ))}
       </div>
 
-      <div className="lesson-list">
+      <div className="lesson-grid">
         {filteredList.map((cours, index) => (
           <div key={index} className="lesson-card">
             <img
@@ -144,7 +140,7 @@ const PageCours = () => {
 
       <h1 style={{ marginTop: "40px" }}>🎓 Cours achetés</h1>
 
-      <div className="lesson-list">
+      <div className="lesson-grid">
         {coursAchetesList.map((cours, index) => (
           <div key={index} className="lesson-card">
             <img
@@ -179,4 +175,3 @@ const PageCours = () => {
 };
 
 export default PageCours;
-
