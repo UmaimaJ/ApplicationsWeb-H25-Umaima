@@ -104,6 +104,8 @@ const PageCours = () => {
 
   return (
     <div className="cours-container">
+      <div id="lblError" className="alert alert-danger alert-fixed w-100" role="alert" style={{display: "none"}}>
+      </div>
       <h1>📘 Lessons</h1>
 
       <div className="tabs">
@@ -183,7 +185,7 @@ const PageCours = () => {
                 <button onClick={() => toggleDescriptionCours(index)}>
                   {showDescriptionCours[index] ? "Masquer" : "Voir"} description
                 </button>
-                <button onClick={() => handleAcheterCours(cours.id)}>Acheter</button>
+                { sessionUsager && <button onClick={() => handleAcheterCours(cours.id)}>Acheter</button> }
               </div>
             </div>
           </div>
