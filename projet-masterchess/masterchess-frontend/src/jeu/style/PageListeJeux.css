@@ -1,15 +1,24 @@
 /*Liste de parties en cours*/
 .parties-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
     width: 100%; 
     height: 100%;
 }
 
 .panneau-parties-header {
     margin: 25px;
+    width: 100%;
     max-width: 600px;
 }
 
+.card-body-obtenir-partie {
+    min-height: 100%;
+}
+
 .browser-parties{
+    background-color: grey;
     height: 500px;
 }
 
