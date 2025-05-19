@@ -3,16 +3,12 @@
     background-size: cover;
     color: white;
     text-align: center;
-    padding: 40px;
+    padding: 10px;
     min-height: 100vh;
     overflow-y: auto;
     font-family: "Urbanist", sans-serif;
-}
-
-.section {
-    margin: 120px auto;
-    width: 90%;
-    max-width: 1300px;
+    font-size: 9px;
+    text-shadow: 0 0 0.5px #1a1a1a;
 }
 
 .hero-section {
@@ -49,35 +45,7 @@
     text-shadow: 0 0 0.5px #000;
 }
 
-.hero-section h1 {
-    color: #699d29;
-    font-size: 20px;
-    font-weight: 900;
-    margin-bottom: 10px;
-    text-shadow: 0 0 1px #000;
-}
-
-.hero-section p {
-    font-size: 18px;
-    color: #ccc;
-    margin-bottom: 15px;
-    text-shadow: 0 0 1px black;
-}
-
-.start-button {
-    background: #699d29;
-    border: 1px solid #547F1D;
-    padding: 6px 20px;
-    font-size: 11px;
-    font-weight: 700;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.3s;
-    text-shadow: 0 0 0.5px #000;
-}
-
-.start-button, 
+.start-button,
 .lessons-btn,
 .play-button {
     background: #699d29;
@@ -102,6 +70,7 @@
     align-self: flex-end;
 }
 
+.lesson-container,
 .play-container {
     display: flex;
     align-items: center;
@@ -120,29 +89,21 @@
 
 .play-container {
     flex-direction: row-reverse;
-    text-align: left;
 }
 
+.lesson-image,
 .play-image {
     width: 80px;
     height: auto;
     margin: 0 12px;
 }
 
+.lesson-content,
 .play-content {
     flex: 1;
     color: white;
     display: flex;
     flex-direction: column;
-}
-
-.play-button {
-    align-self: flex-end;
-}
-
-.video-section {
-    margin: 120px auto;
-    margin-top: 200px;
     justify-content: center;
     text-align: left;
     line-height: 1.2;
@@ -165,7 +126,7 @@
 .video-section {
     margin: 50px auto; 
     width: 90%;
-    max-width: 1400px;
+    max-width: 800px;
 }
 
 .video-section h2 {
@@ -184,7 +145,6 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 14px;
     justify-content: center;
-    margin-top: 50px;
 }
 
 .video-thumbnails img {
@@ -207,14 +167,15 @@
     white-space: normal; 
 }
 footer {
-    margin-top: 200px;
-    padding: 40px;
-    border-top: 4px solid #151515;
+    margin-top: 20px;
+    padding: 10px;
+    border-top: 1px solid #151515;
     text-align: center;
 }
 
 
 footer p {
     color: #757373;
-    font-size: 30px;
+    font-size: 10px;
+    text-shadow: 0 0 0.5px black;
 }
