@@ -20,7 +20,9 @@ export default class AdminService {
     // GET - Afficher les tables
     async getTables() {
         const [rows] = await this.db.query('SHOW TABLES');
-        return rows.map(r => Object.values(r)[0]);
+        return rows
+            .map(r => Object.values(r)[0])
+            .filter(tableName => tableName !== 'cours');
     }
 
     // INSERT - ajouter une valeur
