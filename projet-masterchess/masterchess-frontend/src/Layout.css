@@ -27,23 +27,6 @@ html, body, .App, #root{
   overflow: auto;
 }
 
-.my-sidebar {
-  height: 100%;
-  width: 300px;
-
-  z-index: 5;
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  display: flex;
-  padding: 0px !important;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-
-  background: rgb(0, 0, 0);
-}
-
 .my-sidebar .my-sidebar-header{
   display: flex;
   padding: 20px;
@@ -286,18 +269,72 @@ html, body, .App, #root{
   line-height: normal;
 }
 
-.navbar {
-  display: block;
-  z-index: 6;
+@media screen and (max-width: 600px) {
+  .my-sidebar {
+    height: 100%;
+    width: 300px;
+
+    z-index: 5;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    padding: 0px !important;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    background: rgb(0, 0, 0);
+  }
+
+  .navbar {
+    display: block;
+    z-index: 6;
+  }
+
+  .navbar-toggler {
+    left: 20px;
+    top: 90px;
+    position: absolute;
+    z-index: 6;
+  }
+
+  .nav-links {
+    flex-direction: column;
+  }
 }
 
-.navbar-toggler {
-  left: 20px;
-  top: 90px;
-  position: absolute;
-  z-index: 6;
-}
+@media screen and (min-width: 600px) {
+  .my-sidebar {
+    height: 100%;
+    width: 300px;
 
-.nav-links {
-  flex-direction: column;
+    z-index: 5;
+    position: relative;
+    top: 0px;
+    left: 0px;
+    display: flex;
+    padding: 0px !important;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    background: rgb(0, 0, 0);
+  }
+
+  .navbar {
+    display: block;
+    z-index: 6;
+  }
+
+  .navbar-toggler {
+    left: 20px;
+    top: 90px;
+    position: absolute;
+    z-index: 6;
+  }
+
+  .nav-links {
+    flex-direction: column;
+  }
 }
