@@ -173,7 +173,7 @@ function Layout() {
                                 </div>
                                 <div class="my-sidebar-footer-userdata">
                                     <label class="my-sidebar-footer-username">{sessionUsager?.compte ?? "<blank>"}</label>
-                                    <label class="my-sidebar-footer-informations">Profin</label>
+                                    <label class="my-sidebar-footer-informations">Profil</label>
                                 </div>
                             </div>
                         </div>
