@@ -34,4 +34,5 @@ Comptes test:
 Gabriel gabriel1
 Pro pro1
 Noob noob1
+Admin admin123 - admin
 ```
