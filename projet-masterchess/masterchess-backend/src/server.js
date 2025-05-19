@@ -122,7 +122,6 @@ app.get('/', (req, res) => {
 });
 
 // gestion de session
-
 router.post('/login', async function (req, res) {
     const { username, password } = req.body;
     try {
@@ -221,15 +220,23 @@ router.get("/getSession", async function (req, res) {
 // affichage liste de jeux
 
 router.get("/getAllPartiesEncours", isAuthenticated, async function (req, res, err) {
-    const resultat = await partiesService.selectAllPartiesEncours();
-    res.send({ success: true, message: 'Data requested', result: resultat });
+    try {
+        const resultat = await partiesService.selectAllPartiesEncours();
+        res.send({ success: true, message: 'Data requested', result: resultat });
+    } catch (err) {
+        res.status(500).send(err)
+    }
 });
 
 // affichage profil
 
 router.get("/getProfiljeuProfil", isAuthenticated, async function (req, res, err) {
-    const resultat = await profiljeuService.selectProfiljeuProfil(req.query.id);
-    res.send({ success: true, message: 'Data requested', result: resultat });
+    try {
+        const resultat = await profiljeuService.selectProfiljeuProfil(req.query.id);
+        res.send({ success: true, message: 'Data requested', result: resultat });
+    } catch (err) {
+        res.status(500).send(err)
+    }
 });
 
 // page du jeu
@@ -242,8 +249,12 @@ router.get("/getPartie", isAuthenticated, async function (req, res, err) {
 router.get("/getProfiljeu", isAuthenticated, async function (req, res, err) {
     if (!req.query.id)
         throw new Error("route: query.id not received");
-    const resultat = await jeuService.selectProfiljeu(req.query.id);
-    res.send({ success: true, message: 'Data requested', result: resultat });
+    try {
+        const resultat = await jeuService.selectProfiljeu(req.query.id);
+        res.send({ success: true, message: 'Data requested', result: resultat });
+    } catch (err) {
+        res.status(500).send(err)
+    }
 });
 
 router.post("/createPartie", isAuthenticated, async function (req, res, err) {
@@ -275,23 +286,27 @@ router.post("/createPartie", isAuthenticated, async function (req, res, err) {
 // Checkout achat gems
 
 router.post('/CreateCheckoutSession', async (req, res) => {
-    const session = await stripe.checkout.sessions.create({
-        line_items: [
-            {
-                price_data: {
-                    currency: 'cad',
-                    product_data: {
-                        name: '1000 gems',
+    try {
+        const session = await stripe.checkout.sessions.create({
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'cad',
+                        product_data: {
+                            name: '1000 gems',
+                        },
+                        unit_amount: 500,
                     },
-                    unit_amount: 500,
+                    quantity: 1,
                 },
-                quantity: 1,
-            },
-        ],
-        mode: 'payment',
-        ui_mode: 'custom',
-        return_url: 'https://localhost:4000/data/RetourCharger?session_id={CHECKOUT_SESSION_ID}'
-    });
+            ],
+            mode: 'payment',
+            ui_mode: 'custom',
+            return_url: 'https://localhost:4000/data/RetourCharger?session_id={CHECKOUT_SESSION_ID}'
+        });
+    } catch (err) {
+        res.status(500).send(err)
+    }
 
     res.json({ checkoutSessionClientSecret: session.client_secret });
 });
@@ -299,7 +314,12 @@ router.post('/CreateCheckoutSession', async (req, res) => {
 
 
 router.get('/RetourCharger', async (req, res) => {
-    const session = await stripe.checkout.sessions.retrieve(req?.query?.session_id);
+    try {
+        const session = await stripe.checkout.sessions.retrieve(req?.query?.session_id);
+    } catch (err) {
+        res.status(500).send(err)
+    }
+
     if(!session)
         res.status(400).send({ success: false, message: "Le serveur n'a pas reussi à obtenir la session Stripe avec cet id.", result: null });
     
@@ -323,8 +343,7 @@ router.get('/RetourCharger', async (req, res) => {
 });
 
 router.get("/getFacture", async (req, res) => {
-    try
-    {
+    try {
         const facture = await factureService.selectFacture(req.query.id);
         res.send({ success: true, message: 'Data requested', result: facture });
     } catch (error) {
@@ -442,8 +461,12 @@ const adminRouter = express.Router();
 
 // GET Tables
 adminRouter.get('/tables', async (req, res) => {
-    const tables = await adminService.getTables();
-    res.json(tables);
+    try {
+        const tables = await adminService.getTables();
+        res.json(tables);
+    } catch (err) {
+        res.status(500).send(err)
+    }
 });
 
 // CRUD
@@ -495,8 +518,12 @@ adminRouter.delete('/:table/:id', async (req, res) => {
 
 // GET COLUMNS
 adminRouter.get('/:table/columns', async (req, res) => {
-    const cols = await adminService.getColumns(req.params.table);
-    res.json(cols);
+    try {
+        const cols = await adminService.getColumns(req.params.table);
+        res.json(cols);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 app.use('/data/admin', adminRouter);
 
