@@ -1,18 +1,16 @@
-import React, { useContext } from "react";
-import "./PageAccueil.css"; // CSS
-import { AccueilServiceContext } from "../accueil/service/AccueilService";
-import PageCours from "../cours/PageCours";
-import PageJeu from "../jeu/PageJeu";
+import React from "react";
+import "./PageAccueil.css";
+import { useNavigate } from "react-router-dom";
 
 const PageAccueil = () => {
-  const { setPageCourante } = useContext(AccueilServiceContext);
+  const navigate = useNavigate();
 
   const handlePlayClick = () => {
-    setPageCourante(<PageJeu />);
+    navigate("/PageListeJeux");
   };
 
   const handleLearnClick = () => {
-    setPageCourante(<PageCours />);
+    navigate("/PageCours");
   };
 
   return (
@@ -25,7 +23,6 @@ const PageAccueil = () => {
         </button>
       </div>
 
-      {/* Lesson Section */}
       <div className="lesson-container">
         <img
           src="https://images.chesscomfiles.com/uploads/v1/images_users/tiny_mce/CHESScom/phphK5JVu.png"
