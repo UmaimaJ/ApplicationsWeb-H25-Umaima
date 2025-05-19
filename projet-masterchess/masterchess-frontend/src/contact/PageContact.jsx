@@ -62,6 +62,7 @@ const PageContact = () => {
                         name="nom"
                         value={formData.nom}
                         onChange={handleChange}
+                        maxlength="64"
                         required
                     />
                 </div>
@@ -74,6 +75,7 @@ const PageContact = () => {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
+                        maxlength="64"
                         required
                     />
                 </div>
@@ -86,6 +88,7 @@ const PageContact = () => {
                         name="sujet"
                         value={formData.sujet}
                         onChange={handleChange}
+                        maxlength="64"
                         required
                     />
                 </div>
