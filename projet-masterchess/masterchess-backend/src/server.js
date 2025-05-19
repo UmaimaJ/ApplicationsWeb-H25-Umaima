@@ -286,27 +286,23 @@ router.post("/createPartie", isAuthenticated, async function (req, res, err) {
 // Checkout achat gems
 
 router.post('/CreateCheckoutSession', async (req, res) => {
-    try {
-        const session = await stripe.checkout.sessions.create({
-            line_items: [
-                {
-                    price_data: {
-                        currency: 'cad',
-                        product_data: {
-                            name: '1000 gems',
-                        },
-                        unit_amount: 500,
+    const session = await stripe.checkout.sessions.create({
+        line_items: [
+            {
+                price_data: {
+                    currency: 'cad',
+                    product_data: {
+                        name: '1000 gems',
                     },
-                    quantity: 1,
+                    unit_amount: 500,
                 },
-            ],
-            mode: 'payment',
-            ui_mode: 'custom',
-            return_url: 'https://localhost:4000/data/RetourCharger?session_id={CHECKOUT_SESSION_ID}'
-        });
-    } catch (err) {
-        res.status(500).send(err)
-    }
+                quantity: 1,
+            },
+        ],
+        mode: 'payment',
+        ui_mode: 'custom',
+        return_url: 'https://localhost:4000/data/RetourCharger?session_id={CHECKOUT_SESSION_ID}'
+    });
 
     res.json({ checkoutSessionClientSecret: session.client_secret });
 });
