@@ -39,10 +39,10 @@ const SignUp = () => {
             return;
         }
 
-        const passwordRegex = /^.*(?=.{8,})(?=.*[a-zA-Z])(?=.*\d).*$/;
+        const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{8,32}$/;
         if(!passwordRegex.test(password))
         {
-            await setInvalidTooltip(passwordInvalid, "Doit avoir 8 ou plus caractères alphanumériques.");
+            await setInvalidTooltip(passwordInvalid, "Doit avoir entre 8 et 32 caractères alphanumériques.");
             return;
         }
 
