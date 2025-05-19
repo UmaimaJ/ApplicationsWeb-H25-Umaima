@@ -48,8 +48,10 @@ await mymongo.connect();
 
 const mymongodb = mymongo.db("projet_chess");
 
+const domain = process.env.DOMAIN;
+
 const corsOptions = {
-    origin: ['https://10.186.5.123:4000', 'https://10.0.0.228:4000', 'https://localhost:4000'],//< Change domain to suit your needs
+    origin: ['https://10.186.5.123:4000', 'https://10.0.0.228:4000', 'https://'+ domain ],//< Change domain to suit your needs
     methods: ["GET", "POST"],
     credentials: true
 };
@@ -86,7 +88,7 @@ const profiljeuService = new ProfiljeuService(mymysql);
 const factureService = new FactureService(mymongodb);
 
 server.listen(4000, function () {
-    console.log("masterchess-backend en service sur https://localhost:4000");
+    console.log("masterchess-backend en service sur https://" + domain);
 });
 
 // reactjs serve static
@@ -301,7 +303,7 @@ router.post('/CreateCheckoutSession', async (req, res) => {
         ],
         mode: 'payment',
         ui_mode: 'custom',
-        return_url: 'https://localhost:4000/data/RetourCharger?session_id={CHECKOUT_SESSION_ID}'
+        return_url: 'https://'+ domain +'/data/RetourCharger?session_id={CHECKOUT_SESSION_ID}'
     });
 
     res.json({ checkoutSessionClientSecret: session.client_secret });

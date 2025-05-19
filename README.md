@@ -19,7 +19,7 @@ npm run transfertdb
 ```
 
 ## Configuration
-Pour configurer le projet, il vous faut une clé secrète(Secret API Key) Stripe et une clé publique(Publishable API Key) Stripe mises sur les variables d'environement ```STRIPE_SECRETKEY``` et ```REACT_APP_STRIPE_PUBLISHABLEKEY``` de votre Système d'exploitation. Après les avoir ajoutées, n'oubliez pas de re-ouvrir le processus CLI qui va exécuter la prochaine étape.
+Pour configurer le projet, il vous faut une clé secrète(Secret API Key) Stripe et une clé publique(Publishable API Key) Stripe mises sur les variables d'environement ```STRIPE_SECRETKEY``` et ```REACT_APP_STRIPE_PUBLISHABLEKEY``` de votre Système d'exploitation. Après les avoir ajoutées, n'oubliez pas de re-ouvrir le processus CLI qui va exécuter la prochaine étape. Il faut aussi la variable ```DOMAIN``` avec votre hostname de hébergement(ex:"localhost:4000").
 
 ## Exécuter
 Pour démarrer le projet en développement faites simplement:

@@ -8,13 +8,10 @@ import { ComptesServiceContext } from "../login/service/ComptesService.js"
 const PageCours = () => {
   const { service } = useContext(ServiceCoursContext);
   const { navigate, accueilService } = useContext(AccueilServiceContext)
-  const {sessionUsager, setSessionUsager, comptesService} = useContext(ComptesServiceContext)
   const [coursList, setCoursList] = useState([]);
   const [coursAchetesList, setCoursAchetesList] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedLevel, setSelectedLevel] = useState("Tous");
-
-  var tooltipInvalidAcheter = null;
   const [showDescription, setShowDescription] = useState({});
   const [activeTab, setActiveTab] = useState("Bibliothèque");
 
@@ -24,16 +21,6 @@ const PageCours = () => {
     "Avancé": 3,
     "Tous": null,
   };
-  const getThemeFromNom = (nom) => {
-  nom = nom.toLowerCase();
-  if (nom.includes("ouverture")) return "Ouvertures";
-  if (nom.includes("attaquer") || nom.includes("stratégie")) return "Stratégie";
-  if (nom.includes("tactique") || nom.includes("sacrifice")) return "Tactiques";
-  if (nom.includes("fin") || nom.includes("roi")) return "Fins de partie";
-  if (nom.includes("maître") || nom.includes("grand")) return "Maîtres";
-  return "Autres";
-};
-
 
   const categoryKeywords = {
     "Ouvertures": ["ouverture", "pirc", "ouvertures"],
@@ -41,6 +28,15 @@ const PageCours = () => {
     "Tactiques": ["tactique", "fourchette", "sacrifice"],
     "Fins de partie": ["fin de partie", "finale"],
     "Parties de maîtres": ["maître", "champion"]
+  };
+
+  const emojiByCategory = {
+    "Ouvertures": "♟️",
+    "Stratégie": "🧠",
+    "Tactiques": "🎯",
+    "Fins de partie": "🏁",
+    "Parties de maîtres": "👑",
+    "Autres": "📘"
   };
 
   const [activeCategory, setActiveCategory] = useState("Tous");
@@ -51,6 +47,15 @@ const PageCours = () => {
     return categoryKeywords[category]?.some(keyword => content.includes(keyword));
   };
 
+  const getCategoryEmoji = (nom) => {
+    nom = nom.toLowerCase();
+    if (nom.includes("ouverture")) return emojiByCategory["Ouvertures"];
+    if (nom.includes("attaquer") || nom.includes("stratégie")) return emojiByCategory["Stratégie"];
+    if (nom.includes("tactique") || nom.includes("sacrifice")) return emojiByCategory["Tactiques"];
+    if (nom.includes("fin") || nom.includes("roi")) return emojiByCategory["Fins de partie"];
+    if (nom.includes("maître") || nom.includes("grand")) return emojiByCategory["Parties de maîtres"];
+    return emojiByCategory["Autres"];
+  };
 
   const fetchCours = async () => {
     const cours = await service.getLessons();
@@ -71,36 +76,8 @@ const PageCours = () => {
   };
 
   const handleAcheterCours = async (coursId) => {
-    try
-    {
-      await service.addTransactionCours(coursId);
-    }
-    catch(error)
-    {
-      if(error?.message === "insertTransaction: transaction existe deja")
-      {
-        const element = document.querySelector("#lblError");
-        await setInvalidTooltip(element, "Vous avez déjà acheté cet article.");
-        //timer undo tooltip
-        if(tooltipInvalidAcheter)
-        {
-          clearTimeout(tooltipInvalidAcheter);
-          tooltipInvalidAcheter = null;
-        }
-        tooltipInvalidAcheter = setTimeout(async () => { await setInvalidTooltip(element, null) } , 10000);
-      }
-    }
+    await service.addTransactionCours(coursId);
     fetchCours();
-  };
-
-  const setInvalidTooltip = async (tooltip, message) => {
-    if(!message || message === "")
-        tooltip.style.display = "none";
-    if(message)
-        tooltip.style.display = "block";
-
-    tooltip.innerText = message;
-    tooltip.hidden = false;
   };
 
   const ouvrirCoursAchete = async (id) => {
@@ -117,11 +94,7 @@ const PageCours = () => {
       )
       .map((cours, index) => (
         <div key={index} className="lesson-card">
-          <img
-            src={cours.id_image || "https://upload.wikimedia.org/wikipedia/commons/6/65/No-Image-Placeholder.svg"}
-            alt={`Cours ${cours.id}`}
-            className="lesson-img"
-          />
+          <div className="emoji-img">{getCategoryEmoji(cours.id_nom)}</div>
           <div className="lesson-info">
             <h2>{cours.id_nom}</h2>
             <p className="cours-description">
@@ -150,8 +123,6 @@ const PageCours = () => {
 
   return (
     <div className="cours-container">
-      <div id="lblError" className="alert alert-danger alert-fixed w-100" role="alert" style={{display: "none"}}>
-      </div>
       <h1>📘 Lessons</h1>
 
       <div className="tabs">
@@ -176,8 +147,11 @@ const PageCours = () => {
               <div
                 className={`category-item ${activeCategory === cat ? "active" : ""}`}
                 onClick={() => setActiveCategory(cat)}
+                key={cat}
               >
-                {/* <img src={`/icons/${cat.toLowerCase().replace(/ /g, "")}.png`} alt={cat} /> */}
+                <span style={{ fontSize: "20px", marginRight: "8px" }}>
+                  {emojiByCategory[cat] || "📚"}
+                </span>
                 <span>{cat}</span>
               </div>
             ))}
